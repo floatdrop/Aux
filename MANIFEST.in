@@ -1,0 +1,2 @@
+recursive-include backend/templates *
+recursive-include backend/static *
