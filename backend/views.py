@@ -2,5 +2,5 @@ from backend import app
 
 @app.route('/')
 def hello_world():
-    raise Exception("Lol no")
+    app.logger.info("Hello logs!")
     return 'Hello World!'
