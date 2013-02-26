@@ -23,7 +23,7 @@ def run_server():
 
     configure_logging(app)
 
-    http_server = WSGIServer(('', 81), DebuggedApplication(app))
+    http_server = WSGIServer(('', 81), DebuggedApplication(app, True))
     http_server.serve_forever()
 
 
