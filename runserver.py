@@ -1,6 +1,8 @@
+import gevent
 from gevent import monkey; monkey.patch_all()
 from gevent.wsgi import WSGIServer
-from backend import app
+import signal
+from backend import app, world
 from werkzeug.serving import run_with_reloader
 from werkzeug.debug import DebuggedApplication
 
@@ -20,13 +22,9 @@ def configure_logging(app):
 @run_with_reloader
 def run_server():
     app.debug = True
-
     configure_logging(app)
-
+    gevent.signal(signal.SIGINT, world.shutdown)
+    world.start()
+    app.world = world
     http_server = WSGIServer(('', 81), DebuggedApplication(app, True))
     http_server.serve_forever()
-
-
-
-if __name__ == "__main__":
-    run_server()
