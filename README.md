@@ -1,4 +1,4 @@
-Auxilium
+Aux
 ========
 
 This is open multiplayer game (including "engine") for social networks (like
