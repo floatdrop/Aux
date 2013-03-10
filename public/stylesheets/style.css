@@ -6,3 +6,13 @@ body {
 a {
   color: #00B7FF;
 }
+
+#content {
+  width: 1136px;
+  height: 640px;
+  position: absolute;
+  margin: -320px 0 0 -568px;
+  top: 50%;
+  left: 50%;
+  border: 1px solid #A0A0A0;
+}
