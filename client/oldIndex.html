@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html>                                                                           
+<head>                                                                           
+    <title>JsGame</title>                                                   
+    <script src="js/box2d/box2d.js"></script>
+    <script src="js/jsgamesoup/sprite.js"></script>
+    <script src="js/jsgamesoup/jsgamesoup.js"></script>
+    <script src="js/gl-matrix/gl-matrix.js"></script>
+    <script src="js/jsgamesoup/random.js"></script>
+    <script src="js/uniobject.js"></script>
+    <script src="js/world.js"></script>
+    <script src="js/player.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/downloadSprites.js"></script>
+    <script src="js/jQuery1.8.3.js"></script>
+    <style>
+        * { margin: 0; padding: 0; }
+        
+        html, body {
+            height: 100%;         /* required */
+            font-family: "Arial";
+        }
+
+        div#content {
+            width: 800px;
+            height: 600px;
+            position: absolute;
+            margin: -300px 0px 0px -400px;
+            top: 50%;
+            left: 50%;
+        }
+    </style>
+</head>
+<body ontouchstart="ev.preventDefault();">
+    <h1>ok</h1>
+    <div id="content">
+        <canvas id="gamecanvas" jsgs="startGame" Width="800" height="600" fps="60"/>
+    </div>
+</body>
+</html>
