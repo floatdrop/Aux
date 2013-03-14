@@ -1,6 +1,6 @@
 var cls = require("./lib/class"),
 	_ = require("underscore"),
-	log = require("log");
+	Log = require("log");
 
 module.exports = World = cls.Class.extend({
 	init: function() {

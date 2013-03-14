@@ -4,7 +4,8 @@ function main(config) {
 	var io = require('socket.io').listen(config.port),
 			Log = require('log'),
 			_ = require('underscore'),
-			world = require('./worldserver');
+			worldserver = require('./worldserver'),
+			world = new(worldserver)();
 	
 	switch(config.debug_level) {
     case "error":
@@ -29,6 +30,8 @@ function main(config) {
 	process.on('uncaughtException', function (e) {
     log.error('uncaughtException: ' + e);
   });
+
+  world.run()
 }
 
 function configureStaticServer(config) {
@@ -46,9 +49,9 @@ function getConfigFile(path, callback) {
 		if (err) {
 			console.error("Could not open config file: ", err.path);
 			callback(null);
-        } else {
-            callback(JSON.parse(json_string));
-        }
+		} else {
+			callback(JSON.parse(json_string));
+		}
 	});
 }
 
