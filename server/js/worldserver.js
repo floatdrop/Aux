@@ -1,7 +1,8 @@
 var cls = require("./lib/class"),
 	_ = require("underscore"),
-	Log = require("log");
-	Engine = require("./engine")
+	Log = require("log"),
+	async = require("async"),
+	Engine = require("./engine");
 
 module.exports = World = cls.Class.extend({
 	
@@ -18,9 +19,10 @@ module.exports = World = cls.Class.extend({
 		var self = this;
 		setInterval(function () { 
 			self.engine.tick(1000 / self.ups);
-			_.each(self.players, function(player) {
+			async.each(self.players, function(player, callback) {
 				self.engine.updatePlayer(player);
-			});
+				callback(null);
+			}, function (err) {});
 		},	1000 / this.ups);
 	},
 
