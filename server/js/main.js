@@ -3,8 +3,8 @@ var fs = require('fs');
 function main(config) {
 	var io = require('socket.io').listen(config.port),
 			log = require('log'),
-			_ = require('_'),
-			world = require('./worldserver')
+			_ = require('underscore'),
+			world = require('./worldserver');
 	
 	if (config.static_port) {
 		configureStaticServer(config);
@@ -14,6 +14,9 @@ function main(config) {
 		world.connection_callback(socket);
 	});
 
+	process.on('uncaughtException', function (e) {
+    log.error('uncaughtException: ' + e);
+  });
 }
 
 function configureStaticServer(config) {
@@ -27,15 +30,18 @@ function configureStaticServer(config) {
 }
 
 function getConfigFile(path, callback) {
-	fs.fs.readFile(path, 'utf8', function(err, json_string) {
+	fs.readFile(path, 'utf8', function(err, json_string) {
 		if (err) {
 			console.error("Could not open config file: ", err.path);
-		}
+			callback(null);
+    } else {
+        callback(JSON.parse(json_string));
+    }
 	});
 }
 
-var defaultConfigPath = './server/config.json'
-var customConfigPath = './server/config_local.json'
+var defaultConfigPath = './server/config.json';
+var customConfigPath = './server/config_local.json';
 
 process.argv.forEach(function(val, index, array) {
 	if (index === 2) {
