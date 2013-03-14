@@ -2,11 +2,23 @@ var fs = require('fs');
 
 function main(config) {
 	var io = require('socket.io').listen(config.port),
-			log = require('log'),
+			Log = require('log'),
 			_ = require('underscore'),
 			world = require('./worldserver');
 	
+	switch(config.debug_level) {
+    case "error":
+      log = new Log(Log.ERROR); break;
+    case "debug":
+      log = new Log(Log.DEBUG); break;
+    case "info":
+      log = new Log(Log.INFO); break;
+  };
+
+  log.info("Starting Aux game server...");
+
 	if (config.static_port) {
+		log.info("Starting static server on port " + config.static_port)
 		configureStaticServer(config);
 	}
 
@@ -34,9 +46,9 @@ function getConfigFile(path, callback) {
 		if (err) {
 			console.error("Could not open config file: ", err.path);
 			callback(null);
-    } else {
-        callback(JSON.parse(json_string));
-    }
+        } else {
+            callback(JSON.parse(json_string));
+        }
 	});
 }
 
