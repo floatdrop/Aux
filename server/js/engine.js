@@ -52,7 +52,7 @@ module.exports = Engine = cls.Class.extend({
 	drawDOMObjects: function() {
 		var ret = [];
 		var i = 0;
-		for (var b = world.m_bodyList; b; b = b.m_next) {
+		for (var b = this.b2w.m_bodyList; b; b = b.m_next) {
 			for (var f = b.m_fixtureList; f; f = f.m_next) {
 				if (f.m_userData) {
 					var x = Math.floor((f.m_body.m_xf.position.x * SCALE) -  f.m_userData.width);

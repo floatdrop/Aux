@@ -130,7 +130,7 @@ function start(framePerSecond) {
 	, true //allow sleep
 	);
 
-		//Create DOB OBjects
+	//Create DOB OBjects
 	createDOMObjects(Math.random()* (w-size),Math.random()* (h-size),size, Math.random() > .5);
 	createDOMObjects(Math.random()* (w-size),Math.random()* (h-size),size, Math.random() > .5);
 	createDOMObjects(Math.random()* (w-size),Math.random()* (h-size),size, Math.random() > .5);

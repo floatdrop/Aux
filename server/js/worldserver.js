@@ -9,7 +9,7 @@ module.exports = World = cls.Class.extend({
 		this.ups = 50;
 		this.players = []
 		this.onPlayerConnect(function(socket) {
-            this.players.append(socket)
+            this.players.push(socket)
         });
 		this.engine = new Engine();
 	},
