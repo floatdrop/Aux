@@ -24,7 +24,7 @@ function main(config) {
 	}
 
 	io.sockets.on('connection', function(socket) {
-		world.connection_callback(socket);
+		world.connect_callback(socket);
 	});
 
 	process.on('uncaughtException', function (e) {
