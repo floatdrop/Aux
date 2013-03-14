@@ -7,6 +7,7 @@ This game tested on nodejs v0.8.0 with following libraries:
 - log
 - socket.io
 - node-static
+- async
 
 All of them can be installed via `npm install -d` (this will install a local copy of all the dependencies in the node_modules directory)
 
