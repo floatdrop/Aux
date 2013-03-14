@@ -1,4 +1,6 @@
-var Box2D = require('./box2d.js');
+var Box2D = require('./box2d.js'),
+		cls = require('./lib/class');
+
 
 var b2Vec2 = Box2D.Common.Math.b2Vec2,
 	b2BodyDef = Box2D.Dynamics.b2BodyDef,
@@ -19,34 +21,34 @@ var h = 500;
 var D2R = Math.PI / 180;
 var R2D = 180 / Math.PI;
 var PI2 = Math.PI * 2;
-
+var SCALE = 30;
 
 module.exports = Engine = cls.Class.extend({
 	init: function() {
 		this.b2w = new b2World(new b2Vec2(0, 10), true);
 
-		createDOMObjects(Math.random()* (w-size),Math.random()* (h-size),size, Math.random() > .5);
-		createDOMObjects(Math.random()* (w-size),Math.random()* (h-size),size, Math.random() > .5);
-		createDOMObjects(Math.random()* (w-size),Math.random()* (h-size),size, Math.random() > .5);
-		createDOMObjects(Math.random()* (w-size),Math.random()* (h-size),size, Math.random() > .5);
-		createDOMObjects(Math.random()* (w-size),Math.random()* (h-size),size, Math.random() > .5);
-		createDOMObjects(Math.random()* (w-size),Math.random()* (h-size),size, Math.random() > .5);
-		createDOMObjects(Math.random()* (w-size),Math.random()* (h-size),size, Math.random() > .5);
-		createDOMObjects(Math.random()* (w-size),Math.random()* (h-size),size, Math.random() > .5);
-		createDOMObjects(Math.random()* (w-size),Math.random()* (h-size),size, Math.random() > .5);
+		this.createDOMObjects(Math.random()* (w-size),Math.random()* (h-size),size, Math.random() > .5);
+		this.createDOMObjects(Math.random()* (w-size),Math.random()* (h-size),size, Math.random() > .5);
+		this.createDOMObjects(Math.random()* (w-size),Math.random()* (h-size),size, Math.random() > .5);
+		this.createDOMObjects(Math.random()* (w-size),Math.random()* (h-size),size, Math.random() > .5);
+		this.createDOMObjects(Math.random()* (w-size),Math.random()* (h-size),size, Math.random() > .5);
+		this.createDOMObjects(Math.random()* (w-size),Math.random()* (h-size),size, Math.random() > .5);
+		this.createDOMObjects(Math.random()* (w-size),Math.random()* (h-size),size, Math.random() > .5);
+		this.createDOMObjects(Math.random()* (w-size),Math.random()* (h-size),size, Math.random() > .5);
+		this.createDOMObjects(Math.random()* (w-size),Math.random()* (h-size),size, Math.random() > .5);
 
-		createBox(0, 0 , w, 5, true);
-		createBox(0, h , w, 5, true);
-		createBox(0,0,5,h, true);
-		createBox(w,0,5,h, true);
-	}
+		this.createBox(0, 0 , w, 5, true);
+		this.createBox(0, h , w, 5, true);
+		this.createBox(0,0,5,h, true);
+		this.createBox(w,0,5,h, true);
+	},
 	tick: function(fps) {
-		this.b2w.step(1 / fps, 10, 10)
+		this.b2w.Step(1 / fps, 10, 10)
 		this.b2w.ClearForces();
-	}
+	},
 	updatePlayer: function(player) {
 		player.emit('css', this.drawDOMObjects());
-	}
+	},
 	drawDOMObjects: function() {
 		var ret = [];
 		var i = 0;
@@ -72,7 +74,7 @@ module.exports = Engine = cls.Class.extend({
 			}
 		}
 	return ret;
-	}
+	},
 	createDOMObjects: function(x, y, size, circle) {
 		var domObj = {id:'foo'};
 		var domPos = {left:x, top:y};
@@ -83,7 +85,7 @@ module.exports = Engine = cls.Class.extend({
 	    var y = (domPos.top) + height;
 	    var body = this.createBox(x,y,width,height, false, circle);
 		body.m_userData = {domObj:domObj, width:width, height:height, circle: circle ? true : false, setup: true};
-	}
+	},
 	createBox: function(x, y, width, height, static, circle) {
 		var bodyDef = new b2BodyDef;
 		bodyDef.type = static ? b2Body.b2_staticBody : b2Body.b2_dynamicBody;

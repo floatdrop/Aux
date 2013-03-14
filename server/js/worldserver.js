@@ -15,10 +15,11 @@ module.exports = World = cls.Class.extend({
 	},
 
 	run: function() {
+		var self = this;
 		setInterval(function () { 
-			this.engine.tick(1000 / this.ups);
-			_.each(this.players, function(player) {
-				this.engine.updatePlayer(player);
+			self.engine.tick(1000 / self.ups);
+			_.each(self.players, function(player) {
+				self.engine.updatePlayer(player);
 			});
 		},	1000 / this.ups);
 	},
