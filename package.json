@@ -1,0 +1,11 @@
+{
+    "name": "Aux"
+    , "version": "0.0.1"
+    , "private": false
+    , "dependencties": {
+        "underscore": ">0"
+        , "log": ">0"
+        , "socket.io": ">0"
+        , "node-static": ">0"
+    }
+}
