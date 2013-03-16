@@ -7,6 +7,8 @@ function main(config) {
 			worldserver = require('./worldserver'),
 			world = new(worldserver)();
 	
+  io.set('log level', 1)
+
 	switch(config.debug_level) {
     case "error":
       log = new Log(Log.ERROR); break;
