@@ -19,6 +19,10 @@ module.exports = World = cls.Class.extend({
 		var self = this;
 		setInterval(function () { 
 			self.engine.tick(1000 / self.ups);
+			// for (var i=0;i<self.players.length;i++)
+			// {
+				// self.engine.updatePlayer(self.players[i]);
+			// }
 			async.each(self.players, function(player, callback) {
 				self.engine.updatePlayer(player);
 				callback(null);
