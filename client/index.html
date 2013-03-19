@@ -1,85 +1,40 @@
-<html>
-    <head>
-        <style type="text/css">
-                body,div, a {
-                    margin:0;
-                    padding:0;
-                    border:none;
-                    color:#fff;
-                    font-family: "American Typewriter";
-                }
-
-                /* Set translateZ to trigger HW acc for CSS3 transforms */
-                body {
-                    -webkit-transform: translateZ(0);
-                    -o-transform: translateZ(0);
-                    -moz-transform: translateZ(0);
-                    -ms-transform: translateZ(0);
-                    transform: translateZ(0);
-                    background-color:black;
-
-                    width:900px;
-                    height:500px;
-                    border: 1px solid white;
-                }
-
-                aside {
-                    
-                }
-
-                div {
-                    position: absolute;
-                    top:0;
-                    left:0;
-                    
-                    /*-webkit-transition-duration: 0.1s;
-                    -moz-transition-duration: 0.1s;
-                    -o-transition-duration: 0.1s;
-                    transition-duration: 0.1s;
-                    
-                    -webkit-transition-timing-function: linear;
-                    -moz-transition-timing-function: linear;
-                    -o-transition-timing-function: linear;
-                    transition-timing-function: linear;
-                    */
-
-                    background: #ffffff; /* Old browsers */
-            }
-
-
-        </style>
-
-
-        
-
-        <!-- iOS mobile app settings -->
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-        
-    </head>
-<body>
-    <a href="http://paal.org/blog/2012/07/06/running-box2d-on-server-with-node-js-via-socket-io/">paal.org - Box2D on the server via Node.js and Socket.io</a>
-</body>
-    <script src="js/socket.io.js"></script>
+<!DOCTYPE HTML>
+<html>                                                                           
+<head>                                                                           
+    <title>JsGame</title>                                                   
+    <script src="js/box2d/box2d.js"></script>
+    <script src="js/jsgamesoup/sprite.js"></script>
+    <script src="js/jsgamesoup/jsgamesoup.js"></script>
+    <script src="js/gl-matrix/gl-matrix.js"></script>
+    <script src="js/jsgamesoup/random.js"></script>
+    <script src="js/uniobject.js"></script>
+    <script src="js/world.js"></script>
+    <script src="js/player.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/downloadSprites.js"></script>
     <script src="js/jQuery1.8.3.js"></script>
-    <script>
-      window.socket = io.connect('http://localhost:8000');
-
-      divs = [];
-      
-      socket.on('css', function (data) {
-
-        for (var i = 0; i < data.length; i ++) {
-            var css = data[i];
-            var div = divs[i];
-            
-            if (!div) {
-                $('body').append('<div id="id' + i + '"></div>') 
-                div = divs[i] = $('#id' + i);
-            }
-
-            div.css(css);
+    <style>
+        * { margin: 0; padding: 0; }
+        
+        html, body {
+            height: 100%;         /* required */
+            font-family: "Arial";
         }
-      });
-    </script>
+
+        div#content {
+            width: 800px;
+            height: 600px;
+            position: absolute;
+            margin: -300px 0px 0px -400px;
+            top: 50%;
+            left: 50%;
+        }
+    </style>
+</head>
+<body ontouchstart="ev.preventDefault();">
+    <h1>ok</h1>
+    <div id="content">
+        <canvas id="gamecanvas" jsgs="startGame" Width="800" height="600" fps="60"/>
+    </div>
+</body>
 </html>
