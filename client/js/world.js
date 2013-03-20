@@ -1,69 +1,78 @@
-function World(gs) {
-    this.player = null
+/*** World ***/
+function World(gs, box2d) {
     this.gs = gs
-
-    this.draw = function(canvas, gamesoup) 
-    {
-        gamesoup.clear();
+    this.box2d = box2d
+    this.player = null;
+    this.x = 0;
+    this.y = 0;
+    this.w = gs.width / 2
+    this.h = gs.height / 2
+    this.relx = 0;
+    this.rely = 0;
+    
+    this.setPlayer = function(player) {
+        this.player = player;
     }
     
-    this.update = function(gamesoup)
-    {
-        gamesoup.box2d.Step(1.0/gamesoup.framerate, 1);
+    var sprite = new Sprite(["center", "bottom"], {
+        "ground": [["images/ground.png", 0],]
+    },
+    // callback gets called when everything is loaded
+    function() {
+        sprite.action("ground");
+    });
+    this.sprite = sprite;
+
+    this.draw = function(c) {
+        this.gs.clear();
+        
+        // this.gs.background('rgba(100, 100, 100, 1.0)');
+
+        for (var x = 0; x < 26; x++ )
+            for (var y = 0; y < 20; y++ )
+                this.sprite.draw(c, [x * 32, y * 32])
+
     }
     
-    this.create = function(obj)
-    {
-        uniobject = new UniObject(obj)
-        uniobject.createBox2d(this.gs.box2d)
-        uniobject.createGs(this.gs)
+    this.update = function(gs) {
+        this.box2d.Step(1.0/gs.framerate, 1);
+    }
+    
+    this.pointerUp = function() {
+        this.player.Shooting = false
     }
 
-    /** Shooting functions **/
-
-    this.pointerDown = function() 
-    {
+    this.pointerDown = function() {
+        this.player.Shooting = true
     }
-
-    this.pointerUp = function()
-    {
-    }
-
-    this.pointerBox = function() 
-    {
+        
+    this.pointerBox = function() {
         return [0, 0, gs.width, gs.height];
     }
 
-    /** Helper function, that draws poly of entity **/
-    this.DrawPoly = function(c, entity) 
-    {
-        if (!entity.body) 
-            return;
+    this.DrawPoly = function(c, entity) {
+        if (entity.body) {
+            var position = entity.body.GetPosition()
+            var angle = entity.body.GetAngle()
 
-        var position = entity.body.GetPosition()
-        var angle = entity.body.GetAngle()
-
-        c.strokeStyle = entity.strokeStyle
-        c.fillStyle = entity.fillStyle
-
-        var t = entity.body.GetXForm()
-        c.translate(t.position.x, t.position.y)
-        c.rotate(entity.body.GetAngle())
-        
-        c.beginPath()
+            c.strokeStyle = entity.strokeStyle
+            c.fillStyle = entity.fillStyle
+            var t = entity.body.GetXForm()
+            c.translate(t.position.x, t.position.y)
+            c.rotate(entity.body.GetAngle())
+            c.beginPath()
             var poly = entity.body.GetShapeList().GetVertices()
             c.moveTo(poly[0].x, poly[0].y)
-            for (var n = 0 ; n < entity.body.GetShapeList().GetVertexCount() ; n++)
+            for (var n = 0 ; n < entity.body.GetShapeList().GetVertexCount() ; n++) {
                 c.lineTo(poly[n].x, poly[n].y)
+            }
             c.lineTo(poly[0].x, poly[0].y)
-        c.closePath()
-
-        c.fill()
-        c.stroke()
-        
-        c.rotate(-entity.body.GetAngle())
-        c.translate(-t.position.x, -t.position.y)
-
+            c.closePath()
+            c.fill()
+            c.stroke()
+            c.rotate(-entity.body.GetAngle())
+            c.translate(-t.position.x, -t.position.y)
+        }
     }
 
 }
