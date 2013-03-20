@@ -2,7 +2,7 @@ define(['jquery', 'game'], function($, Game) {
 
 	var canvas = document.getElementById("gamecanvas");
 	var game = new Game();
-	game.setCanvas(canvas);
+	game.setup(canvas);
 
 	$(document).mousemove(function(event) {
 		var gamePos = $('#gamecanvas').offset(),
@@ -11,7 +11,7 @@ define(['jquery', 'game'], function($, Game) {
 		mouse.x = event.pageX - gamePos.left;
     mouse.y = event.pageY - gamePos.top;
 
-  	game.movecursor();
+  	game.moveCursor();
   });
 
 	$(document).bind("keydown", function(e) {
@@ -33,5 +33,7 @@ define(['jquery', 'game'], function($, Game) {
 				return false;
 			}
 	});
+
+	game.connect();
 
 });
