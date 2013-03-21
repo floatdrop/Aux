@@ -7,18 +7,18 @@ function main(config) {
 			worldserver = require('./worldserver'),
 			world = new(worldserver)();
 	
-  io.set('log level', 1)
+	io.set('log level', 1)
 
 	switch(config.debug_level) {
-    case "error":
-      log = new Log(Log.ERROR); break;
-    case "debug":
-      log = new Log(Log.DEBUG); break;
-    case "info":
-      log = new Log(Log.INFO); break;
-  };
+		case "error":
+			log = new Log(Log.ERROR); break;
+		case "debug":
+			log = new Log(Log.DEBUG); break;
+		case "info":
+			log = new Log(Log.INFO); break;
+	};
 
-  log.info("Starting Aux game server...");
+	log.info("Starting Aux game server...");
 
 	if (config.static_port) {
 		log.info("Starting static server on port " + config.static_port)
@@ -30,10 +30,10 @@ function main(config) {
 	});
 
 	process.on('uncaughtException', function (e) {
-    log.error('uncaughtException: ' + e);
-  });
+		log.error('uncaughtException: ' + e + '\n' + e.stack);
+	});
 
-  world.run()
+	world.run()
 }
 
 function configureStaticServer(config) {

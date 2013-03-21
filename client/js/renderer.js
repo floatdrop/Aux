@@ -1,1 +1,5 @@
-renderer.js
+define([], function() {
+	init: function() {
+		
+	}
+})

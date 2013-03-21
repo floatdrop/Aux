@@ -1,5 +1,6 @@
 var Box2D = require('./box2d'),
-	Entity = require('./entity')
+	Entity = require('./entity'),
+	_ = require('underscore'),
 	cls = require('./lib/class');
 
 
@@ -54,5 +55,19 @@ module.exports = Engine = cls.Class.extend({
 			dump.push(entity.getBaseState());
 		});
 		return dump;
+	},
+	createBox: function(x, y, width, height) {
+		var bodyDef = new b2BodyDef;
+		bodyDef.type = b2Body.b2_staticBody;
+		bodyDef.position.x = x;
+		bodyDef.position.y = y;	
+
+		var fixDef = new b2FixtureDef;
+	 	fixDef.density = 1.5;
+	 	fixDef.friction = 0.01;
+	 	fixDef.restitution = 1;
+		fixDef.shape = new b2PolygonShape;
+		fixDef.shape.SetAsBox(width, height);
+		return this.b2w.CreateBody(bodyDef).CreateFixture(fixDef);
 	}
 });

@@ -1,6 +1,4 @@
-var cls = require("./lib/class"),
-    Messages = require('./message'),
-    Utils = require('./utils');
+var cls = require("./lib/class");
 
 module.exports = Entity = cls.Class.extend({
     init: function(id, type, kind) {
