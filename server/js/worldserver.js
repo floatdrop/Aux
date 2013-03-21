@@ -26,7 +26,7 @@ module.exports = World = cls.Class.extend({
 
 	broadcast: function (event, message) {
 		async.each(this.players, function (player, callback) {
-			player.emit(event, message);
+			player.socket.emit(event, message);
 			callback(null);
 		}, function (err) {})
 	},

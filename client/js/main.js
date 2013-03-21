@@ -6,13 +6,13 @@ define(['jquery', 'game'], function($, Game) {
 
 	$(document).mousemove(function(event) {
 		var gamePos = $('#gamecanvas').offset(),
-				mouse = game.mouse;
-
+			mouse = game.mouse;
+			
 		mouse.x = event.pageX - gamePos.left;
-    mouse.y = event.pageY - gamePos.top;
+		mouse.y = event.pageY - gamePos.top;
 
-  	game.moveCursor();
-  });
+		game.moveCursor();
+	});
 
 	$(document).bind("keydown", function(e) {
 			var key = e.which;

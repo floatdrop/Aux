@@ -1,4 +1,4 @@
-define(['player'], function(Player) {
+define(['player', 'entity'], function(Player, Entity) {
     
     var Player = Entity.extend({
         init: function(id, name) {

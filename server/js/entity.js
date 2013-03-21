@@ -5,11 +5,14 @@ module.exports = Entity = cls.Class.extend({
         this.id = id;
         this.type = type;
         this.kind = kind;
+        this.position = {x: 0, y: 0};
     },
     setPosition: function(x, y) {
-        this.x = x;
-        this.y = y;
+        this.position.x = x;
+        this.position.y = y;
     },
+    
+    // Contains BUG
     scheduleAction: function(action, timeout) {
     	if (timeout <= 0)
     		process.nextTick(action);

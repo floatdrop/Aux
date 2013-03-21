@@ -1,5 +1,8 @@
 define([], function() {
-	init: function() {
-		
-	}
-})
+	var Renderer = Class.extend({
+		init: function() {
+			
+		}
+	});
+	return Renderer;
+});

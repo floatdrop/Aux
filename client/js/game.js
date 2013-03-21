@@ -1,4 +1,5 @@
-define(['renderer', 'underscore', 'gameclient'], function(Renderer, Updater, _, GameClient) {
+define(['renderer', 'player', 'lib/underscore.min', 'gameclient'], 
+	function(Renderer, Player, _, GameClient) {
 	var Game = Class.extend({
 		init: function() {
 			this.mouse = { x: 0, y: 0 };
@@ -24,6 +25,7 @@ define(['renderer', 'underscore', 'gameclient'], function(Renderer, Updater, _, 
 			this.client.onEntityList(function(list) {
 				this.entities = list;
 			});
+			this.client.connect();
 		},
 		moveCursor: function() {
 			var angle = 0;
