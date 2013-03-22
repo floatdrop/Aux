@@ -1,12 +1,15 @@
 define(function() {
 
     var Animation = Class.extend({
-        init: function(name, length, row, width, height) {
+        init: function(name, length, row, width, height, flipX, flipY, speed) {
             this.name = name;
         	this.length = length;
         	this.row = row;
         	this.width = width;
         	this.height = height;
+            this.speed = speed;
+            this.flipSpriteX = flipX;
+            this.flipSpriteY = flipY;
         	this.reset();
         },
     
@@ -29,10 +32,6 @@ define(function() {
         	this.currentFrame.x = this.width * i;
         	this.currentFrame.y = this.height * this.row;
         	this.currentFrame.index = i;
-        },
-    
-        setSpeed: function(speed) {
-            this.speed = speed;
         },
     
         setCount: function(count, onEndCount) {

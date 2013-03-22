@@ -43,9 +43,9 @@ define(['sprites'], function(Sprites) {
             return animation;
         },
         idle: function() {
-
+            
         },
-        setAnimation: function(name, speed, count, onEndCount) {
+        setAnimation: function(name, count, onEndCount) {
             var self = this;
 
             if(this.isLoaded) {
@@ -61,7 +61,6 @@ define(['sprites'], function(Sprites) {
                     if(name.substr(0, 3) === "atk") {
                         this.currentAnimation.reset();
                     }
-                    this.currentAnimation.setSpeed(speed);
                     this.currentAnimation.setCount(count ? count : 0, onEndCount || function() {
                         self.idle();
                     });

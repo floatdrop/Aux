@@ -59,20 +59,28 @@ module.exports = Player = Entity.extend({
         this.world.DestroyBody(this.body);
     },
     move_up: function() {
+        var self = this;
         this.animation = "walk_up";
     	this.body.ApplyImpulse(new b2Vec2(0, -0.01), new b2Vec2(0, 0));
+        this.scheduleAction(function() { self.animation = "idle_up"; }, 500, this.id);
     },
     move_down: function() {
+        var self = this;
         this.animation = "walk_down";
        	this.body.ApplyImpulse(new b2Vec2(0, 0.01), new b2Vec2(0, 0));
+        this.scheduleAction(function() { self.animation = "idle_down"; }, 500, this.id);
     },
     move_left: function() {
+        var self = this;
         this.animation = "walk_left";
     	this.body.ApplyImpulse(new b2Vec2(-0.01, 0), new b2Vec2(0, 0));
+        this.scheduleAction(function() { self.animation = "idle_left"; }, 500, this.id);
     },
     move_right: function() {
+        var self = this;
         this.animation = "walk_right";
     	this.body.ApplyImpulse(new b2Vec2(0.01, 0), new b2Vec2(0, 0));
+        this.scheduleAction(function() { self.animation = "idle_right"; }, 500, this.id);
     },
     turn_cw: function() {
 
@@ -93,11 +101,12 @@ module.exports = Player = Entity.extend({
     		this.move_right();
     },
     onAngle: function(data) {
+        var self = this;
         if (this.body === undefined)
             return false;
     	if (this.getAngle() > parseFloat(data))
-    		this.scheduleAction(this.turn_cw, 0);
+    		this.scheduleAction(self.turn_cw, 0);
     	else
-    		this.scheduleAction(this.turn_ccw, 0);
+    		this.scheduleAction(self.turn_ccw, 0);
     }
 });

@@ -1,5 +1,7 @@
 var cls = require("./lib/class");
 
+var actions = {};
+
 module.exports = Entity = cls.Class.extend({
     init: function(id, type, kind) {
         this.id = id;
@@ -28,12 +30,16 @@ module.exports = Entity = cls.Class.extend({
     destruct: function() {
 
     },
-    // Contains BUG
-    scheduleAction: function(action, timeout) {
+    scheduleAction: function(action, timeout, id) {
     	if (timeout <= 0)
     		process.nextTick(action);
-    	else
-    		setTimeout(action, timeout);
+    	else {
+            if (id in actions)
+                clearTimeout(actions[id]);
+    		var timeoutId = setTimeout(action, timeout);
+            if (id)
+                actions[id] = timeoutId;
+        }
     },
     getBaseState: function() {
         return {

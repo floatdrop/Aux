@@ -54,9 +54,8 @@ define(['animation', 'sprites'], function(Animation, sprites) {
         
     	    for(var name in this.animationData) {
     	        var a = this.animationData[name];
-    	        animations[name] = new Animation(name, a.length, a.row, this.width, this.height);
-                animations[name].flipSpriteX = (a.flipSpriteX !== undefined) ? a.flipSpriteX : false;
-                animations[name].flipSpriteY = (a.flipSpriteY !== undefined) ? a.flipSpriteY : false;
+    	        animations[name] = new Animation(name, a.length, a.row, this.width, this.height, 
+                    a.flipSpriteX, a.flipSpriteY, a.speed);
     	    }
 
     	    return animations;

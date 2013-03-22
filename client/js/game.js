@@ -58,7 +58,7 @@ define(['renderer', 'player', 'gameclient', 'entityfactory'],
 					var kind = entity_info.kind;
 					var id = entity_info.id;
 					var entity = id in self.entities ? self.entities[id] : EntityFactory.createEntity(kind, id);
-					entity.setAnimation(entity_info.animation, 100);
+					entity.setAnimation(entity_info.animation);
 					entity.setPosition(entity_info.position.x, entity_info.position.y);
 					entity.setAngle(entity_info.angle);
 					entities[id] = entity;
