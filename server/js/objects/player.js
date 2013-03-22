@@ -7,6 +7,14 @@ module.exports = Player = cls.Class.extend({
 		this.physicBody = world.engine.createPlayerBody();
 		this.id = world.gameObjects.length;
 		physicBody = this.physicBody;
+		var self = this;
+		
+		socket.on('pointerPosition', function (data) {
+			self.heading = [
+				data.x - self.physicBody.GetPosition().x,
+				data.y - self.physicBody.GetPosition().y,
+			];
+		});
 		
 		socket.on('AkeyDown', function (data) {
 			console.log(socket.id);
@@ -65,6 +73,19 @@ module.exports = Player = cls.Class.extend({
             this.action = this.getAction(lv, "left");
         if (angle > 315)
             this.action = this.getAction(lv, "up");
+        
+		if (this.heading) {
+			var pts = [this.heading[0] * Math.cos(this.physicBody.GetAngle()) + this.heading[1] * Math.sin(this.physicBody.GetAngle()), this.heading[0] * Math.sin(this.physicBody.GetAngle()) - this.heading[1] * Math.cos(this.physicBody.GetAngle())];
+			this.heading = Math.atan2(pts[0], pts[1]);
+		
+            if (this.heading > 0.1) {
+                this.physicBody.SetAngularVelocity(5);
+            } else if (this.heading < -0.1) {
+                this.physicBody.SetAngularVelocity(-5);
+            } else {
+                this.physicBody.SetAngularVelocity(0);
+            }
+        }
 	},
 	
 	getAction: function(lv, direction)

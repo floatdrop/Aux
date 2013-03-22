@@ -161,7 +161,6 @@ function Player(world) {
                 this.body.SetAngularVelocity(0);
             }
         }
-
     }
     
     this.draw = function(c) {
