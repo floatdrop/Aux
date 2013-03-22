@@ -40,7 +40,7 @@ module.exports = World = cls.Class.extend({
 	run: function() {
 		var self = this;
 		setInterval(function () {
-			self.engine.tick(1000 / self.ups);
+			self.engine.tick(1000.0 / self.ups);
 			self.broadcast("entity_list", self.engine.dumpEntities());
 		},	1000 / this.ups);
 	},

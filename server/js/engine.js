@@ -32,7 +32,8 @@ module.exports = Engine = cls.Class.extend({
 		this.createBox(this.width, 0, 5, this.height, true);
 	},
 	tick: function(fps) {
-		this.b2w.Step(1 / fps, 10, 10)
+		this.b2w.Step(1 / fps, 10, 10);
+		this.b2w.ClearForces();
 	},
 	addEntity: function(entity) {
 		entity.construct(this.b2w);

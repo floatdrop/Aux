@@ -1,6 +1,7 @@
 var cls = require("./lib/class"),
 	Box2D = require('./box2d'),
-    Entity = require('./entity')
+    Entity = require('./entity'),
+    Log = require('log'),
     Constants = require('../../client/js/constants'),
     _ = require("underscore");
 
@@ -37,21 +38,31 @@ module.exports = Player = Entity.extend({
         this.body = b2w.CreateBody(this.bodyDef);
         this.body.m_userData = this;
         this.fixture = this.body.CreateFixture(this.fixtureDef);
+        this.getPosition = function() {
+            return this.body.GetPosition();
+        }
+        this.setPosition = function(x, y) {
+            this.body.SetPosition(new b2Vec2(x,y));
+        }
     },
     destruct: function() {
         this.world.DestroyBody(this.body);
     },
     move_up: function() {
-    	this.body.ApplyImpulse(new b2Vec2(-1, 0), new b2Vec2(0, 0));
+        log.info(this.id + " moved up");
+    	this.body.ApplyImpulse(new b2Vec2(0, -1000), new b2Vec2(0, 0));
     },
     move_down: function() {
-    	this.body.ApplyImpulse(new b2Vec2(1, 0), new b2Vec2(0, 0));
+         log.info(this.id + " moved down");
+       	this.body.ApplyImpulse(new b2Vec2(0, 1000), new b2Vec2(0, 0));
     },
     move_left: function() {
-    	this.body.ApplyImpulse(new b2Vec2(0, -1), new b2Vec2(0, 0));
+        log.info(this.id + " moved left");
+    	this.body.ApplyImpulse(new b2Vec2(-1000, 0), new b2Vec2(0, 0));
     },
     move_right: function() {
-    	this.body.ApplyImpulse(new b2Vec2(0, 1), new b2Vec2(0, 0));
+        log.info(this.id + " moved right");
+    	this.body.ApplyImpulse(new b2Vec2(1000, 0), new b2Vec2(0, 0));
     },
     turn_cw: function() {
 

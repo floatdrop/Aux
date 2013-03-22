@@ -11,6 +11,9 @@ module.exports = Entity = cls.Class.extend({
         this.position.x = x;
         this.position.y = y;
     },
+    getPosition: function() {
+        return { x: this.position.x, y: this.position.y };
+    },
     construct: function(b2w) {
 
     },
@@ -28,7 +31,7 @@ module.exports = Entity = cls.Class.extend({
         return {
             id: this.id,
             kind: this.kind,
-            position: {x: this.position.x, y: this.position.y }
+            position: this.getPosition()
         };
     },
 });
