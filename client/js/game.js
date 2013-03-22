@@ -1,10 +1,17 @@
-define(['renderer', 'player', 'lib/underscore.min', 'gameclient'], 
-	function(Renderer, Player, _, GameClient) {
+define(['renderer', 'player', 'gameclient'], 
+	function(Renderer, Player, GameClient) {
 	var Game = Class.extend({
 		init: function() {
 			this.mouse = { x: 0, y: 0 };
 			this.renderer = null;
 			this.entities = [];
+			this.keyboard = {};
+			this.keybindings = {
+				'w': this.moveUp.bind(this),
+				's': this.moveDown.bind(this),
+				'a': this.moveLeft.bind(this),
+				'd': this.moveRight.bind(this)
+			};
 			this.host = "localhost";
 			this.port = 8000;
 			this.player = new Player("player", "");
@@ -14,7 +21,12 @@ define(['renderer', 'player', 'lib/underscore.min', 'gameclient'],
 			this.tick();
 		},
 		tick: function() {
+			var self = this;
 			this.renderer.renderFrame();
+			_.each(this.keyboard, function(pressed, key) {  
+				if (pressed)
+					self.keybindings[key]();
+			});
 			requestAnimFrame(this.tick.bind(this));
 		},
 		setup: function(canvas) {
