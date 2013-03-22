@@ -1,7 +1,7 @@
 define([], function() {
 	var Renderer = Class.extend({
 		init: function(game, canvas) {
-            this.debug = true;
+            this.debug = false;
 			this.scale = 100;
 			this.game = game;
 			this.canvas = canvas;
@@ -42,13 +42,13 @@ define([], function() {
                     y = frame.y * os,
                     w = sprite.width * os,
                     h = sprite.height * os,
-                    ox = sprite.offsetX * s,
-                    oy = sprite.offsetY * s,
-                    dx = entity.x * s,
-                    dy = entity.y * s,
+                    ox = sprite.offsetX * 1,
+                    oy = sprite.offsetY * 1,
+                    dx = entity.x * this.scale,
+                    dy = entity.y * this.scale,
                     dw = w * ds,
                     dh = h * ds;
-        	this.context.drawImage(sprite.image, x, y, w, h, ox, oy, dw, dh);
+        	this.context.drawImage(sprite.image, x, y, w, h, dx, dy, dw, dh);
         }
 	});
 	return Renderer;

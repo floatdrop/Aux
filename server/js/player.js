@@ -45,6 +45,12 @@ module.exports = Player = Entity.extend({
         this.setPosition = function(x, y) {
             this.body.SetPosition(new b2Vec2(x,y));
         }
+        this.getAngle = function() {
+            return this.body.GetAngle();
+        }
+        this.setAngle = function(a) {
+            this.body.SetAngle(a);
+        }
     },
     destruct: function() {
         this.world.DestroyBody(this.body);
@@ -82,7 +88,7 @@ module.exports = Player = Entity.extend({
     onAngle: function(data) {
         if (this.body === undefined)
             return false;
-    	if (this.angle > parseFloat(data))
+    	if (this.getAngle() > parseFloat(data))
     		this.scheduleAction(this.turn_cw, 0);
     	else
     		this.scheduleAction(this.turn_ccw, 0);

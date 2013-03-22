@@ -6,6 +6,7 @@ module.exports = Entity = cls.Class.extend({
         this.type = type;
         this.kind = kind;
         this.position = {x: 0, y: 0};
+        this.angle = 0;
     },
     setPosition: function(x, y) {
         this.position.x = x;
@@ -13,6 +14,12 @@ module.exports = Entity = cls.Class.extend({
     },
     getPosition: function() {
         return { x: this.position.x, y: this.position.y };
+    },
+    setAngle: function(a) {
+        this.angle = a;
+    },
+    getAngle: function() {
+        return { x: this.angle };
     },
     construct: function(b2w) {
 
@@ -31,7 +38,8 @@ module.exports = Entity = cls.Class.extend({
         return {
             id: this.id,
             kind: this.kind,
-            position: this.getPosition()
+            position: this.getPosition(),
+            angle: this.getAngle()
         };
     },
 });
