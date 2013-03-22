@@ -17,6 +17,8 @@ module.exports = Player = Entity.extend({
     	this.socket = socket;
     	this._super(this.socket.id, "player", Types.Entities.PLAYER);
 
+        this.socket.emit("welcome", { playerId: this.socket.id });
+
     	this.socket.on('action', function (data) { self.onAction(data); });
     	this.socket.on('angle', function (data) { self.onAngle(data); });
 

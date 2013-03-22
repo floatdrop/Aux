@@ -51,7 +51,7 @@ define([], function() {
 
                 this.context.save();
                 if(entity.flipSpriteX) {
-                    this.context.translate(dx + dw, dy);
+                    this.context.translate(dx + dw / 2, dy);
                     this.context.scale(-1, 1);
                 }
                 else if(entity.flipSpriteY) {
@@ -62,7 +62,7 @@ define([], function() {
                     this.context.translate(dx, dy);
                 }
 
-        	this.context.drawImage(sprite.image, x, y, w, h, dx, dy, dw, dh);
+        	this.context.drawImage(sprite.image, x, y, w, h, ox, oy, dw, dh);
 
             this.context.restore();
 

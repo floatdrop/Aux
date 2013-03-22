@@ -1,5 +1,5 @@
-define(['renderer', 'player', 'gameclient'], 
-	function(Renderer, Player, GameClient) {
+define(['renderer', 'player', 'gameclient', 'entityfactory'], 
+	function(Renderer, Player, GameClient, EntityFactory) {
 	var Game = Class.extend({
 		init: function() {
 			this.mouse = { x: 0, y: 0 };
@@ -14,7 +14,7 @@ define(['renderer', 'player', 'gameclient'],
 			};
 			this.host = "localhost";
 			this.port = 8000;
-			this.player = new Player("player", "");
+			this.playerId = null;
 		},
 		run: function() {
 			this.camera = this.renderer.camera;
@@ -38,8 +38,21 @@ define(['renderer', 'player', 'gameclient'],
 		connect: function() {
 			var self = this;
 			this.client = new GameClient(this.host, this.port);
+			this.client.onWelcome(function(data) {
+				self.playerId = data.playerId;
+			});
 			this.client.onEntityList(function(data) {
-				self.entities = data;
+                var entities = {};
+				for (var i = 0; i < data.length; i ++) {
+					var entity_info = data[i];
+					var kind = entity_info.kind;
+					var id = entity_info.id;
+					var entity = id in self.entities ? self.entities[id] : EntityFactory.createEntity(kind, id);
+					entity.setPosition(entity_info.position.x, entity_info.position.y);
+					entity.setAngle(entity_info.angle);
+					entities[id] = entity;
+				}
+				self.entities = entities;
 			});
 			this.client.connect();
 		},
@@ -48,20 +61,21 @@ define(['renderer', 'player', 'gameclient'],
 			return this.client.angle(angle);
 		},
 		moveUp: function() {
-			this.player.setAnimation("walk_up");
+			this.entities[this.playerId].setAnimation("walk_up");
 			return this.client.action('up');
 		},
 		moveDown: function() {
-			this.player.setAnimation("walk_down");
+			this.entities[this.playerId].setAnimation("walk_down");
 			return this.client.action('down');
 		},
 		moveLeft: function() {
-			this.player.flipSpriteX = true;
-			this.player.setAnimation("walk_right");
+			this.entities[this.playerId].flipSpriteX = true;
+			this.entities[this.playerId].setAnimation("walk_right");
 			return this.client.action('left');
 		},
 		moveRight: function() {
-			this.player.setAnimation("walk_right");
+			this.entities[this.playerId].flipSpriteX = false;
+			this.entities[this.playerId].setAnimation("walk_right");
 			return this.client.action('right');
 		},
 	});

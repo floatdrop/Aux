@@ -16,6 +16,9 @@ define(['sprites'], function(Sprites) {
     		this.x = x;
     		this.y = y;
     	},
+        setAngle: function(a) {
+            this.angle = a;
+        },
         setSprite: function(sprite) {
             if(!sprite) {
                 console.log(this.id + " : sprite is null", true);
