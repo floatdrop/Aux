@@ -6,6 +6,7 @@ module.exports = Player = cls.Class.extend({
 		this.socket = sock;
 		this.physicBody = world.engine.createPlayerBody();
 		this.id = world.gameObjects.length;
+		world.gameObjects.push(this);
 		var self = this;
 		
 		this.socket.on('pointerPosition', function (data) {
@@ -16,7 +17,6 @@ module.exports = Player = cls.Class.extend({
 		});
 		
 		this.socket.on('AkeyDown', function (data) {
-			console.log(self.socket.id);
 			var lv = self.physicBody.GetLinearVelocity();
 			if (lv.x > -500)
 				lv.x -= 50;

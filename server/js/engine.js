@@ -53,5 +53,22 @@ module.exports = Engine = cls.Class.extend({
 		var body = this.b2w.CreateBody(bodyDef);
 		body.CreateFixture(fixDef);
 		return body;
+	},
+	
+	createBarrel: function(position) {
+		var bodyDef = new b2BodyDef;
+		bodyDef.position.Set(position.x, position.y);
+		
+		var fixDef = new b2FixtureDef;
+		fixDef.restitution = 0.2;
+		fixDef.density = 1.0;
+		fixDef.friction = 1.0;
+
+		fixDef.shape = new b2PolygonShape;
+		fixDef.shape.SetAsBox(10, 10);
+		
+		var body = this.b2w.CreateBody(bodyDef);
+		body.CreateFixture(fixDef);
+		return body;
 	}
 });

@@ -16,16 +16,16 @@ socket.on('update', function (data) {
 function createGameObject(data){
 	switch(data.type){
 		case "player":
-			createPlayer(data);
-			break;
+			return registryObject(new Player(socket),data);
+		case "barrel":
+			return registryObject(new Barrel(),data);
 	}
 }
 
-function createPlayer(data){
-	var player = new Player(socket);
-	this.gs.addEntity(player);
-	player.position = data.position;
-	return player;
+function registryObject(object,data){
+	this.gs.addEntity(object);
+	//object.reciveData(data);
+	return object;
 }
 
 function startGame(gs) {

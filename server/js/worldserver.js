@@ -3,7 +3,8 @@ var cls = require("./lib/class"),
 	Log = require("log"),
 	async = require("async"),
 	Engine = require("./engine"),
-	Player = require("./objects/player");
+	Player = require("./objects/player"),
+	Barrel = require("./objects/barrel");
 	
 module.exports = World = cls.Class.extend({
 	
@@ -14,11 +15,18 @@ module.exports = World = cls.Class.extend({
 		this.onPlayerConnect(function(socket) {
 			this.sockets.push(socket);
 			var player = new Player(this, socket);
-            this.gameObjects.push(player);
         });
-		this.engine = new Engine(1000 / this.ups);
+		this.createWorld();
 	},
-
+	
+	createWorld: function(){
+		this.engine = new Engine(1000 / this.ups);
+		new Barrel(this, {x: 100, y:400});
+		new Barrel(this, {x: 200, y:100});
+		new Barrel(this, {x: 300, y:400});
+		new Barrel(this, {x: 400, y:100});
+	},
+	
 	run: function() {
 		var self = this;
 		setInterval(function () {
@@ -27,13 +35,11 @@ module.exports = World = cls.Class.extend({
 			
 			for (var i=0;i<self.gameObjects.length;i++){
 				var json = self.gameObjects[i].update();
-				//console.log(json.id);
 				if (json)
 					worldState.push(json);
 			}
 						
 			if (worldState.length > 0){
-				//console.log(worldState);
 				for (var i=0;i<self.sockets.length;i++)
 					self.sockets[i].emit('update',worldState);
 			}
