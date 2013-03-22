@@ -35,17 +35,13 @@ module.exports = Engine = cls.Class.extend({
 		this.b2w.Step(1 / fps, 10, 10)
 	},
 	addEntity: function(entity) {
-		entity.body = this.b2w.CreateBody(entity.bodyDef);
-		entity.fixture = entity.body.CreateFixture(entity.fixtureDef);
-		entity.fixture.m_userData = entity;
+		entity.construct(this.b2w);
 	},
 	getEntities: function() {
 		var entities = [];
 		for (var b = this.b2w.m_bodyList; b; b = b.m_next) {
-			for (var f = b.m_fixtureList; f; f = f.m_next) {
-				if (f.m_userData && f.m_userData instanceof Entity) {
-					entities.push(f.m_userData);
-				}
+			if (b.m_userData !== null) {
+				entities.push(b.m_userData);
 			}
 		}
 		return entities;

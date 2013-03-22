@@ -19,6 +19,7 @@ define(['player', 'entityfactory', 'socket.io'], function(Player, EntityFactory)
 					var id = entity_info.id;
 					var entity = EntityFactory.createEntity(kind, id);
 					entity.setPosition(entity_info.position.x, entity_info.position.y);
+					entity_list.push(entity);
 				}
 				self.entity_list_callback(entity_list);
 			});

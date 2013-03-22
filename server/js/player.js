@@ -32,6 +32,15 @@ module.exports = Player = Entity.extend({
 		circleShape.m_radius = 10;
 		this.fixtureDef.shape = circleShape;
     },
+    construct: function(b2w) {
+        this.world = b2w;
+        this.body = b2w.CreateBody(this.bodyDef);
+        this.body.m_userData = this;
+        this.fixture = this.body.CreateFixture(this.fixtureDef);
+    },
+    destruct: function() {
+        this.world.DestroyBody(this.body);
+    },
     move_up: function() {
     	this.body.ApplyImpulse(new b2Vec2(-1, 0), new b2Vec2(0, 0));
     },

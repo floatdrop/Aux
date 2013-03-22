@@ -35,5 +35,6 @@ define(['jquery', 'game'], function($, Game) {
 	});
 
 	game.connect();
+	game.run();
 
 });

@@ -14,11 +14,17 @@ module.exports = World = cls.Class.extend({
 		this.players = [];
 		this.onPlayerConnect(function(socket) {
 			var player = new Player(socket);
+			player.setPosition(100, 100);
+			log.info("Player " + player.id + " connected");
 			self.players.push(player);
-			socket.on('disconnect', function(){
+			socket.on('disconnect', function() {
+				log.info("Player " + player.id + " disconnected");
 				var index = self.players.indexOf(player);
-				if (index)
-					self.players.splice(index, 1);
+				player.destruct();
+				if (index !== -1) {
+					log.debug("Found in players array in " + index + " position.");
+					self.players = self.players.splice(index, 1);
+				}
 			});
             self.engine.addEntity(player);
         });

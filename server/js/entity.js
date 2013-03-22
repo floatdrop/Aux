@@ -11,7 +11,12 @@ module.exports = Entity = cls.Class.extend({
         this.position.x = x;
         this.position.y = y;
     },
-    
+    construct: function(b2w) {
+
+    },
+    destruct: function() {
+
+    },
     // Contains BUG
     scheduleAction: function(action, timeout) {
     	if (timeout <= 0)
@@ -23,7 +28,7 @@ module.exports = Entity = cls.Class.extend({
         return {
             id: this.id,
             kind: this.kind,
-            position: {x: this.x, y: this.y }
+            position: {x: this.position.x, y: this.position.y }
         };
     },
 });
