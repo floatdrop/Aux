@@ -23,7 +23,7 @@ module.exports = World = cls.Class.extend({
 				player.destruct();
 				if (index !== -1) {
 					log.debug("Found in players array in " + index + " position.");
-					// self.players = self.players.splice(index, 1);
+					self.players.splice(index, 1);
 				}
 			});
             self.engine.addEntity(player);
