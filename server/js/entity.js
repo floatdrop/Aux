@@ -7,6 +7,7 @@ module.exports = Entity = cls.Class.extend({
         this.kind = kind;
         this.position = {x: 0, y: 0};
         this.angle = 0;
+        this.animation = null;
     },
     setPosition: function(x, y) {
         this.position.x = x;
@@ -39,7 +40,8 @@ module.exports = Entity = cls.Class.extend({
             id: this.id,
             kind: this.kind,
             position: this.getPosition(),
-            angle: this.getAngle()
+            angle: this.getAngle(),
+            animation: this.animation
         };
     },
 });

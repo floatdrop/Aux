@@ -20,7 +20,6 @@ define(['animation', 'sprites'], function(Animation, sprites) {
     		this.height = data.height;
     		this.offsetX = (data.offset_x !== undefined) ? data.offset_x : -16;
             this.offsetY = (data.offset_y !== undefined) ? data.offset_y : -16;
-
     		this.load();
     	},
 
@@ -56,6 +55,8 @@ define(['animation', 'sprites'], function(Animation, sprites) {
     	    for(var name in this.animationData) {
     	        var a = this.animationData[name];
     	        animations[name] = new Animation(name, a.length, a.row, this.width, this.height);
+                animations[name].flipSpriteX = (a.flipSpriteX !== undefined) ? a.flipSpriteX : false;
+                animations[name].flipSpriteY = (a.flipSpriteY !== undefined) ? a.flipSpriteY : false;
     	    }
 
     	    return animations;

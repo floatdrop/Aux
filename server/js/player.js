@@ -18,6 +18,7 @@ module.exports = Player = Entity.extend({
     	this._super(this.socket.id, "player", Types.Entities.PLAYER);
 
         this.socket.emit("welcome", { playerId: this.socket.id });
+        this.animation = "idle_right";
 
     	this.socket.on('action', function (data) { self.onAction(data); });
     	this.socket.on('angle', function (data) { self.onAngle(data); });
@@ -58,15 +59,19 @@ module.exports = Player = Entity.extend({
         this.world.DestroyBody(this.body);
     },
     move_up: function() {
+        this.animation = "walk_up";
     	this.body.ApplyImpulse(new b2Vec2(0, -0.01), new b2Vec2(0, 0));
     },
     move_down: function() {
+        this.animation = "walk_down";
        	this.body.ApplyImpulse(new b2Vec2(0, 0.01), new b2Vec2(0, 0));
     },
     move_left: function() {
+        this.animation = "walk_left";
     	this.body.ApplyImpulse(new b2Vec2(-0.01, 0), new b2Vec2(0, 0));
     },
     move_right: function() {
+        this.animation = "walk_right";
     	this.body.ApplyImpulse(new b2Vec2(0.01, 0), new b2Vec2(0, 0));
     },
     turn_cw: function() {

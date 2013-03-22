@@ -50,11 +50,11 @@ define([], function() {
                     dh = h * ds;
 
                 this.context.save();
-                if(entity.flipSpriteX) {
+                if(anim.flipSpriteX) {
                     this.context.translate(dx + dw / 2, dy);
                     this.context.scale(-1, 1);
                 }
-                else if(entity.flipSpriteY) {
+                else if(anim.flipSpriteY) {
                     this.context.translate(dx, dy + dh);
                     this.context.scale(1, -1);
                 }

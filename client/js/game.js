@@ -48,6 +48,7 @@ define(['renderer', 'player', 'gameclient', 'entityfactory'],
 					var kind = entity_info.kind;
 					var id = entity_info.id;
 					var entity = id in self.entities ? self.entities[id] : EntityFactory.createEntity(kind, id);
+					entity.setAnimation(entity_info.animation);
 					entity.setPosition(entity_info.position.x, entity_info.position.y);
 					entity.setAngle(entity_info.angle);
 					entities[id] = entity;
@@ -61,21 +62,15 @@ define(['renderer', 'player', 'gameclient', 'entityfactory'],
 			return this.client.angle(angle);
 		},
 		moveUp: function() {
-			this.entities[this.playerId].setAnimation("walk_up");
 			return this.client.action('up');
 		},
 		moveDown: function() {
-			this.entities[this.playerId].setAnimation("walk_down");
 			return this.client.action('down');
 		},
 		moveLeft: function() {
-			this.entities[this.playerId].flipSpriteX = true;
-			this.entities[this.playerId].setAnimation("walk_right");
 			return this.client.action('left');
 		},
 		moveRight: function() {
-			this.entities[this.playerId].flipSpriteX = false;
-			this.entities[this.playerId].setAnimation("walk_right");
 			return this.client.action('right');
 		},
 	});

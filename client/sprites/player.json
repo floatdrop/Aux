@@ -3,6 +3,21 @@
 	"width": 32,
 	"height": 32,
 	"animations": {
+		"atk_left": {
+			"length": 5,
+			"row": 0,
+			"flipSpriteX": true
+		},
+		"walk_left": {
+			"length": 4,
+			"row": 1,
+			"flipSpriteX": true
+		},
+		"idle_left": {
+			"length": 2,
+			"row": 2,
+			"flipSpriteX": true
+		},
 		"atk_right": {
 			"length": 5,
 			"row": 0
