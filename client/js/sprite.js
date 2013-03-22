@@ -1,5 +1,7 @@
 define(['animation', 'sprites'], function(Animation, sprites) {
 
+    var imageCache = {};
+
     var Sprite = Class.extend({
         init: function(name, scale) {
         	this.name = name;
@@ -25,16 +27,27 @@ define(['animation', 'sprites'], function(Animation, sprites) {
         load: function() {
         	var self = this;
 
-        	this.image = new Image();
-        	this.image.src = this.filepath;
+            // This causing that all objects are linked to one sprite
+            // so it must be constant in time.
 
-        	this.image.onload = function() {
-        		self.isLoaded = true;
-    		    
-                if(self.onload_func) {
-                    self.onload_func();
+            if (this.filepath in imageCache) {
+                this.image = imageCache[this.filepath];
+                this.isLoaded = true;
+                if (this.onload_func) {
+                    this.onload_func();
                 }
-        	};
+            } else {
+                this.image = new Image();
+                this.image.src = this.filepath;
+
+                this.image.onload = function() {
+                    self.isLoaded = true;
+                    imageCache[self.filepath] = self.image;
+                    if(self.onload_func) {
+                        self.onload_func();
+                    }
+                };
+            }
         },
     
         createAnimations: function() {

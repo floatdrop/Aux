@@ -48,19 +48,20 @@ define(['renderer', 'player', 'gameclient'],
 			return this.client.angle(angle);
 		},
 		moveUp: function() {
-			this.player.currentAnimation = "walk_up";
+			this.player.setAnimation("walk_up");
 			return this.client.action('up');
 		},
 		moveDown: function() {
-			this.player.currentAnimation = "walk_down";
+			this.player.setAnimation("walk_down");
 			return this.client.action('down');
 		},
 		moveLeft: function() {
-			this.player.currentAnimation = "walk_left";
+			this.player.flipSpriteX = true;
+			this.player.setAnimation("walk_right");
 			return this.client.action('left');
 		},
 		moveRight: function() {
-			this.player.currentAnimation = "walk_right";
+			this.player.setAnimation("walk_right");
 			return this.client.action('right');
 		},
 	});

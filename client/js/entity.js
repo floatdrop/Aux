@@ -18,7 +18,7 @@ define(['sprites'], function(Sprites) {
     	},
         setSprite: function(sprite) {
             if(!sprite) {
-                log.error(this.id + " : sprite is null", true);
+                console.log(this.id + " : sprite is null", true);
                 throw "Error";
             }
             if(this.sprite && this.sprite.name === sprite.name) {
@@ -35,9 +35,12 @@ define(['sprites'], function(Sprites) {
                 animation = this.animations[name];
             }
             else {
-                log.error("No animation called "+ name);
+                console.log("No animation called " + name);
             }
             return animation;
+        },
+        idle: function() {
+
         },
         setAnimation: function(name, speed, count, onEndCount) {
             var self = this;
@@ -62,7 +65,7 @@ define(['sprites'], function(Sprites) {
                 }
             }
             else {
-                this.log_error("Not ready for animation");
+                console.log("Not ready for animation");
             }
         }
     });

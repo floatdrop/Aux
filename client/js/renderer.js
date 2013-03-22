@@ -48,7 +48,24 @@ define([], function() {
                     dy = entity.y * this.scale,
                     dw = w * ds,
                     dh = h * ds;
+
+                this.context.save();
+                if(entity.flipSpriteX) {
+                    this.context.translate(dx + dw, dy);
+                    this.context.scale(-1, 1);
+                }
+                else if(entity.flipSpriteY) {
+                    this.context.translate(dx, dy + dh);
+                    this.context.scale(1, -1);
+                }
+                else {
+                    this.context.translate(dx, dy);
+                }
+
         	this.context.drawImage(sprite.image, x, y, w, h, dx, dy, dw, dh);
+
+            this.context.restore();
+
         }
 	});
 	return Renderer;
