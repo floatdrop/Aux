@@ -3,64 +3,64 @@ var cls = require("../lib/class");
 module.exports = Player = cls.Class.extend({
 	
 	init: function(world, sock) {
-		socket = sock;
+		this.socket = sock;
 		this.physicBody = world.engine.createPlayerBody();
 		this.id = world.gameObjects.length;
-		physicBody = this.physicBody;
 		var self = this;
 		
-		socket.on('pointerPosition', function (data) {
+		this.socket.on('pointerPosition', function (data) {
 			self.heading = [
 				data.x - self.physicBody.GetPosition().x,
 				data.y - self.physicBody.GetPosition().y,
 			];
 		});
 		
-		socket.on('AkeyDown', function (data) {
-			console.log(socket.id);
-			var lv = physicBody.GetLinearVelocity();
+		this.socket.on('AkeyDown', function (data) {
+			console.log(self.socket.id);
+			var lv = self.physicBody.GetLinearVelocity();
 			if (lv.x > -500)
 				lv.x -= 50;
-			physicBody.SetLinearVelocity(lv);
+			self.physicBody.SetLinearVelocity(lv);
 		});
     
-		socket.on('DkeyDown', function (data) {
-			var lv = physicBody.GetLinearVelocity();
+		this.socket.on('DkeyDown', function (data) {
+			var lv = self.physicBody.GetLinearVelocity();
 			if (lv.x < 500)
 				lv.x += 50;
-			physicBody.SetLinearVelocity(lv);
+			self.physicBody.SetLinearVelocity(lv);
 		});
 
-		socket.on('WkeyDown', function (data) {
-			var lv = physicBody.GetLinearVelocity();
+		this.socket.on('WkeyDown', function (data) {
+			var lv = self.physicBody.GetLinearVelocity();
 			if (lv.y > -500)
 				lv.y -= 50;
-			physicBody.SetLinearVelocity(lv);
+			self.physicBody.SetLinearVelocity(lv);
 		});
 		
-		socket.on('SkeyDown', function (data) {
-			var lv = physicBody.GetLinearVelocity();
+		this.socket.on('SkeyDown', function (data) {
+			var lv = self.physicBody.GetLinearVelocity();
 			if (lv.y < 500)
 				lv.y += 50;
-			physicBody.SetLinearVelocity(lv);
+			self.physicBody.SetLinearVelocity(lv);
 		});
 	},
 
 	update: function() {
-        //physicBody.WakeUp();
-        
         var lv = this.physicBody.GetLinearVelocity();
         lv.Multiply(0.75)
         this.physicBody.SetLinearVelocity(lv);
 		this.updateAngle(lv);
-		//console.log(this.action);
 		
-		return {id:this.id,position: this.physicBody.GetPosition(),action: this.action};
-		//socket.emit("update",{id:id,position: physicBody.GetPosition()});
+		return {
+				type: "player",
+				id:this.id,
+				position: this.physicBody.GetPosition(),
+				action: this.action};
     },
 	
 	updateAngle: function(lv){
-		var angle = (this.physicBody.GetAngle() * 180) / Math.PI;
+		var physicAngle = this.physicBody.GetAngle();
+		var angle = (physicAngle * 180) / Math.PI;
         while (angle < 0) angle += 360;
 		
         if (angle > -45 && angle <= 45)
@@ -75,7 +75,7 @@ module.exports = Player = cls.Class.extend({
             this.action = this.getAction(lv, "up");
         
 		if (this.heading) {
-			var pts = [this.heading[0] * Math.cos(this.physicBody.GetAngle()) + this.heading[1] * Math.sin(this.physicBody.GetAngle()), this.heading[0] * Math.sin(this.physicBody.GetAngle()) - this.heading[1] * Math.cos(this.physicBody.GetAngle())];
+			var pts = [this.heading[0] * Math.cos(physicAngle) + this.heading[1] * Math.sin(physicAngle), this.heading[0] * Math.sin(physicAngle) - this.heading[1] * Math.cos(physicAngle)];
 			this.heading = Math.atan2(pts[0], pts[1]);
 		
             if (this.heading > 0.1) {

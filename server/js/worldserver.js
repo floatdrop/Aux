@@ -15,7 +15,6 @@ module.exports = World = cls.Class.extend({
 			this.sockets.push(socket);
 			var player = new Player(this, socket);
             this.gameObjects.push(player);
-			//console.log(player.id);
         });
 		this.engine = new Engine(1000 / this.ups);
 	},

@@ -14,6 +14,14 @@ socket.on('update', function (data) {
 });
 
 function createGameObject(data){
+	switch(data.type){
+		case "player":
+			createPlayer(data);
+			break;
+	}
+}
+
+function createPlayer(data){
 	var player = new Player(socket);
 	this.gs.addEntity(player);
 	player.position = data.position;
