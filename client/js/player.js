@@ -5,7 +5,7 @@ define(['player', 'entity', 'sprite'], function(Player, Entity, Sprite) {
             this._super(id, Types.Entities.PLAYER);
             this.name = name;
             this.setSprite(new Sprite("player", 1));
-            this.setAnimation("idle_right");
+            this.setAnimation("idle_right", 100);
         }
     });
     
