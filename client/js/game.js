@@ -27,6 +27,12 @@ define(['renderer', 'player', 'gameclient', 'entityfactory'],
 				if (pressed)
 					self.keybindings[key]();
 			});
+			_.each(this.entities, function(entity) {
+				var anim = entity.currentAnimation;
+                if(anim) {
+                    anim.update(t);
+                }
+			});
 			requestAnimFrame(this.tick.bind(this));
 		},
 		setup: function(canvas) {
