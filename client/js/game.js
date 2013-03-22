@@ -27,7 +27,6 @@ define(['renderer', 'player', 'lib/underscore.min', 'gameclient'],
 			var self = this;
 			this.client = new GameClient(this.host, this.port);
 			this.client.onEntityList(function(data) {
-				console.log(data);
 				self.entities = data;
 			});
 			this.client.connect();

@@ -30,7 +30,7 @@ module.exports = Player = Entity.extend({
 	 	this.fixtureDef.restitution = 1;
 
  		var circleShape = new b2CircleShape;
-		circleShape.m_radius = 10;
+		circleShape.m_radius = 0.1;
 		this.fixtureDef.shape = circleShape;
     },
     construct: function(b2w) {
@@ -49,20 +49,16 @@ module.exports = Player = Entity.extend({
         this.world.DestroyBody(this.body);
     },
     move_up: function() {
-        log.info(this.id + " moved up");
-    	this.body.ApplyImpulse(new b2Vec2(0, -1000), new b2Vec2(0, 0));
+    	this.body.ApplyImpulse(new b2Vec2(0, -0.01), new b2Vec2(0, 0));
     },
     move_down: function() {
-         log.info(this.id + " moved down");
-       	this.body.ApplyImpulse(new b2Vec2(0, 1000), new b2Vec2(0, 0));
+       	this.body.ApplyImpulse(new b2Vec2(0, 0.01), new b2Vec2(0, 0));
     },
     move_left: function() {
-        log.info(this.id + " moved left");
-    	this.body.ApplyImpulse(new b2Vec2(-1000, 0), new b2Vec2(0, 0));
+    	this.body.ApplyImpulse(new b2Vec2(-0.01, 0), new b2Vec2(0, 0));
     },
     move_right: function() {
-        log.info(this.id + " moved right");
-    	this.body.ApplyImpulse(new b2Vec2(1000, 0), new b2Vec2(0, 0));
+    	this.body.ApplyImpulse(new b2Vec2(0.01, 0), new b2Vec2(0, 0));
     },
     turn_cw: function() {
 

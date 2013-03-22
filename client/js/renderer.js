@@ -2,7 +2,7 @@ define([], function() {
 	var Renderer = Class.extend({
 		init: function(game, canvas) {
             this.debug = true;
-			this.scale = 1;
+			this.scale = 100;
 			this.game = game;
 			this.canvas = canvas;
 			this.context = (canvas && canvas.getContext) ? canvas.getContext("2d") : null;
