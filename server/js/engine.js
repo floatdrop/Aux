@@ -62,7 +62,7 @@ module.exports = Engine = cls.Class.extend({
 
 		var fixDef = new b2FixtureDef;
 	 	fixDef.density = 1.5;
-	 	fixDef.friction = 0.01;
+	 	fixDef.friction = 1;
 	 	fixDef.restitution = 1;
 		fixDef.shape = new b2PolygonShape;
 		fixDef.shape.SetAsBox(width, height);

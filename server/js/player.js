@@ -23,6 +23,7 @@ module.exports = Player = Entity.extend({
 		this.bodyDef = new b2BodyDef;
 		this.bodyDef.type = b2Body.b2_dynamicBody;
 		this.bodyDef.position = this.position;
+        this.bodyDef.linearDamping = 3;
 
 		this.fixtureDef = new b2FixtureDef;
 	 	this.fixtureDef.density = 1.5;
