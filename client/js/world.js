@@ -25,8 +25,6 @@ function World(gs, box2d) {
 
     this.draw = function(c) {
         this.gs.clear();
-        
-        // this.gs.background('rgba(100, 100, 100, 1.0)');
 
         for (var x = 0; x < 26; x++ )
             for (var y = 0; y < 20; y++ )
