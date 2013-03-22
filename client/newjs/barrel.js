@@ -14,7 +14,9 @@ function Barrel() {
     this.sprite = sprite
 
     this.update = function(gs) {
-    }
+		this.priority = this.position.y
+        gs.sortEntities();
+	}
     
 	this.reciveData = function(data) {
 		this.position = data.position;

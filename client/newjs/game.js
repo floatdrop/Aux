@@ -48,7 +48,7 @@ function startGame(gs) {
 		],
 		function() {
 			this.gs = gs;
-			//createWorld()
+			gs.addEntity(new Ground());
 		}
 	);
 }
