@@ -62,25 +62,25 @@ module.exports = Player = Entity.extend({
         var self = this;
         this.animation = "walk_up";
     	this.body.ApplyImpulse(new b2Vec2(0, -0.01), new b2Vec2(0, 0));
-        this.scheduleAction(function() { self.animation = "idle_up"; }, 500, this.id);
+        this.scheduleAction(function() { self.animation = "idle_up"; }, 250, this.id);
     },
     move_down: function() {
         var self = this;
         this.animation = "walk_down";
        	this.body.ApplyImpulse(new b2Vec2(0, 0.01), new b2Vec2(0, 0));
-        this.scheduleAction(function() { self.animation = "idle_down"; }, 500, this.id);
+        this.scheduleAction(function() { self.animation = "idle_down"; }, 250, this.id);
     },
     move_left: function() {
         var self = this;
         this.animation = "walk_left";
     	this.body.ApplyImpulse(new b2Vec2(-0.01, 0), new b2Vec2(0, 0));
-        this.scheduleAction(function() { self.animation = "idle_left"; }, 500, this.id);
+        this.scheduleAction(function() { self.animation = "idle_left"; }, 250, this.id);
     },
     move_right: function() {
         var self = this;
         this.animation = "walk_right";
     	this.body.ApplyImpulse(new b2Vec2(0.01, 0), new b2Vec2(0, 0));
-        this.scheduleAction(function() { self.animation = "idle_right"; }, 500, this.id);
+        this.scheduleAction(function() { self.animation = "idle_right"; }, 250, this.id);
     },
     turn_cw: function() {
 
