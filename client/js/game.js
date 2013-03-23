@@ -12,7 +12,7 @@ define(['renderer', 'player', 'gameclient', 'entityfactory'],
 				'a': this.moveLeft.bind(this),
 				'd': this.moveRight.bind(this)
 			};
-			this.host = "localhost";
+			this.host = window.location.host;
 			this.port = 8000;
 			this.playerId = null;
 		},
