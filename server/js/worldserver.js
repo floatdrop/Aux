@@ -20,6 +20,13 @@ module.exports = World = cls.Class.extend({
 		return _.find(this.players, function(player) { return player.id == id; });
 	},
 
+	removePlayer: function(id) {
+		var index = this.players.indexOf(this.findPlayer(id));
+		if (index !== -1) {
+			this.players.splice(index, 1);
+		}
+	},
+
 	playerConnect: function(socket) {
 		var self = this;
 		var player = new Player(socket, socket.id);
@@ -32,12 +39,10 @@ module.exports = World = cls.Class.extend({
 
     playerDisconnect: function(id) {
     	var player = this.findPlayer(id);
-		log.info("Player " + id + " disconnected");
-		var index = this.players.indexOf(player);
-		player.destruct();
-		if (index !== -1) {
-			log.debug("Found in players array in " + index + " position.");
-			this.players.splice(index, 1);
+		if (player) {
+			log.info("Player " + player.id + " disconnected");
+			this.removePlayer(player.id);
+			this.engine.removeEntity(player);
 		}
     },
 

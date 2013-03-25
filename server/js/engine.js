@@ -38,6 +38,9 @@ module.exports = Engine = cls.Class.extend({
 	addEntity: function(entity) {
 		entity.construct(this.b2w);
 	},
+	removeEntity: function(entity) {
+		entity.destruct();
+	},
 	getEntities: function() {
 		var entities = [];
 		for (var b = this.b2w.m_bodyList; b; b = b.m_next) {
