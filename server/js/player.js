@@ -12,10 +12,10 @@ var	b2BodyDef = Box2D.Dynamics.b2BodyDef,
 	b2CircleShape = Box2D.Collision.Shapes.b2CircleShape;
 
 module.exports = Player = Entity.extend({
-    init: function(socket) {
+    init: function(socket, id) {
     	var self = this;
     	this.socket = socket;
-    	this._super(this.socket.id, "player", Types.Entities.PLAYER);
+    	this._super(id, "player", Types.Entities.PLAYER);
 
         this.socket.emit("welcome", { playerId: this.socket.id });
         this.animation = "idle_right";

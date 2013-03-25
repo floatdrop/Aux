@@ -12,23 +12,34 @@ module.exports = World = cls.Class.extend({
 		this.ups = 50;
 		this.engine = new Engine();
 		this.players = [];
-		this.onPlayerConnect(function(socket) {
-			var player = new Player(socket);
-			player.setPosition(1, 1);
-			log.info("Player " + player.id + " connected");
-			self.players.push(player);
-			socket.on('disconnect', function() {
-				log.info("Player " + player.id + " disconnected");
-				var index = self.players.indexOf(player);
-				player.destruct();
-				if (index !== -1) {
-					log.debug("Found in players array in " + index + " position.");
-					self.players.splice(index, 1);
-				}
-			});
-            self.engine.addEntity(player);
-        });
+		this.onPlayerConnect(this.playerConnect);
+		this.onPlayerDisconnect(this.playerDisconnect);
 	},
+
+	findPlayer: function(id) {
+		return _.find(this.players, function(player) { return player.id == id; });
+	},
+
+	playerConnect: function(socket) {
+		var self = this;
+		var player = new Player(socket, socket.id);
+		socket.on('disconnect', function() { self.disconnect_callback(player.id); });
+		player.setPosition(1, 1);
+		log.info("Player " + player.id + " connected");
+		this.players.push(player);
+        this.engine.addEntity(player);
+    },
+
+    playerDisconnect: function(id) {
+    	var player = this.findPlayer(id);
+		log.info("Player " + id + " disconnected");
+		var index = this.players.indexOf(player);
+		player.destruct();
+		if (index !== -1) {
+			log.debug("Found in players array in " + index + " position.");
+			this.players.splice(index, 1);
+		}
+    },
 
 	broadcast: function (event, message) {
 		async.each(this.players, function (player, callback) {
@@ -47,6 +58,10 @@ module.exports = World = cls.Class.extend({
 
     onPlayerConnect: function(callback) {
         this.connect_callback = callback;
+    },
+
+    onPlayerDisconnect: function(callback) {
+    	this.disconnect_callback = callback;
     }
 
 });
