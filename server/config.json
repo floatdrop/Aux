@@ -1,0 +1,7 @@
+{
+    "port": 8000,
+    "debug_level": "debug",
+    "static_port": 80,
+    "maximum_players": 15,
+    "map_filepath": "./server/maps/map.json"
+}

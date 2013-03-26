@@ -1,0 +1,72 @@
+{
+	"id": "player",
+	"width": 32,
+	"height": 32,
+	"animations": {
+		"atk_left": {
+			"length": 5,
+			"row": 0,
+			"flipSpriteX": true,
+			"speed": 200
+		},
+		"walk_left": {
+			"length": 4,
+			"row": 1,
+			"flipSpriteX": true,
+			"speed": 200
+		},
+		"idle_left": {
+			"length": 2,
+			"row": 2,
+			"flipSpriteX": true,
+			"speed": 2000
+		},
+		"atk_right": {
+			"length": 5,
+			"row": 0,
+			"speed": 200
+		},
+		"walk_right": {
+			"length": 4,
+			"row": 1,
+			"speed": 200
+		},
+		"idle_right": {
+			"length": 2,
+			"row": 2,
+			"speed": 2000
+		},
+		"atk_up": {
+			"length": 5,
+			"row": 3,
+			"speed": 200
+		},
+		"walk_up": {
+			"length": 4,
+			"row": 4,
+			"speed": 200
+		},
+		"idle_up": {
+			"length": 2,
+			"row": 5,
+			"speed": 2000
+		},
+		"atk_down": {
+			"length": 5,
+			"row": 6,
+			"speed": 200
+		},
+		"walk_down": {
+			"length": 4,
+			"row": 7,
+			"speed": 200
+		},
+		"idle_down": {
+			"length": 2,
+			"row": 8,
+			"speed": 2000
+		}
+	},
+	"offset_x": -8,
+	"offset_y": -12
+}

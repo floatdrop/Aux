@@ -1,0 +1,47 @@
+<html>
+ <head>
+ 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+ 	<script type="text/javascript">
+
+ 		var windows = [];
+		var windowsCount = 5;
+		var screenWidth = 800;
+		var screenHeight = 600;
+		var width = 300;
+		var height = 200;
+
+		var CreateWindow = function (id, left, top, width, height) {
+			var w = window.open("/", id, "width="+width+",height="+height+",left="+left+",top="+top);
+			return w;
+		}
+
+		$(function() {
+			var top = 10;
+			var left = 10;
+			while (windowsCount > 0) {
+				if (left > screenWidth) {
+					left = 10;
+					top += height + 45;
+				}
+
+				left += width + 5;
+				windowsCount -= 1;
+
+				windows.push(CreateWindow(windowsCount, left, top, width, height));
+
+			}
+
+			$("#closeAll").click(function(e) {
+				for (var w in windows) {
+					windows[w].close();
+				}
+			});
+		});
+
+
+	</script>
+ </head>
+ <body>
+ 	<input id="closeAll" type="submit" value="Close"/>
+ </body>
+</html>
