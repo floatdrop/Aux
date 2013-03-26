@@ -1,0 +1,14 @@
+{
+	"id": "stone",
+	"width": 32,
+	"height": 32,
+	"animations": {
+		"basic": {
+				"length": 1,
+				"row": 0,
+				"flipSpriteX": true,
+				"speed": 200
+			}},
+	"offset_x": 0,
+	"offset_y": 0
+}
