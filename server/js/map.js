@@ -42,7 +42,6 @@ module.exports = Map = Entity.extend({
         var id = engine.entitiesCount();
 
         for (var i = 0;i<objects.length;i++){
-            console.log(engine.entitiesCount());
 			var o = new SimpleObject(id, objects[i], engine);
 			id++;
         }

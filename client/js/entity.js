@@ -38,7 +38,7 @@ define(['sprites'], function(Sprites) {
                 animation = this.animations[name];
             }
             else {
-                console.log("No animation called " + name);
+                //console.log("No animation called " + name);
             }
             return animation;
         },

@@ -17,7 +17,7 @@ module.exports = World = cls.Class.extend({
 		this.onPlayerConnect(function(socket) {
 			self.map.sendMap(socket);
 			var player = new Player(socket);
-			player.setPosition(1, 1);
+			player.setPosition(5, 5);
 			log.info("Player " + player.id + " connected");
 			self.players.push(player);
 			socket.on('disconnect', function() {

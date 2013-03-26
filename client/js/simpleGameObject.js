@@ -4,7 +4,8 @@ define(['entity', 'sprite'], function(Entity, Sprite) {
         init: function(id, name, type) {
             this._super(id, type);
             this.name = name;
-            this.setSprite(new Sprite(name, 1));
+            this.setSprite(new Sprite(type, 1));
+			this.setAnimation("basic", 100);
         }
     });
     

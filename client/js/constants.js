@@ -1,12 +1,11 @@
 Types = {
 	Entities: {
 		PLAYER: 1,
-		STONE: 2,
-		STUMP: 3,
-		TRIE: 4,
-		STONE2: 5,
-		STONE3: 6,
-		STONE4: 7,
-		BORDER: 8,
+		stone: 2,
+		stump: 3,
+		trie: 4,
+		stone2: 5,
+		stone3: 6,
+		stone4: 7
 	}
 }
