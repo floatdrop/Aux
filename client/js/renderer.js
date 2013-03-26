@@ -10,8 +10,6 @@ define([], function() {
 		renderFrame: function() {
 			var self = this;
 			this.clearScreen(this.context);
-            if (this.game.map.isLoaded)
-                this.drawMap(this.game.map);
 			var entities = _.sortBy(this.game.entities, function(e) { return e.y; });
 			_.each(entities, function(entity) {
 				if (self.debug) {
@@ -68,49 +66,7 @@ define([], function() {
 
             this.context.restore();
 
-        },
-
-        //TODO REMOVE if (data.layers[i].visible) !!!!!!!!
-        //Сделать разбиение map на clientMap, serverMap
-        drawMap: function(map){
-            var data = map.data;
-            for (var i=0;i<data.layers.length;i++){
-                if (data.layers[i].visible)
-                    this.drawLayer(map.tiles[0], data.layers[i]);
-            }  
-        },
-
-        drawLayer: function(tileSet, layer){
-            for (var i=0;i<layer.data.length;i++){
-                if (layer.data[i] !== 0)
-                    this.drawTile(tileSet, i, layer.data[i], layer.width);
-            }
-        },
-
-        drawScaledImage: function(image, x, y, w, h, dx, dy) {
-            var s = 1;
-        
-            this.context.drawImage(image,
-                          x * s,
-                          y * s,
-                          w * s,
-                          h * s,
-                          dx * s,
-                          dy * s,
-                          w * s,
-                          h * s);
-        },
-
-        drawTile: function(tileSet, tileid, tileValue, mapWidth) {
-            this.drawScaledImage(tileSet.image,
-                            ((tileValue - 1) % tileSet.width)*tileSet.tileWidth,
-                            Math.floor(tileValue / tileSet.width) * tileSet.tileHeight,
-                            tileSet.tileWidth,
-                            tileSet.tileHeight,
-                            (tileid % mapWidth)*tileSet.tileWidth,
-                            Math.floor(tileid / mapWidth)*tileSet.tileHeight
-                            );
-        },
+        }
 	});
 	return Renderer;
 });

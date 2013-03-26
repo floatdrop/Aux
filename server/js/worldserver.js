@@ -3,35 +3,48 @@ var cls = require("./lib/class"),
 	Log = require("log"),
 	async = require("async"),
 	Player = require("./player"),
-	Engine = require("./engine"),
-	Map = require("./map");
+	Engine = require("./engine");
 
 module.exports = World = cls.Class.extend({
 	
-	init: function(config) {
+	init: function() {
 		var self = this;
 		this.ups = 50;
 		this.engine = new Engine();
-		this.map = new Map(config, this.engine);
 		this.players = [];
-		this.onPlayerConnect(function(socket) {
-			self.map.sendMap(socket);
-			var player = new Player(socket);
-			player.setPosition(5, 5);
-			log.info("Player " + player.id + " connected");
-			self.players.push(player);
-			socket.on('disconnect', function() {
-				log.info("Player " + player.id + " disconnected");
-				var index = self.players.indexOf(player);
-				player.destruct();
-				if (index !== -1) {
-					log.debug("Found in players array in " + index + " position.");
-					self.players.splice(index, 1);
-				}
-			});
-            self.engine.addEntity(player);
-        });
+		this.onPlayerConnect(this.playerConnect);
+		this.onPlayerDisconnect(this.playerDisconnect);
 	},
+
+	findPlayer: function(id) {
+		return _.find(this.players, function(player) { return player.id == id; });
+	},
+
+	removePlayer: function(id) {
+		var index = this.players.indexOf(this.findPlayer(id));
+		if (index !== -1) {
+			this.players.splice(index, 1);
+		}
+	},
+
+	playerConnect: function(socket) {
+		var self = this;
+		var player = new Player(socket, socket.id);
+		socket.on('disconnect', function() { self.disconnect_callback(player.id); });
+		player.setPosition(1, 1);
+		log.info("Player " + player.id + " connected");
+		this.players.push(player);
+        this.engine.addEntity(player);
+    },
+
+    playerDisconnect: function(id) {
+    	var player = this.findPlayer(id);
+		if (player) {
+			log.info("Player " + player.id + " disconnected");
+			this.removePlayer(player.id);
+			this.engine.removeEntity(player);
+		}
+    },
 
 	broadcast: function (event, message) {
 		async.each(this.players, function (player, callback) {
@@ -50,6 +63,10 @@ module.exports = World = cls.Class.extend({
 
     onPlayerConnect: function(callback) {
         this.connect_callback = callback;
+    },
+
+    onPlayerDisconnect: function(callback) {
+    	this.disconnect_callback = callback;
     }
 
 });

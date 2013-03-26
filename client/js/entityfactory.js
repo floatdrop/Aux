@@ -1,4 +1,4 @@
-define(['player', 'simpleGameObject'], function(Player, SimpleGameObject) {
+define(['player'], function(Player) {
 	var EntityFactory = {};
 
 	EntityFactory.createEntity = function(kind, id, name) {
@@ -19,16 +19,7 @@ define(['player', 'simpleGameObject'], function(Player, SimpleGameObject) {
 	EntityFactory.builders[Types.Entities.PLAYER] = function(id, name) {
 		return new Player(id, name);
 	};
-	
-	for(var property in Types.Entities) {
-		var index = Types.Entities[property];
-		if (!EntityFactory.builders[index]){
-			EntityFactory.builders[index] = function(id, name) {
-				return new SimpleGameObject(id, name, property);
-			};
-		}
-	}
-	
+
 	return EntityFactory;
 
 });

@@ -22,7 +22,7 @@ module.exports = Entity = cls.Class.extend({
         this.angle = a;
     },
     getAngle: function() {
-        return { x: this.angle };
+        return this.angle;
     },
     construct: function(b2w) {
 
