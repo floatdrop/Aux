@@ -15,7 +15,7 @@ module.exports = Map = Entity.extend({
           }
           self.data = JSON.parse(data);
           self.isLoaded = true;
-          //self.fillWorld(self.data, self.engine);
+          self.fillWorld(self.data, self.engine);
         });
     },
 

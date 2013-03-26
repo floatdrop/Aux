@@ -1,7 +1,7 @@
 {
 	"id": "trie",
-	"width": 32,
-	"height": 32,
+	"width": 172,
+	"height": 210,
 	"animations": {
 		"basic": {
 				"length": 1,
