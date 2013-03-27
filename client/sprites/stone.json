@@ -6,7 +6,7 @@
 		"basic": {
 				"length": 1,
 				"row": 0,
-				"flipSpriteX": true,
+				"flipSpriteX": false,
 				"speed": 200
 			}},
 	"offset_x": 0,
