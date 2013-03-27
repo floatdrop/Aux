@@ -33,6 +33,7 @@ define([], function() {
             ctx.fill();
         },
         drawEntity: function(entity) {
+			var s = entity.name == "PLAYER" ? 100 : 1;
         	var os = 1,
         		ds = 1;
         	var sprite = entity.sprite,
@@ -44,8 +45,8 @@ define([], function() {
                     h = sprite.height * os,
                     ox = sprite.offsetX * 1,
                     oy = sprite.offsetY * 1,
-                    dx = entity.x * this.scale,
-                    dy = entity.y * this.scale,
+                    dx = entity.x * s,
+                    dy = entity.y * s,
                     dw = w * ds,
                     dh = h * ds;
 

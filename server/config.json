@@ -3,5 +3,5 @@
     "debug_level": "debug",
     "static_port": 80,
     "maximum_players": 15,
-    "map_filepath": "./server/maps/world_server.json"
+    "map_filepath": "./maps/world_server.json"
 }
