@@ -35,7 +35,7 @@ module.exports = World = cls.Class.extend({
 		log.info("Map send to " + socket.id);
 		var player = new Player(socket, socket.id);
 		socket.on('disconnect', function() { self.disconnect_callback(player.id); });
-		player.setPosition(1, 1);
+		player.setPosition(3, 3);
 		log.info("Player " + player.id + " connected");
 		this.players.push(player);
         this.engine.addEntity(player);

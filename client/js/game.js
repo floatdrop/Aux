@@ -61,6 +61,7 @@ define(['renderer', 'player', 'gameclient', 'entityfactory'],
 					entity.setAnimation(entity_info.animation);
 					entity.setPosition(entity_info.position.x, entity_info.position.y);
 					entity.setAngle(entity_info.angle);
+					entity.update(entity_info);
 					entities[id] = entity;
 				}
 				self.entities = entities;

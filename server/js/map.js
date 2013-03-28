@@ -1,6 +1,6 @@
 var fs = require('fs'),
   Constants = require('../../client/js/constants'),
-  SimpleObject = require('./simpleObject');
+  CommonEntity = require('./commonEntity');
 
 module.exports = Map = Entity.extend({
     init: function(config,engine) {
@@ -42,7 +42,7 @@ module.exports = Map = Entity.extend({
         var id = engine.entitiesCount();
 
         for (var i = 0;i<objects.length;i++){
-			var o = new SimpleObject(id, objects[i], engine);
+			var o = new CommonEntity(id, objects[i], engine);
 			id++;
         }
     }
