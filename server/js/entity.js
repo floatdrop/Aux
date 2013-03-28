@@ -21,7 +21,7 @@ module.exports = Entity = cls.Class.extend({
         this.position.y = y;
     },
     getPosition: function() {
-        return { x: this.position.x, y: this.position.y };
+        return { x: this.position.x, y: this.position.y};
     },
     setAngle: function(a) {
         this.angle = a;

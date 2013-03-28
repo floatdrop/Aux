@@ -21,15 +21,6 @@ var b2Vec2 = Box2D.Common.Math.b2Vec2,
 module.exports = Engine = cls.Class.extend({
 	init: function() {
 		this.b2w = new b2World(new b2Vec2(0, 0), false);
-		
-		this.width = 8; 
-		this.height = 6;
-
-		// World walls
-		// this.createBox(0, 0 , this.width, 0.1, true);
-		// this.createBox(0, this.height, this.width, 0.1, true);
-		// this.createBox(0, 0, 0.1, this.height, true);
-		// this.createBox(this.width, 0, 0.1, this.height, true);
 	},
 	tick: function(fps) {
 		this.b2w.Step(1 / fps, 10, 10);

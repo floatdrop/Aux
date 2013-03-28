@@ -10,6 +10,7 @@ define([], function() {
 		renderFrame: function() {
 			var self = this;
 			this.clearScreen(this.context);
+			this.drawMap(this.game.map);
 			var entities = _.sortBy(this.game.entities, function(e) { return e.y; });
 			_.each(entities, function(entity) {
 				if (self.debug) {
@@ -35,7 +36,7 @@ define([], function() {
 			ctx.fillText(entity.type, x, y);			
         },
         drawEntity: function(entity) {
-        	var os = 1,
+			var os = 1,
         		ds = 1;
         	var sprite = entity.sprite,
         		anim = entity.currentAnimation;
@@ -46,8 +47,8 @@ define([], function() {
                     h = sprite.height * os,
                     ox = sprite.offsetX * 1,
                     oy = sprite.offsetY * 1,
-                    dx = entity.x * this.scale,
-                    dy = entity.y * this.scale,
+                    dx = entity.x * this.scale - sprite.width / 2,
+                    dy = entity.y * this.scale - sprite.height,
                     dw = w * ds,
                     dh = h * ds;
 
@@ -68,7 +69,32 @@ define([], function() {
 
             this.context.restore();
 
-        }
+        },
+		drawMap: function(map) {
+			// if (!map.isLoaded)
+				// return;
+			for (var i=0;i<map.layers.length;i++)
+				if (map.layers[i].visible)
+					this.drawLayer(map, map.layers[i]);
+		},
+		drawLayer: function(map, layer){
+			var countTiles = layer.width * layer.height;
+			for (var i=0;i<countTiles;i++){
+				if (layer.data[i] !== 0)
+					this.drawTile(map, i, layer.data[i], layer.x, layer.y);
+			}
+		},
+		drawTile: function(map, index, value, offsetX, offsetY){
+			var tileSet = map.getTileSet(value);
+			var tileW = tileSet.tileWidth,
+				tileH = tileSet.tileHeight,
+				x = ((value - 1) % tileSet.width) * tileW,
+				y = Math.floor(value / tileSet.width) * tileH,
+				dx = (index % map.width) * tileW,
+				dy = Math.floor(index / map.width) * tileH;
+				
+			this.context.drawImage(tileSet.image, x, y, tileW, tileH, dx, dy, tileW, tileH);
+		}
 	});
 	return Renderer;
 });

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="100" height="100" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" name="mainSprites" tilewidth="32" tileheight="32">
+  <image source="../../floatdrop jsGame/client/img/sprites/ground_64x64.png" width="2048" height="2048"/>
+  <terraintypes>
+   <terrain name="Новый участок" tile="-1"/>
+  </terraintypes>
+ </tileset>
+ <layer name="ground" width="100" height="100">
+  <data encoding="base64" compression="zlib">
+   eJzt2M1OGzEUhmGbQAtlAVK5oYCAIgKtVG5oIPxuWMANAQHEBhZwQT1H4yMOxp6hQezeR/oUZ5Rk4U+2Z9KEEPYlB5Kx5FByJGnSeJr43/Lxv4+yK8n9TAgzsc21vL9L13V8I5lIbtPrkmRZ8kM+uyjZlowkO27sr+1K/srn9/S7Ml6O7e+jTOd9PGij86+dfIvtdR0PJLOSudj28TuUO7Bx3oW+v5DvXOp3ZfyHPjr5PnQtaDZkzmKa/7X4dp2ch/Kcjzr6eJbvvIR2jWnooy7G171qkKJ9DNO60A4sfu/SfWtU2J9K6+WnZEXyFOmjzzB1se+i8964PmazbnTv0n3L+qjF+rDzw7qkjzo7J7SHg9SFnRk+1oWO12O7b320Dzs/6KNf3ofvYhDr3TxJzmQ8L1koZDuLnh8rgT762PmR39uWuvDXllwXW4X4Ls5S9gJ99BmmLkp92H3uqls/Y8lhbO9drY/TQvL1oWF99LvSPvTc0H0ovfpMCl18z/aph5RSBz6sj36NWx8Wu/+15H1sSn5V9qau6JlOH92a+H7+V7PkfRxLTjr2pVrsmZA+6prK/Pv4Lv5n/t+dH5E++sTC/PsO5rLY/yXTxPYr/X8MZcPCnPusZe/1uWPaPnS/0t/YoI+q5gN9+Ohzx+OU0f1Kn+2P6KNK73cnX5jr+PZ++lZyRx8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOAT/gFQzttR
+  </data>
+ </layer>
+ <layer name="grass" width="100" height="100">
+  <data encoding="base64" compression="zlib">
+   eJzt2Mtq1FAABuCQERF63bXg09hVodddu3HjswgK1erK++MIFryCYr09jH8YA2Gc0wkxC2m/D36GmeRkcf6cM5OpqnFs1FW1WY90sSvu7qSqXtfTDKWP8bR93JiUz3maY88Kx29n7FFy3OnjTr14HH9r5qvpo+nirJ5mnvMc/zZgXpvr66S/885e1XZSMmRem+sP7fKqaver7cnFe1ZpXpcydjlZSVaTtWS90OtNvSx0K3O3VU/v/e3OfPVdDzsZu5vsJfvJQXLou32wZm209/79zvz33WdOMv5B8jA5TR4lj2f62Mh1Nq2NXpo+7v3p4qwwZ5/z+ZfCsbcZ/y55n3xIPiafCn3Yrxa7fq2q3lzQRaN9vpjXyVI+W05WktVkLVmfOe8o7491MZr2+WLeOtnJ+91kL9lPDpLDzjn2qv+LtcFl0X2eXvRb90nn3OfJi+Rl8spaGE33eXrRb92vnXO/Jz+Sn8kvffyT9h4vvY7B/7/9tfd46XUMs///AgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABwOfwGHcxUrw==
+  </data>
+ </layer>
+ <layer name="entities" width="100" height="100" visible="0">
+  <properties>
+   <property name="client" value="false"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJzt0+lJA1EYhtGbpA7XNrSVrG1oD9pAVu3CFGEDWVy60B++f5QYAhpMGCHnwAMzMAOX7+OWwn90kS6rPgRfrtL1L799SNOV92a9lFZqp07qpl5992c8FNvejbf0vvLez+wHaZhGaZwmG/ZxUyvltva3sx6Cbe7GJrPMfp4WaZme0vPaPj7v1KN97N1Ro5TjdJJO01k6b3z/Zv1OsT/NzL6V2qmTuqnX+Pk/9qOf2Q/SMI3SOE3sozKzzH6eFmmZ7tK9fVRmff4veX61j8qYPwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADsxgfk3yet
+  </data>
+ </layer>
+ <objectgroup name="objects" width="100" height="100" visible="0">
+  <properties>
+   <property name="client" value="false"/>
+  </properties>
+  <object type="trie" x="608" y="240" width="64" height="35"/>
+  <object type="stump" x="546" y="289" width="59" height="49"/>
+  <object type="stump" x="674" y="257" width="59" height="49"/>
+  <object type="stone" x="420" y="110">
+   <polyline points="0,0 22,10 51,3 47,-24 32,-37 7,-23 1,1"/>
+  </object>
+  <object type="stone" x="834" y="173">
+   <polyline points="0,0 22,10 51,3 47,-24 32,-37 7,-23 1,1"/>
+  </object>
+  <object type="stone2" x="34" y="116" width="38" height="29"/>
+  <object type="stone3" x="72" y="111" width="22" height="14"/>
+  <object type="stone2" x="66" y="51" width="38" height="29"/>
+  <object type="stone3" x="104" y="46" width="22" height="14"/>
+  <object type="stone4" x="883" y="113">
+   <polyline points="0,0 28,33 44,34 45,-14 -3,-17 -1,-1"/>
+  </object>
+  <object type="border" x="4" y="553" width="953" height="21"/>
+  <object type="border" x="939" y="3" width="21" height="548"/>
+  <object type="border" x="1" y="2" width="13" height="549"/>
+  <object type="border" x="13" y="339" width="277" height="13"/>
+  <object type="border" x="193" y="160" width="13" height="34"/>
+  <object type="border" x="17" y="2" width="942" height="15"/>
+  <object type="border" x="179" y="19" width="26" height="138"/>
+ </objectgroup>
+</map>

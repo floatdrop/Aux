@@ -1,5 +1,5 @@
-define(['renderer', 'player', 'gameclient', 'entityfactory'], 
-	function(Renderer, Player, GameClient, EntityFactory) {
+define(['renderer', 'player', 'gameclient', 'entityfactory','map'], 
+	function(Renderer, Player, GameClient, EntityFactory,Map) {
 	var Game = Class.extend({
 		init: function() {
 			this.mouse = { x: 0, y: 0 };
@@ -48,8 +48,12 @@ define(['renderer', 'player', 'gameclient', 'entityfactory'],
 		connect: function() {
 			var self = this;
 			this.client = new GameClient(this.host, this.port);
+			this.map = new Map(this);
 			this.client.onWelcome(function(data) {
 				self.playerId = data.playerId;
+			});
+			this.client.onMap(function(data) {
+				self.map.onMapLoaded(data);
 			});
 			this.client.onEntityList(function(data) {
                 if (data.debug == true){
