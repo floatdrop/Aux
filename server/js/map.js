@@ -15,20 +15,18 @@ module.exports = Map = Entity.extend({
           }
           self.data = JSON.parse(data);
           self.isLoaded = true;
+		  console.log("map loaded");
           self.fillWorld(self.data, self.engine);
         });
     },
 
     sendMap: function(socket){
-        if (this.isLoaded){
-          socket.emit("map", this.data);
-          return;
-        }
-
-        setInterval(function () {
-          if (this.isLoaded){
-            socket.emit("map", this.data);
-            return;
+		var self = this;
+        var intervalId = setInterval(function () {
+          if (self.isLoaded){
+            socket.emit("map", self.data);
+			console.log("map sended");
+            clearInterval(intervalId);
           }
         },  100);
     },
