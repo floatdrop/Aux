@@ -39,7 +39,7 @@ module.exports = Map = Entity.extend({
           i++;
 
         var objects = data.layers[i].objects;
-        var id = engine.entitiesCount();
+        var id = 0;
 
         for (var i = 0;i<objects.length;i++){
 			var o = new CommonEntity(id, objects[i], engine);

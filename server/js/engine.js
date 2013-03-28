@@ -69,54 +69,11 @@ module.exports = Engine = cls.Class.extend({
 		return entities;
 	},
 	
-	entitiesCount: function() {
-		return this.getEntities().length;
-	},
 	dumpEntities: function() {
 		var dump = [];
 		_.each(this.getEntities(), function(entity) {
 			dump.push(entity.getBaseState());
 		});
 		return dump;
-	},
-	createBox: function(x, y, width, height) {
-		var body = this.createBody(x,y);
-		return this.createBoxFixture(body, width, height);
-	},
-	createPolygon: function(x,y, points){
-		var body = this.createBody(x,y);
-		return this.createpolygonFixture(body, points);
-	},
-	
-	createBoxFixture: function(body, width, height){
-		var fixDef = new b2FixtureDef;
-	 	fixDef.density = 1.5;
-	 	fixDef.friction = 1;
-	 	fixDef.restitution = 1;
-		fixDef.shape = new b2PolygonShape;
-		fixDef.shape.SetAsBox(width, height);
-		return body.CreateFixture(fixDef);
-	},
-	createPolygonFixture: function(body, points){
-		var fixDef = new b2FixtureDef;
-	 	fixDef.density = 1.5;
-	 	fixDef.friction = 1;
-	 	fixDef.restitution = 1;
-	 	
-		fixDef.shape = new b2PolygonShape;
-		fixDef.shape.vertexCount = points.length;
-		console.log(points.length);
-		for (var i = 0; i < points.length; i++) {
-			fixDef.shape.vertices[i].Set(points[i]);
-        }
-		return body.CreateFixture(fixDef);
-	},
-	
-	createBody: function(x, y){
-		var bodyDef = new b2BodyDef;
-		bodyDef.type = b2Body.b2_staticBody;
-		bodyDef.position.x = x;
-		bodyDef.position.y = y;	
-		return this.b2w.CreateBody(bodyDef);
 	}
 });
