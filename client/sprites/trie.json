@@ -1,0 +1,14 @@
+{
+	"id": "trie",
+	"width": 172,
+	"height": 210,
+	"animations": {
+		"basic": {
+				"length": 1,
+				"row": 0,
+				"flipSpriteX": false,
+				"speed": 200
+			}},
+	"offset_x": 0,
+	"offset_y": -90
+}

@@ -5,7 +5,7 @@ function main(config) {
 			Log = require('log'),
 			_ = require('underscore'),
 			worldserver = require('./worldserver'),
-			world = new(worldserver)();
+			world = new(worldserver)(config);
 	
 	io.set('log level', 1)
 

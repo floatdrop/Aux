@@ -3,17 +3,20 @@ var cls = require("./lib/class"),
 	Log = require("log"),
 	async = require("async"),
 	Player = require("./player"),
-	Engine = require("./engine");
-
+	Engine = require("./engine"),
+	Map = require("./map");
+	
 module.exports = World = cls.Class.extend({
 	
-	init: function() {
+	init: function(config) {
 		var self = this;
 		this.ups = 50;
 		this.engine = new Engine();
+		this.map = new Map(config, this.engine);
 		this.players = [];
 		this.onPlayerConnect(this.playerConnect);
 		this.onPlayerDisconnect(this.playerDisconnect);
+		this.debug = config.drawDebug;
 	},
 
 	findPlayer: function(id) {
@@ -29,6 +32,8 @@ module.exports = World = cls.Class.extend({
 
 	playerConnect: function(socket) {
 		var self = this;
+		self.map.sendMap(socket);
+		log.info("Map send to " + socket.id);
 		var player = new Player(socket, socket.id);
 		socket.on('disconnect', function() { self.disconnect_callback(player.id); });
 		player.setPosition(1, 1);
@@ -57,7 +62,10 @@ module.exports = World = cls.Class.extend({
 		var self = this;
 		setInterval(function () {
 			self.engine.tick(1000.0 / self.ups);
-			self.broadcast("entity_list", self.engine.dumpEntities());
+			var entity_list={entities: self.engine.dumpEntities()};
+			if (self.debug == true)
+				entity_list.debugEntities = self.engine.dumpDebugEntities();
+			self.broadcast("entity_list", entity_list);
 		},	1000 / this.ups);
 	},
 

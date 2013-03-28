@@ -21,15 +21,6 @@ var b2Vec2 = Box2D.Common.Math.b2Vec2,
 module.exports = Engine = cls.Class.extend({
 	init: function() {
 		this.b2w = new b2World(new b2Vec2(0, 0), false);
-		
-		this.width = 8; 
-		this.height = 6;
-
-		// World walls
-		this.createBox(0, 0 , this.width, 0.1, true);
-		this.createBox(0, this.height, this.width, 0.1, true);
-		this.createBox(0, 0, 0.1, this.height, true);
-		this.createBox(this.width, 0, 0.1, this.height, true);
 	},
 	tick: function(fps) {
 		this.b2w.Step(1 / fps, 10, 10);
@@ -50,25 +41,31 @@ module.exports = Engine = cls.Class.extend({
 		}
 		return entities;
 	},
+	dumpDebugEntities: function(){
+		var entities = [];
+		for (var b = this.b2w.m_bodyList; b; b = b.m_next) {
+			if (b.m_fixtureCount != 0){
+				var type = (b.m_userData !== null) ? b.m_userData.type : "";
+				var aabb = b.m_fixtureList.m_aabb;
+				var width = aabb.upperBound.x - aabb.lowerBound.x;
+				var height = aabb.upperBound.y - aabb.lowerBound.y;
+				
+				entities.push({
+						position: b.GetPosition(),
+						width: width,
+						heigth: height,
+						type : type
+					});
+			}
+		}
+		return entities;
+	},
+	
 	dumpEntities: function() {
 		var dump = [];
 		_.each(this.getEntities(), function(entity) {
 			dump.push(entity.getBaseState());
 		});
 		return dump;
-	},
-	createBox: function(x, y, width, height) {
-		var bodyDef = new b2BodyDef;
-		bodyDef.type = b2Body.b2_staticBody;
-		bodyDef.position.x = x;
-		bodyDef.position.y = y;	
-
-		var fixDef = new b2FixtureDef;
-	 	fixDef.density = 1.5;
-	 	fixDef.friction = 1;
-	 	fixDef.restitution = 1;
-		fixDef.shape = new b2PolygonShape;
-		fixDef.shape.SetAsBox(width, height);
-		return this.b2w.CreateBody(bodyDef).CreateFixture(fixDef);
 	}
 });
