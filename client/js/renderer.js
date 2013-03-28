@@ -32,7 +32,7 @@ define([], function() {
 				heigth = entity.heigth * this.scale;
 			var ctx = this.context;
 			ctx.fillStyle = "rgb(0, 0, 0)";
-			ctx.fillRect(x - width/2, y - heigth/2, width, heigth);
+			ctx.fillRect(x - width / 2, y - heigth / 2, width, heigth);
 			ctx.fillStyle = "rgb(255, 0, 0)";
 			ctx.fillText(entity.type, x, y);			
         },
@@ -49,7 +49,7 @@ define([], function() {
                     ox = sprite.offsetX * 1,
                     oy = sprite.offsetY * 1,
                     dx = entity.x * this.scale - sprite.width / 2,
-                    dy = entity.y * this.scale - sprite.height,
+                    dy = entity.y * this.scale - sprite.height / 2,
                     dw = w * ds,
                     dh = h * ds;
 
