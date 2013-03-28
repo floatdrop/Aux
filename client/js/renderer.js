@@ -12,12 +12,13 @@ define([], function() {
 			this.clearScreen(this.context);
 			this.drawMap(this.game.map);
 			var entities = _.sortBy(this.game.entities, function(e) { return e.y; });
-			_.each(entities, function(entity) {
-				if (self.debug) {
+			if (this.debug){
+				_.each(this.game.debugEntities, function(entity){
 					self.debugDrawEntity(entity);
-				} else {
-					self.drawEntity(entity);
-				}
+				});
+			}
+			_.each(entities, function(entity) {
+				self.drawEntity(entity);
 			});
 		},
 		clearScreen: function(ctx) {

@@ -56,10 +56,9 @@ define(['renderer', 'player', 'gameclient', 'entityfactory','map'],
 				self.map.onMapLoaded(data);
 			});
 			this.client.onEntityList(function(data) {
-                if (data.debug == true){
-					self.entities = data.entities;
+                if (data.debugEntities){
+					self.debugEntities = data.debugEntities;
 					self.renderer.debug = true;
-					return;
 				}
 				var entities = {};
 				for (var i = 0; i < data.entities.length; i ++) {

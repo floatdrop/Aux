@@ -62,12 +62,10 @@ module.exports = World = cls.Class.extend({
 		var self = this;
 		setInterval(function () {
 			self.engine.tick(1000.0 / self.ups);
-			var entities=[];
+			var entity_list={entities: self.engine.dumpEntities()};
 			if (self.debug == true)
-				entities = self.engine.dumpDebugEntities();
-			else
-				entities = self.engine.dumpEntities();
-			self.broadcast("entity_list", {debug: self.debug, entities: entities});
+				entity_list.debugEntities = self.engine.dumpDebugEntities();
+			self.broadcast("entity_list", entity_list);
 		},	1000 / this.ups);
 	},
 

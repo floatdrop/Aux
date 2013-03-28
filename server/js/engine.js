@@ -49,6 +49,7 @@ module.exports = Engine = cls.Class.extend({
 				var aabb = b.m_fixtureList.m_aabb;
 				var width = aabb.upperBound.x - aabb.lowerBound.x;
 				var height = aabb.upperBound.y - aabb.lowerBound.y;
+				
 				entities.push({
 						position: b.GetPosition(),
 						width: width,

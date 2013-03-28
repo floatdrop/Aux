@@ -4,5 +4,5 @@
     "static_port": 80,
     "maximum_players": 15,
     "map_filepath": "./maps/world_server.json",
-	"drawDebug": false
+	"drawDebug": true
 }
