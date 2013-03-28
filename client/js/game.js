@@ -52,9 +52,14 @@ define(['renderer', 'player', 'gameclient', 'entityfactory'],
 				self.playerId = data.playerId;
 			});
 			this.client.onEntityList(function(data) {
-                var entities = {};
-				for (var i = 0; i < data.length; i ++) {
-					var entity_info = data[i];
+                if (data.debug == true){
+					self.entities = data.entities;
+					self.renderer.debug = true;
+					return;
+				}
+				var entities = {};
+				for (var i = 0; i < data.entities.length; i ++) {
+					var entity_info = data.entities[i];
 					var kind = entity_info.kind;
 					var id = entity_info.id;
 					var entity = id in self.entities ? self.entities[id] : EntityFactory.createEntity(kind, id);

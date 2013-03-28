@@ -24,16 +24,17 @@ define([], function() {
         },
         debugDrawEntity: function(entity) {
         	var os = 1;
-        	var x = entity.x * this.scale,
-                y = entity.y * this.scale;
-            var ctx = this.context;
-            ctx.beginPath();
-            ctx.arc(x, y, 10, 0, Math.PI*2, true); 
-            ctx.closePath();
-            ctx.fill();
+        	var x = entity.position.x * this.scale,
+                y = entity.position.y * this.scale,
+				width = entity.width * this.scale,
+				heigth = entity.heigth * this.scale;
+			var ctx = this.context;
+			ctx.fillStyle = "rgb(0, 0, 0)";
+			ctx.fillRect(x - width/2, y - heigth/2, width, heigth);
+			ctx.fillStyle = "rgb(255, 0, 0)";
+			ctx.fillText(entity.type, x, y);			
         },
         drawEntity: function(entity) {
-			//var s = entity.name == "PLAYER" ? 100 : 1;
         	var os = 1,
         		ds = 1;
         	var sprite = entity.sprite,

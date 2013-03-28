@@ -16,6 +16,7 @@ module.exports = World = cls.Class.extend({
 		this.players = [];
 		this.onPlayerConnect(this.playerConnect);
 		this.onPlayerDisconnect(this.playerDisconnect);
+		this.debug = config.drawDebug;
 	},
 
 	findPlayer: function(id) {
@@ -35,7 +36,7 @@ module.exports = World = cls.Class.extend({
 		log.info("Map send to " + socket.id);
 		var player = new Player(socket, socket.id);
 		socket.on('disconnect', function() { self.disconnect_callback(player.id); });
-		player.setPosition(3, 3);
+		player.setPosition(1, 1);
 		log.info("Player " + player.id + " connected");
 		this.players.push(player);
         this.engine.addEntity(player);
@@ -61,7 +62,12 @@ module.exports = World = cls.Class.extend({
 		var self = this;
 		setInterval(function () {
 			self.engine.tick(1000.0 / self.ups);
-			self.broadcast("entity_list", self.engine.dumpEntities());
+			var entities=[];
+			if (self.debug == true)
+				entities = self.engine.dumpDebugEntities();
+			else
+				entities = self.engine.dumpEntities();
+			self.broadcast("entity_list", {debug: self.debug, entities: entities});
 		},	1000 / this.ups);
 	},
 
