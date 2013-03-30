@@ -3,6 +3,7 @@ TODO
 
 Here is list of ideas/plans about repo:
 * Write test with Vows + nock + zombie.js (+ should.js?)
+* Or maybe look at Grunt? http://gruntjs.com/
 * Add pre-commit hook (ready.js https://github.com/dsimard/ready.js)
 
 Plans about game:
