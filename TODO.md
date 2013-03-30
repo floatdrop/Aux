@@ -8,3 +8,4 @@ Here is list of ideas/plans about repo:
 
 Plans about game:
 * Dead Reckoning: Latency Hiding for Networked Games http://www.gamasutra.com/view/feature/3230/dead_reckoning_latency_hiding_for_.php
+* Cool server monitor with events timeline.
