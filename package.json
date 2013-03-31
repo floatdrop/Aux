@@ -3,17 +3,17 @@
 	"version": "0.0.1",
 	"private": false,
 	"dependencies": {
-		"underscore": ">0"
-		"log": ">0"
-		"socket.io": ">0"
-		"node-static": ">0"
-		"async": ">0"
+		"underscore": ">0",
+		"log": ">0",
+		"socket.io": ">0",
+		"node-static": ">0",
+		"async": ">0",
 		"bison": ">0"
 	},
 	"scripts": {
 		"test": "make test"
 	},
 	"devDependencies": {
-		"jshint": ">0.9.1"
+		"jshint": ">=0.9.1"
 	}
 }
