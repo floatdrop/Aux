@@ -33,9 +33,9 @@ define(['renderer', 'player', 'gameclient', 'entityfactory','map'],
 			var t = this.currentTime;
 			_.each(this.entities, function(entity) {
 				var anim = entity.currentAnimation;
-                if(anim) {
-                    anim.update(t);
-                }
+				if(anim) {
+					anim.update(t);
+				}
 			});
 			requestAnimFrame(this.tick.bind(this));
 		},
@@ -56,7 +56,7 @@ define(['renderer', 'player', 'gameclient', 'entityfactory','map'],
 				self.map.onMapLoaded(data);
 			});
 			this.client.onEntityList(function(data) {
-                if (data.debugEntities){
+				if (data.debugEntities){
 					self.debugEntities = data.debugEntities;
 					self.renderer.debug = true;
 				}

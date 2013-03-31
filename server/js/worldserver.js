@@ -39,17 +39,17 @@ module.exports = World = cls.Class.extend({
 		player.setPosition(1, 1);
 		log.info("Player " + player.id + " connected");
 		this.players.push(player);
-        this.engine.addEntity(player);
-    },
+		this.engine.addEntity(player);
+	},
 
-    playerDisconnect: function(id) {
-    	var player = this.findPlayer(id);
+	playerDisconnect: function(id) {
+		var player = this.findPlayer(id);
 		if (player) {
 			log.info("Player " + player.id + " disconnected");
 			this.removePlayer(player.id);
 			this.engine.removeEntity(player);
 		}
-    },
+	},
 
 	broadcast: function (event, message) {
 		async.each(this.players, function (player, callback) {
@@ -69,12 +69,12 @@ module.exports = World = cls.Class.extend({
 		},	1000 / this.ups);
 	},
 
-    onPlayerConnect: function(callback) {
-        this.connect_callback = callback;
-    },
+	onPlayerConnect: function(callback) {
+		this.connect_callback = callback;
+	},
 
-    onPlayerDisconnect: function(callback) {
-    	this.disconnect_callback = callback;
-    }
+	onPlayerDisconnect: function(callback) {
+		this.disconnect_callback = callback;
+	}
 
 });

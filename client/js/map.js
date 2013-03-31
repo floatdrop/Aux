@@ -4,7 +4,7 @@ define([], function() {
 			this.isLoaded = false;
 			this.tilesets = [];
 			this.layers = [];
-            this.game = game;
+			this.game = game;
 		},
 
 		onMapLoaded: function(data){

@@ -4,3 +4,5 @@ client-build
 build.txt
 .c9revisions
 *.bat
+*.sublime-project
+*.sublime-workspace
