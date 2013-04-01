@@ -24,10 +24,7 @@ vows.describe('Aux').addBatch({
 					zombie.visit("http://localhost:" + StaticPort + "/", { runScripts: false }, this.callback);
 				},
 				"should return success": function (e, browser, status) {
-					console.log(e, browser, status);
-					should.not.exist(e);
-					should.exists(browser);
-					should.ok(browser.success);
+					should.ok(browser.success)
 				}
 			}
 		}
