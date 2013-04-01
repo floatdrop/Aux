@@ -10,9 +10,6 @@
 		"async": ">0",
 		"bison": ">0"
 	},
-	//"scripts": {
-	//	"test": "make test"
-	//},
 	"devDependencies": {
 		"jshint": ">=0.9.1"
 	}
