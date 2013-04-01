@@ -2,7 +2,7 @@ var vows = require('vows'),
 	should = require('should'),
 	Browser = require('zombie');
 
-var Server = require('./main');
+var Server = require('./server/js/main');
 
 var StaticPort = 8080;
 
