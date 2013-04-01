@@ -14,13 +14,16 @@ var Server = module.exports = cls.Class.extend({
 
 		switch (config.debug_level) {
 		case "error":
-			global.log = new Log(Log.ERROR); 
+			global.log = new Log(Log.ERROR);
+			this.loglevel = 0;
 			break;
 		case "debug":
-			global.log = new Log(Log.DEBUG); 
+			global.log = new Log(Log.DEBUG);
+			this.loglevel = 2;
 			break;
 		case "info":
-			global.log = new Log(Log.INFO); 
+			global.log = new Log(Log.INFO);
+			this.loglevel = 1;
 			break;
 		}
 	},
@@ -43,8 +46,10 @@ var Server = module.exports = cls.Class.extend({
 
 		this.configureStaticServer();
 
-		var io = require('socket.io').listen(this.config.port);
-		io.set('log level', 1);
+		var io = require('socket.io').listen(this.config.port, {
+			'log level': this.loglevel
+		});
+
 		io.sockets.on('connection', function (socket) {
 			this.world.connect_callback(socket);
 		});
@@ -53,7 +58,11 @@ var Server = module.exports = cls.Class.extend({
 			global.log.error('uncaughtException: ' + e + '\n' + e.stack);
 		});
 
-		this.world.run(started_callback);
+		this.world.run(function (err) {
+			if (started_callback) {
+				started_callback(err, this);
+			}
+		});
 	}
 });
 
@@ -79,11 +88,11 @@ process.argv.forEach(function (val, index) {
 
 getConfigFile(customConfigPath, function (customConfig) {
 	if (customConfig) {
-		new Server(customConfig).run();
+		new Server(customConfig).start();
 	} else {
 		getConfigFile(defaultConfigPath, function (defaultConfig) {
 			if (defaultConfig) {
-				new Server(defaultConfig).run();
+				new Server(defaultConfig).start();
 			} else {
 				console.error("Server cannot start without any configuration file.");
 				process.exit(1);

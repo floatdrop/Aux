@@ -55,7 +55,9 @@ module.exports = cls.Class.extend({
 			self.engine.tick(1000.0 / self.ups);
 			self.broadcast("entity_list", self.engine.dumpEntities());
 		},	1000 / this.ups);
-		callback(null);
+		if (callback) {
+			callback(null, this);
+		}
 	},
 
 	onPlayerConnect: function (callback) {

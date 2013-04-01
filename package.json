@@ -15,7 +15,7 @@
 		"jshint": ">=0.9.1",
 		"vows": ">=0.7.0",
 		"should": ">=1.2.2",
-		"zombie": ">=2.0.0-alpha11"
+		"zombie": ">=1.4.1"
 	},
 	"scripts": {
 		"test": "vows server/test/* --spec"

@@ -1,30 +1,34 @@
 var vows = require('vows'),
 	should = require('should'),
-	Browser = require('zombie');
+	zombie = require('zombie');
 
-var Server = require('./server/js/main');
+var Server = require('../js/main');
 
 var StaticPort = 8080;
 
 vows.describe('Aux').addBatch({
 	'A server': {
-		topic: new Server({
-			port: 8081,
-			static_port: StaticPort,
-			debug_level: "debug",
-		}),
+		topic: function() { 
+			return new Server({
+				port: 8081,
+				static_port: StaticPort,
+				debug_level: "error",
+			}); 
+		},
 		'started': {
 			topic: function (server) {
 				server.start(this.callback);
 			},
-			'and return 200 code on static port': function (error, result) {
-				should.not.exists(error);
-				should.exist(result);
-
-				var browser = new Browser();
-				browser.visit("http://localhost:" + StaticPort + "/", function () {
+			'and index page': {
+				topic: function (error, server) {
+					zombie.visit("http://localhost:" + StaticPort + "/", { runScripts: false }, this.callback);
+				},
+				"should return success": function (e, browser, status) {
+					console.log(e, browser, status);
+					should.not.exist(e);
+					should.exists(browser);
 					should.ok(browser.success);
-				});
+				}
 			}
 		}
 	}
