@@ -18,6 +18,6 @@
 		"zombie": ">=2.0.0-alpha11"
 	},
 	"scripts": {
-		"test": "vows --spec"
+		"test": "vows server/test/* --spec"
 	}
 }
