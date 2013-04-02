@@ -4,11 +4,11 @@ var vows = require('vows'),
 
 var Server = require('../js/main');
 
-var StaticPort = 8080;
+var StaticPort = 8082;
 
 vows.describe('Aux').addBatch({
 	'A server': {
-		topic: function() { 
+		topic: function () { 
 			return new Server({
 				port: 8081,
 				static_port: StaticPort,
@@ -20,11 +20,11 @@ vows.describe('Aux').addBatch({
 				server.start(this.callback);
 			},
 			'and index page': {
-				topic: function (error, server) {
+				topic: function () {
 					zombie.visit("http://localhost:" + StaticPort + "/", { runScripts: false }, this.callback);
 				},
-				"should return success": function (e, browser, status) {
-					should.ok(browser.success)
+				"should return success": function (e, browser) {
+					should.ok(browser.success);
 				}
 			}
 		}

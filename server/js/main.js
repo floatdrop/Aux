@@ -77,26 +77,33 @@ function getConfigFile(path, callback) {
 	});
 }
 
-var defaultConfigPath = './server/config.json';
-var customConfigPath = './server/config_local.json';
+var main = function () {
+    var defaultConfigPath = './server/config.json',
+		customConfigPath = './server/config_local.json';
 
-process.argv.forEach(function (val, index) {
-	if (index === 2) {
-		customConfigPath = val;
-	}
-});
+	process.argv.forEach(function (val, index) {
+		if (index === 2) {
+			customConfigPath = val;
+		}
+	});
 
-getConfigFile(customConfigPath, function (customConfig) {
-	if (customConfig) {
-		new Server(customConfig).start();
-	} else {
-		getConfigFile(defaultConfigPath, function (defaultConfig) {
-			if (defaultConfig) {
-				new Server(defaultConfig).start();
-			} else {
-				console.error("Server cannot start without any configuration file.");
-				process.exit(1);
-			}
-		});
-	}
-});
+	getConfigFile(customConfigPath, function (customConfig) {
+		if (customConfig) {
+			new Server(customConfig).start();
+		} else {
+			getConfigFile(defaultConfigPath, function (defaultConfig) {
+				if (defaultConfig) {
+					new Server(defaultConfig).start();
+				} else {
+					console.error("Server cannot start without any configuration file.");
+					process.exit(1);
+				}
+			});
+		}
+	});
+};
+
+if (require.main === module) {
+    main();
+}
+
