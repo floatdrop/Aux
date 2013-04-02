@@ -4,7 +4,7 @@ var vows = require('vows'),
 
 var Server = require('../js/main');
 
-var StaticPort = 8082;
+var StaticPort = 8080;
 
 vows.describe('Aux').addBatch({
 	'A server': {

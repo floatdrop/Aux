@@ -1,5 +1,6 @@
 var cls = require("./lib/class"),
 	async = require("async"),
+	_ = require('underscore'),
 	Player = require("./player"),
 	Engine = require("./engine");
 

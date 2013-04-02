@@ -32,26 +32,28 @@ var Server = module.exports = cls.Class.extend({
 			return;
 		}
 
-		global.log.info("Starting static server on port " + this.config.static_port);
+		var StaticServer = require('node-static').Server,
+			file = new StaticServer('./client', { cache: false });
 
-		var file = new(require('node-static').Server)('./client', { cache: false });
 		require('http').createServer(function (request, response) {
-			request.addListener('end', function () {
-				file.serve(request, response);
-			});
+			global.log.debug("Static file request: " + request.url);
+			file.serve(request, response);
 		}).listen(this.config.static_port);
+
+		global.log.info("Starting static server on port " + this.config.static_port);
 	},
 	start: function (started_callback) {
+		var self = this,
+			io = require('socket.io').listen(this.config.port, {
+				'log level': this.loglevel
+			});
+
 		global.log.info("Starting Aux game server...");
 
 		this.configureStaticServer();
 
-		var io = require('socket.io').listen(this.config.port, {
-			'log level': this.loglevel
-		});
-
 		io.sockets.on('connection', function (socket) {
-			this.world.connect_callback(socket);
+			self.world.connect_callback(socket);
 		});
 
 		process.on('uncaughtException', function (e) {
