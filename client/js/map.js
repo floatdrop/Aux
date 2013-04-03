@@ -1,4 +1,4 @@
-define([], function () {
+define(['underscore'], function (_) {
 	var Map = Class.extend({
 		init: function (game) {
 			this.isLoaded = false;

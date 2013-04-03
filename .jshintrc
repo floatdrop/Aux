@@ -7,7 +7,7 @@
         "define": false,
         "requestAnimFrame": false
     },
-    "maxparams": 5,
+    "maxparams": 10,
     "maxdepth": 5,
     "maxstatements": 25,
     "maxcomplexity": 10,

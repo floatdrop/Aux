@@ -1,4 +1,5 @@
 var cls = require("./lib/class"),
+	_ = require("underscore"),
 	Box2D = require('./lib/box2d');
 
 var actions = {};
