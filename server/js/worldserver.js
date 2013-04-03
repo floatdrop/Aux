@@ -8,7 +8,7 @@ var cls = require("./lib/class"),
 module.exports = cls.Class.extend({
 	init: function (config) {
 		this.ups = 50;
-		this.engine = new Engine(config.drawDebug);
+		this.engine = new Engine(config);
 		this.map = new Map(config, this.engine);
 		this.players = [];
 		this.onPlayerConnect(this.playerConnect);
@@ -27,11 +27,11 @@ module.exports = cls.Class.extend({
 	},
 
 	playerConnect: function (socket) {
-		var self = this;
+		var self = this,
+			player = new Player(socket, socket.id, this.engine.b2w);
 		self.map.sendMap(socket);
-		log.info("Map send to " + socket.id);
-		var player = new Player(socket, socket.id, this.engine.b2w);
-		socket.on('disconnect', function() { self.disconnect_callback(player.id); });
+		global.log.info("Map send to " + socket.id);
+		socket.on('disconnect', function () { self.disconnect_callback(player.id); });
 		player.setPosition(1, 1);
 		global.log.info("Player " + player.id + " connected");
 		this.players.push(player);

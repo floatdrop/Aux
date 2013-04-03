@@ -1,50 +1,48 @@
 var fs = require('fs'),
-  Constants = require('../../client/js/constants'),
-  CommonEntity = require('./commonEntity');
+	cls = require('./lib/class'),
+	_ = require('underscore'),
+	CommonEntity = require('./commonEntity');
 
-  module.exports = Map = Entity.extend({
-  init: function(config,engine) {
-    this.isLoaded = false;
-    this.data = {};
-    this.engine = engine;
-    var self = this;
+var Map = module.exports = cls.Class.extend({
+	init: function (config, engine) {
+		this.isLoaded = false;
+		this.data = {};
+		this.engine = engine;
+		var self = this;
 
-    fs.readFile(config.map_filepath, 'utf8', function (err,data) {
-    if (err) {
-      return console.log(err);
-    }
-    self.data = JSON.parse(data);
-    self.isLoaded = true;
-    console.log("map loaded");
-    self.fillWorld(self.data, self.engine);
-    });
-  },
+		fs.readFile(config.map_filepath, 'utf8', function (err, data) {
+			if (err) {
+				return console.log(err);
+			}
+			self.data = JSON.parse(data);
+			self.isLoaded = true;
+			console.log("map loaded");
+			self.fillWorld(self.data, self.engine);
+		});
+	},
 
-  sendMap: function(socket){
-    var self = this;
-    var intervalId = setInterval(function () {
-      if (self.isLoaded){
-        socket.emit("map", self.data);
-        console.log("map sended");
-        clearInterval(intervalId);
-      }
-    },  100);
-  },
+	sendMap: function (socket) {
+		if (this.isLoaded) {
+			socket.emit("map", this.data);
+			console.log("map sended");
+		} else {
+			setTimeout(this.sendMap, 100);
+		}
+	},
+	
+	fillWorld: function (data, engine) {
 
-  fillWorld: function(data, engine){
-    var i=0;
-    while (data.layers[i].name !== "objects")
-      i++;
+		var objects = _.find(data.layers, function (layer) { 
+			return layer.name === "objects"; 
+		}).objects;
 
-    var objects = data.layers[i].objects;
-    var id = 0;
-
-    for (var i = 0;i<objects.length;i++){
-      var object = objects[i];
-      var o = new CommonEntity(id, engine.b2w, object, engine);
-      id++;
-      if (o.type != "border" && object.width != 0 && object.height != 0)
-        engine.addEntity(o);
-    }
-  }
+		_.each(objects, function (object) {
+			var o = new CommonEntity(null, engine.b2w, object, engine);
+			if (o.type !== "border" && object.width !== 0 && object.height !== 0) {
+				engine.addEntity(o);
+			}
+		});
+	}
 });
+
+return Map;

@@ -2,7 +2,7 @@
     "globals": {
         "console": false,
         "jQuery": false,
-        "_": false
+        "Constants": false
     },
     "maxparams": 5,
     "maxdepth": 5,

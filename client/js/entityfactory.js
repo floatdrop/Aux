@@ -16,11 +16,11 @@ define(['player', 'commonEntity'], function(Player, CommonEntity) {
 
 	EntityFactory.builders = [];
 
-	EntityFactory.builders[Types.Entities.PLAYER] = function(id, name) {
+	EntityFactory.builders[Constants.Types.Entities.PLAYER] = function(id, name) {
 		return new Player(id, name);
 	};
 	
-	EntityFactory.builders[Types.Entities.CommonEntity] = function(id, name) {
+	EntityFactory.builders[Constants.Types.Entities.CommonEntity] = function(id, name) {
 		return new CommonEntity(id, "CommonEntity");
 	};
 	
