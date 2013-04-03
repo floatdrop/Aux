@@ -32,7 +32,7 @@ define([], function () {
 					}
 				};
 
-				this.tilesets.push({
+				self.tilesets.push({
 					firstgid: tileset.firstgid,
 					tileWidth: tileset.tilewidth,
 					tileHeight: tileset.tileheight,

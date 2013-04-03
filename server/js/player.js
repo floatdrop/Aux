@@ -1,5 +1,5 @@
 var cls = require("./lib/class"),
-	Box2D = require('./box2d'),
+	Box2D = require('./lib/box2d'),
 	Entity = require('./entity'),
 	Log = require('log');
 	_ = require("underscore");

@@ -71,16 +71,16 @@ define([], function () {
 
 		},
 		drawMap: function (map) {
-			// if (!map.isLoaded)
-			// return;
+			var self = this;
 			_.each(map.layers, function (layer) {
-				if (layer.visible) this.drawLayer(map, layer);
+				if (layer.visible) self.drawLayer(map, layer);
 			});
 		},
 		drawLayer: function (map, layer) {
-			var i = 0;
+			var self = this,
+				i = 0;
 			_.each(layer.data, function (tile) {
-				if (tile !== 0) this.drawTile(map, i, tile);
+				if (tile !== 0) self.drawTile(map, i, tile);
 				i++;
 			});
 		},

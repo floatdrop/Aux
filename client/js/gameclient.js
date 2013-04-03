@@ -1,4 +1,4 @@
-define(['./lib/socket.io'], function (io) {
+define(['lib/socket.io'], function (io) {
 	var GameClient = Class.extend({
 		init: function (host, port) {
 			this.connection = null;
