@@ -1,7 +1,7 @@
 define(['sprites'], function(Sprites) {
 
     var Entity = Class.extend({
-    	init: function(id, kind) {
+        init: function(id, kind) {
             this.id = id;
             this.kind = kind;
             this.x = 0;
@@ -11,13 +11,15 @@ define(['sprites'], function(Sprites) {
             this.flipSpriteY = false;
             this.animations = null;
             this.currentAnimation = null;
-    	},
-    	setPosition: function(x, y) {
-    		this.x = x;
-    		this.y = y;
-    	},
+        },
+        setPosition: function(x, y) {
+            this.x = x;
+            this.y = y;
+        },
         setAngle: function(a) {
             this.angle = a;
+        },
+        update: function(entity_info){
         },
         setSprite: function(sprite) {
             if(!sprite) {
