@@ -1,4 +1,4 @@
-define(['renderer', 'player', 'gameclient', 'entityfactory', 'map', 'underscore'],
+define(['renderer', 'player', 'gameclient', 'entityfactory', 'map', 'lib/underscore'],
 
 function (Renderer, Player, GameClient, EntityFactory, Map, _) {
 	var Game = Class.extend({
