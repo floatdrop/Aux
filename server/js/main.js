@@ -43,6 +43,7 @@ var Server = module.exports = cls.Class.extend({
 		global.log.info("Starting static server on port " + this.config.static_port);
 	},
 	start: function (started_callback) {
+
 		var self = this,
 			io = require('socket.io').listen(this.config.port, {
 				'log level': this.loglevel
