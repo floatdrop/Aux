@@ -23,7 +23,8 @@ var Box2D = {};
 
 (function (a2j, undefined) {
 
-   if(!(Object.prototype.defineProperty instanceof Function)
+   /* This code brokens Zombie */
+   /* if(!(Object.prototype.defineProperty instanceof Function)
       && Object.prototype.__defineGetter__ instanceof Function
       && Object.prototype.__defineSetter__ instanceof Function)
    {
@@ -33,7 +34,7 @@ var Box2D = {};
          if(cfg.set instanceof Function)
             obj.__defineSetter__(p, cfg.set);
       }
-   }
+   }*/
    
    function emptyFn() {};
    a2j.inherit = function(cls, base) {

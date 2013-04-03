@@ -1,7 +1,7 @@
 {
     "port": 8000,
     "debug_level": "debug",
-    "static_port": 80,
+    "static_port": 8080,
     "maximum_players": 15,
     "map_filepath": "./maps/world_server.json",
 	"drawDebug": true

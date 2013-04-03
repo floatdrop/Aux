@@ -1,53 +1,75 @@
-var fs = require('fs');
+var fs = require('fs'),
+	cls = require('./lib/class');
 
-function main(config) {
-	var io = require('socket.io').listen(config.port),
-			Log = require('log'),
-			_ = require('underscore'),
-			worldserver = require('./worldserver'),
-			world = new(worldserver)(config);
-	
-	io.set('log level', 1)
+var Server = module.exports = cls.Class.extend({
+	init: function (config) {
+		this.started = false;
 
-	switch(config.debug_level) {
+		this.config = config;
+
+		var	Log = require('log'),
+			WorldServer = require('./worldserver');
+		
+		this.world = new WorldServer(config);
+
+		switch (config.debug_level) {
 		case "error":
-			log = new Log(Log.ERROR); break;
+			global.log = new Log(Log.ERROR);
+			this.loglevel = 0;
+			break;
 		case "debug":
-			log = new Log(Log.DEBUG); break;
+			global.log = new Log(Log.DEBUG);
+			this.loglevel = 2;
+			break;
 		case "info":
-			log = new Log(Log.INFO); break;
-	};
+			global.log = new Log(Log.INFO);
+			this.loglevel = 1;
+			break;
+		}
+	},
+	configureStaticServer: function () {
+		if (!(this.config.static_port)) {
+			return;
+		}
 
-	log.info("Starting Aux game server...");
+		var StaticServer = require('node-static').Server,
+			file = new StaticServer('./client', { cache: false });
 
-	if (config.static_port) {
-		log.info("Starting static server on port " + config.static_port)
-		configureStaticServer(config);
-	}
-
-	io.sockets.on('connection', function(socket) {
-		world.connect_callback(socket);
-	});
-
-	process.on('uncaughtException', function (e) {
-		log.error('uncaughtException: ' + e + '\n' + e.stack);
-	});
-
-	world.run()
-}
-
-function configureStaticServer(config) {
-	var static = require('node-static');
-	var file = new(static.Server)('./client', { cache: false });
-	require('http').createServer(function(request, response) {
-		request.addListener('end', function() {
+		require('http').createServer(function (request, response) {
+			global.log.debug("Static file request: " + request.url);
 			file.serve(request, response);
+		}).listen(this.config.static_port);
+
+		global.log.info("Starting static server on port " + this.config.static_port);
+	},
+	start: function (started_callback) {
+		var self = this,
+			io = require('socket.io').listen(this.config.port, {
+				'log level': this.loglevel
+			});
+
+		global.log.info("Starting Aux game server...");
+
+		this.configureStaticServer();
+
+		io.sockets.on('connection', function (socket) {
+			self.world.connect_callback(socket);
 		});
-	}).listen(config.static_port);
-}
+
+		process.on('uncaughtException', function (e) {
+			global.log.error('uncaughtException: ' + e + '\n' + e.stack);
+		});
+
+		this.world.run(function (err) {
+			if (started_callback) {
+				started_callback(err, this);
+			}
+		});
+	}
+});
 
 function getConfigFile(path, callback) {
-	fs.readFile(path, 'utf8', function(err, json_string) {
+	fs.readFile(path, 'utf8', function (err, json_string) {
 		if (err) {
 			console.error("Could not open config file: ", err.path);
 			callback(null);
@@ -57,24 +79,33 @@ function getConfigFile(path, callback) {
 	});
 }
 
-var defaultConfigPath = './server/config.json';
-var customConfigPath = './server/config_local.json';
+var main = function () {
+    var defaultConfigPath = './server/config.json',
+		customConfigPath = './server/config_local.json';
 
-process.argv.forEach(function(val, index, array) {
-	if (index === 2) {
-		customConfigPath = val;
-	}
-});
-
-getConfigFile(defaultConfigPath, function(defaultConfig) {
-	getConfigFile(customConfigPath, function(localConfig) {
-		if (localConfig) {
-			main(localConfig);
-		} else if (defaultConfig) {
-			main(defaultConfig);
-		} else {
-			console.error("Server cannot start without any configuration file.");
-			process.exit(1);
+	process.argv.forEach(function (val, index) {
+		if (index === 2) {
+			customConfigPath = val;
 		}
 	});
-});
+
+	getConfigFile(customConfigPath, function (customConfig) {
+		if (customConfig) {
+			new Server(customConfig).start();
+		} else {
+			getConfigFile(defaultConfigPath, function (defaultConfig) {
+				if (defaultConfig) {
+					new Server(defaultConfig).start();
+				} else {
+					console.error("Server cannot start without any configuration file.");
+					process.exit(1);
+				}
+			});
+		}
+	});
+};
+
+if (require.main === module) {
+    main();
+}
+
