@@ -6,7 +6,7 @@ define(['./lib/text!../sprites/player.json',
 	'./lib/text!../sprites/stone4.json',
 	'./lib/text!../sprites/stump.json',
 	'./lib/text!../sprites/empty.json',
-	'underscore'], function (_) {
+	'lib/underscore'], function (_) {
 
 	var sprites = {};
 
