@@ -15,9 +15,11 @@
 		"jshint": ">=0.9.1",
 		"vows": ">=0.7.0",
 		"should": ">=1.2.2",
-		"zombie": ">=1.4.1"
+		"zombie": ">=1.4.1",
+		"jshint": ">0"
 	},
 	"scripts": {
+		"jshint": "jshint .",
 		"test": "vows server/test/* --spec"
 	}
 }
