@@ -1,4 +1,4 @@
-define(['animation', 'sprites'], function (Animation, sprites) {
+define(['lib/animation', 'sprites'], function (Animation, sprites) {
 
 	var imageCache = {},
 	Sprite = Class.extend({
