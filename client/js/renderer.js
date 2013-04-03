@@ -1,47 +1,48 @@
-define([], function() {
+define([], function () {
 	var Renderer = Class.extend({
-		init: function(game, canvas) {
+		init: function (game, canvas) {
 			this.debug = false;
 			this.scale = 100;
 			this.game = game;
 			this.canvas = canvas;
 			this.context = (canvas && canvas.getContext) ? canvas.getContext("2d") : null;
 		},
-		renderFrame: function() {
-			var self = this;
+		renderFrame: function () {
 			this.clearScreen(this.context);
 			this.drawMap(this.game.map);
-			var entities = _.sortBy(this.game.entities, function(e) { return e.y; });
-			if (this.debug){
-				_.each(this.game.debugEntities, function(entity){
+			var self = this,
+				entities = _.sortBy(this.game.entities, function (e) {
+					return e.y;
+				});
+			if (this.debug) {
+				_.each(this.game.debugEntities, function (entity) {
 					self.debugDrawEntity(entity);
 				});
 			}
-			_.each(entities, function(entity) {
+			_.each(entities, function (entity) {
 				self.drawEntity(entity);
 			});
 		},
-		clearScreen: function(ctx) {
+		clearScreen: function (ctx) {
 			ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 		},
-		debugDrawEntity: function(entity) {
-			var os = 1;
+		debugDrawEntity: function (entity) {
 			var x = entity.position.x * this.scale,
 				y = entity.position.y * this.scale,
 				width = entity.width * this.scale,
-				heigth = entity.heigth * this.scale;
-			var ctx = this.context;
+				heigth = entity.heigth * this.scale,
+				ctx = this.context;
 			ctx.fillStyle = "rgb(0, 0, 0)";
 			ctx.fillRect(x - width / 2, y - heigth / 2, width, heigth);
 			ctx.fillStyle = "rgb(255, 0, 0)";
-			ctx.fillText(entity.type, x, y);			
+			ctx.fillText(entity.type, x, y);
 		},
-		drawEntity: function(entity) {
+		drawEntity: function (entity) {
 			var os = 1,
-				ds = 1;
-			var sprite = entity.sprite,
-				anim = entity.currentAnimation;
-			var	frame = anim.currentFrame,
+				ds = 1,
+				sprite = entity.sprite,
+				anim = entity.currentAnimation,
+				frame = anim.currentFrame,
 				x = frame.x * os,
 				y = frame.y * os,
 				w = sprite.width * os,
@@ -54,15 +55,13 @@ define([], function() {
 				dh = h * ds;
 
 			this.context.save();
-			if(anim.flipSpriteX) {
+			if (anim.flipSpriteX) {
 				this.context.translate(dx + dw / 2, dy);
 				this.context.scale(-1, 1);
-			}
-			else if(anim.flipSpriteY) {
+			} else if (anim.flipSpriteY) {
 				this.context.translate(dx, dy + dh);
 				this.context.scale(1, -1);
-			}
-			else {
+			} else {
 				this.context.translate(dx, dy);
 			}
 
@@ -71,29 +70,29 @@ define([], function() {
 			this.context.restore();
 
 		},
-		drawMap: function(map) {
+		drawMap: function (map) {
 			// if (!map.isLoaded)
-				// return;
-			for (var i=0;i<map.layers.length;i++)
-				if (map.layers[i].visible)
-					this.drawLayer(map, map.layers[i]);
+			// return;
+			_.each(map.layers, function (layer) {
+				if (layer.visible) this.drawLayer(map, layer);
+			});
 		},
-		drawLayer: function(map, layer){
-			var countTiles = layer.width * layer.height;
-			for (var i=0;i<countTiles;i++){
-				if (layer.data[i] !== 0)
-					this.drawTile(map, i, layer.data[i], layer.x, layer.y);
-			}
+		drawLayer: function (map, layer) {
+			var i = 0;
+			_.each(layer.data, function (tile) {
+				if (tile !== 0) this.drawTile(map, i, tile);
+				i++;
+			});
 		},
-		drawTile: function(map, index, value, offsetX, offsetY){
-			var tileSet = map.getTileSet(value);
-			var tileW = tileSet.tileWidth,
+		drawTile: function (map, index, value) {
+			var tileSet = map.getTileSet(value),
+				tileW = tileSet.tileWidth,
 				tileH = tileSet.tileHeight,
 				x = ((value - 1) % tileSet.width) * tileW,
 				y = Math.floor(value / tileSet.width) * tileH,
 				dx = (index % map.width) * tileW,
 				dy = Math.floor(index / map.width) * tileH;
-				
+
 			this.context.drawImage(tileSet.image, x, y, tileW, tileH, dx, dy, tileW, tileH);
 		}
 	});
