@@ -1,4 +1,4 @@
-var Box2D = require('./box2d'),
+var Box2D = require('./lib/box2d'),
 	_ = require('underscore'),
 	cls = require('./lib/class'),
 	RectangleEntity = require('./rectangleEntity');
