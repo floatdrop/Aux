@@ -5,7 +5,7 @@ define(['text!../sprites/player.json',
         'text!../sprites/stone3.json',
         'text!../sprites/stone4.json',
         'text!../sprites/stump.json',
-        'text!../sprites/empty.json',], function() {
+        'text!../sprites/empty.json'], function() {
 
     var sprites = {};
 

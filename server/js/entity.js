@@ -103,7 +103,7 @@ var Entity = module.exports = cls.Class.extend({
 		var bodyDef = new b2BodyDef();
 		bodyDef.type = b2Body.b2_staticBody;
 		bodyDef.position.x = x;
-		bodyDef.position.y = y;	
+		bodyDef.position.y = y;
 		return b2w.CreateBody(bodyDef);
 	}
 });

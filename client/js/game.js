@@ -1,4 +1,4 @@
-define(['renderer', 'player', 'gameclient', 'entityfactory','map'], 
+define(['renderer', 'player', 'gameclient', 'entityfactory','map'],
 	function(Renderer, Player, GameClient, EntityFactory,Map) {
 	var Game = Class.extend({
 		init: function() {
@@ -22,11 +22,11 @@ define(['renderer', 'player', 'gameclient', 'entityfactory','map'],
 		},
 		tick: function() {
 			this.currentTime = new Date().getTime();
-			
+
 			var self = this;
 
 			this.renderer.renderFrame();
-			_.each(this.keyboard, function(pressed, key) {  
+			_.each(this.keyboard, function(pressed, key) {
 				if (pressed)
 					self.keybindings[key]();
 			});
@@ -91,7 +91,7 @@ define(['renderer', 'player', 'gameclient', 'entityfactory','map'],
 		},
 		moveRight: function() {
 			return this.client.action('right');
-		},
+		}
 	});
 
 	return Game;

@@ -24,17 +24,17 @@ module.exports = Player = Entity.extend({
 		this.socket.on('action', function (data) { self.onAction(data); });
 		this.socket.on('angle', function (data) { self.onAngle(data); });
 
-		this.bodyDef = new b2BodyDef;
+		this.bodyDef = new b2BodyDef();
 		this.bodyDef.type = b2Body.b2_dynamicBody;
 		this.bodyDef.position = this.position;
 		this.bodyDef.linearDamping = 4;
 
-		this.fixtureDef = new b2FixtureDef;
+		this.fixtureDef = new b2FixtureDef();
 		this.fixtureDef.density = 1.5;
 		this.fixtureDef.friction = 0.01;
 		this.fixtureDef.restitution = 1;
 
-		var circleShape = new b2CircleShape;
+		var circleShape = new b2CircleShape();
 		circleShape.m_radius = 0.1;
 		this.fixtureDef.shape = circleShape;
 	},
@@ -44,16 +44,16 @@ module.exports = Player = Entity.extend({
 		this.fixture = this.body.CreateFixture(this.fixtureDef);
 		this.getPosition = function() {
 			return this.body.GetPosition();
-		}
+		};
 		this.setPosition = function(x, y) {
 			this.body.SetPosition(new b2Vec2(x,y));
-		}
+		};
 		this.getAngle = function() {
 			return this.body.GetAngle();
-		}
+		};
 		this.setAngle = function(a) {
 			this.body.SetAngle(a);
-		}
+		};
 	},
 	destruct: function() {
 		this.world.DestroyBody(this.body);

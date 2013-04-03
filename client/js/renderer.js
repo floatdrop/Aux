@@ -34,7 +34,7 @@ define([], function() {
 			ctx.fillStyle = "rgb(0, 0, 0)";
 			ctx.fillRect(x - width / 2, y - heigth / 2, width, heigth);
 			ctx.fillStyle = "rgb(255, 0, 0)";
-			ctx.fillText(entity.type, x, y);			
+			ctx.fillText(entity.type, x, y);
 		},
 		drawEntity: function(entity) {
 			var os = 1,
@@ -71,7 +71,7 @@ define([], function() {
 			this.context.restore();
 
 		},
-		drawMap: function(map) {
+		drawMap: function(map){
 			// if (!map.isLoaded)
 				// return;
 			for (var i=0;i<map.layers.length;i++)
@@ -93,7 +93,7 @@ define([], function() {
 				y = Math.floor(value / tileSet.width) * tileH,
 				dx = (index % map.width) * tileW,
 				dy = Math.floor(index / map.width) * tileH;
-				
+
 			this.context.drawImage(tileSet.image, x, y, tileW, tileH, dx, dy, tileW, tileH);
 		}
 	});

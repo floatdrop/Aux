@@ -35,7 +35,6 @@ define(['sprites'], function(Sprites) {
         },
         getAnimationByName: function(name) {
             var animation = null;
-        
             if(name in this.animations) {
                 animation = this.animations[name];
             }
@@ -45,7 +44,6 @@ define(['sprites'], function(Sprites) {
             return animation;
         },
         idle: function() {
-            
         },
         setAnimation: function(name, count, onEndCount) {
             var self = this;
@@ -73,6 +71,6 @@ define(['sprites'], function(Sprites) {
             }
         }
     });
-    
+
     return Entity;
 });

@@ -48,13 +48,13 @@ define(['animation', 'sprites'], function(Animation, sprites) {
                 };
             }
         },
-    
+
         createAnimations: function() {
             var animations = {};
-        
+
             for(var name in this.animationData) {
                 var a = this.animationData[name];
-                animations[name] = new Animation(name, a.length, a.row, this.width, this.height, 
+                animations[name] = new Animation(name, a.length, a.row, this.width, this.height,
                 a.flipSpriteX, a.flipSpriteY, a.speed);
             }
 
@@ -85,7 +85,7 @@ define(['animation', 'sprites'], function(Animation, sprites) {
 
                 ctx.putImageData(spriteData, 0, 0);
 
-                this.whiteSprite = { 
+                this.whiteSprite = {
                     image: canvas,
                     isLoaded: true,
                     offsetX: this.offsetX,
@@ -166,7 +166,7 @@ define(['animation', 'sprites'], function(Animation, sprites) {
             finalData.data = fdata;
             ctx.putImageData(finalData, 0, 0);
 
-            this.silhouetteSprite = { 
+            this.silhouetteSprite = {
                 image: canvas,
                 isLoaded: true,
                 offsetX: this.offsetX,
