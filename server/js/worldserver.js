@@ -6,7 +6,7 @@ var cls = require("./lib/class"),
 	Map = require("./map");
 
 module.exports = cls.Class.extend({
-	init: function () {
+	init: function (config) {
 		this.ups = 50;
 		this.engine = new Engine(config.drawDebug);
 		this.map = new Map(config, this.engine);
