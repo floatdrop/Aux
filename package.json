@@ -19,7 +19,6 @@
 		"jshint": ">0"
 	},
 	"scripts": {
-		"jshint": "jshint .",
-		"test": "vows server/test/* --spec"
+		"test": "jshint . && vows server/test/* --spec"
 	}
 }
