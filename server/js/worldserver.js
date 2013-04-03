@@ -34,7 +34,7 @@ module.exports = World = cls.Class.extend({
 		var self = this;
 		self.map.sendMap(socket);
 		log.info("Map send to " + socket.id);
-		var player = new Player(socket, socket.id);
+		var player = new Player(socket, socket.id, this.engine.b2w);
 		socket.on('disconnect', function() { self.disconnect_callback(player.id); });
 		player.setPosition(1, 1);
 		log.info("Player " + player.id + " connected");
@@ -62,10 +62,7 @@ module.exports = World = cls.Class.extend({
 		var self = this;
 		setInterval(function () {
 			self.engine.tick(1000.0 / self.ups);
-			var entity_list={entities: self.engine.dumpEntities()};
-			if (self.debug == true)
-				entity_list.debugEntities = self.engine.dumpDebugEntities();
-			self.broadcast("entity_list", entity_list);
+			self.broadcast("entity_list", self.engine.dumpEntities());
 		},	1000 / this.ups);
 	},
 

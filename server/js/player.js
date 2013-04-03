@@ -12,10 +12,10 @@ var	b2BodyDef = Box2D.Dynamics.b2BodyDef,
     b2CircleShape = Box2D.Collision.Shapes.b2CircleShape;
 
 module.exports = Player = Entity.extend({
-    init: function(socket, id) {
+    init: function(socket, id, world) {
         var self = this;
         this.socket = socket;
-        this._super(id, "player", Types.Entities.PLAYER);
+        this._super(id, world, "player", Types.Entities.PLAYER);
 
         this.socket.emit("welcome", { playerId: this.socket.id });
         this.animation = "idle_right";
@@ -37,23 +37,22 @@ module.exports = Player = Entity.extend({
         circleShape.m_radius = 0.1;
         this.fixtureDef.shape = circleShape;
     },
-    construct: function(b2w) {
-        this.world = b2w;
-        this.body = b2w.CreateBody(this.bodyDef);
+    construct: function() {
+        this.body = this.world.CreateBody(this.bodyDef);
         this.body.m_userData = this;
         this.fixture = this.body.CreateFixture(this.fixtureDef);
         this.getPosition = function() {
-        return this.body.GetPosition();
-    }
-    this.setPosition = function(x, y) {
-        this.body.SetPosition(new b2Vec2(x,y));
-    }
-    this.getAngle = function() {
-        return this.body.GetAngle();
-    }
-    this.setAngle = function(a) {
-        this.body.SetAngle(a);
-    }
+            return this.body.GetPosition();
+        }
+        this.setPosition = function(x, y) {
+            this.body.SetPosition(new b2Vec2(x,y));
+        }
+        this.getAngle = function() {
+            return this.body.GetAngle();
+        }
+        this.setAngle = function(a) {
+            this.body.SetAngle(a);
+        }
     },
     destruct: function() {
         this.world.DestroyBody(this.body);

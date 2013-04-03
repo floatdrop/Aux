@@ -8,8 +8,9 @@ var b2BodyDef = Box2D.Dynamics.b2BodyDef,
     b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape;
 
 module.exports = Entity = cls.Class.extend({
-    init: function(id, type, kind) {
+    init: function(id, world, type, kind) {
         this.id = id;
+        this.world = world;
         this.type = type;
         this.kind = kind;
         this.position = {x: 0, y: 0};
@@ -29,7 +30,7 @@ module.exports = Entity = cls.Class.extend({
     getAngle: function() {
         return this.angle;
     },
-    construct: function(b2w) {
+    construct: function() {
 
     },
     destruct: function() {

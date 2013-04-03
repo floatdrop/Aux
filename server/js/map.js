@@ -40,7 +40,7 @@ var fs = require('fs'),
     var id = 0;
 
     for (var i = 0;i<objects.length;i++){
-      var o = new CommonEntity(id, objects[i], engine);
+      var o = new CommonEntity(id, engine.b2w, objects[i], engine);
       id++;
     }
   }

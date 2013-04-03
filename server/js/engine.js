@@ -27,7 +27,7 @@ module.exports = Engine = cls.Class.extend({
 		this.b2w.ClearForces();
 	},
 	addEntity: function(entity) {
-		entity.construct(this.b2w);
+		entity.construct();
 	},
 	removeEntity: function(entity) {
 		entity.destruct();

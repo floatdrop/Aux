@@ -61,8 +61,8 @@ define(['renderer', 'player', 'gameclient', 'entityfactory','map'],
 					self.renderer.debug = true;
 				}
 				var entities = {};
-				for (var i = 0; i < data.entities.length; i ++) {
-					var entity_info = data.entities[i];
+				for (var i = 0; i < data.length; i ++) {
+					var entity_info = data[i];
 					var kind = entity_info.kind;
 					var id = entity_info.id;
 					var entity = id in self.entities ? self.entities[id] : EntityFactory.createEntity(kind, id);
