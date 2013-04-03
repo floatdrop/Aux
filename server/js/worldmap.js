@@ -3,7 +3,7 @@ var fs = require('fs'),
 	_ = require('underscore'),
 	CommonEntity = require('./commonEntity');
 
-var Map = module.exports = cls.Class.extend({
+var WorldMap = module.exports = cls.Class.extend({
 	init: function (config, engine) {
 		this.isLoaded = false;
 		this.data = {};
@@ -45,4 +45,4 @@ var Map = module.exports = cls.Class.extend({
 	}
 });
 
-return Map;
+return WorldMap;

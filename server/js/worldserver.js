@@ -3,13 +3,13 @@ var cls = require("./lib/class"),
 	_ = require('underscore'),
 	Player = require("./player"),
 	Engine = require("./engine"),
-	Map = require("./map");
+	WorldMap = require("./worldmap");
 
 module.exports = cls.Class.extend({
 	init: function (config) {
 		this.ups = 50;
 		this.engine = new Engine(config);
-		this.map = new Map(config, this.engine);
+		this.map = new WorldMap(config, this.engine);
 		this.players = [];
 		this.onPlayerConnect(this.playerConnect);
 		this.onPlayerDisconnect(this.playerDisconnect);
