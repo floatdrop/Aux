@@ -25,6 +25,7 @@ vows.describe('Aux').addBatch({
 				},
 				"should return success": function (e, browser) {
 					should.exists(browser);
+					browser.errors.should.be.empty();
 					browser.statusCode.should.equal(200);
 				}
 			}
