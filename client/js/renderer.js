@@ -1,4 +1,6 @@
-define(['lib/underscore'], function (_) {
+/* global _ */
+
+define([], function () {
 	var Renderer = Class.extend({
 		init: function (game, canvas) {
 			this.debug = false;

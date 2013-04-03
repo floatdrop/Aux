@@ -1,4 +1,6 @@
-define(['lib/underscore'], function (_) {
+/* global _ */
+
+define([], function () {
 	var Map = Class.extend({
 		init: function (game) {
 			this.isLoaded = false;

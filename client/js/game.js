@@ -1,6 +1,8 @@
-define(['renderer', 'player', 'gameclient', 'entityfactory', 'map', 'lib/underscore'],
+/* global _ */
 
-function (Renderer, Player, GameClient, EntityFactory, Map, _) {
+define(['renderer', 'player', 'gameclient', 'entityfactory', 'map'],
+
+function (Renderer, Player, GameClient, EntityFactory, Map) {
 	var Game = Class.extend({
 		init: function () {
 			this.mouse = {

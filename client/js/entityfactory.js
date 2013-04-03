@@ -1,4 +1,6 @@
-define(['player', 'commonEntity', 'lib/underscore'], function (Player, CommonEntity, _) {
+/* global _ */
+
+define(['player', 'commonEntity'], function (Player, CommonEntity) {
 	var EntityFactory = {};
 
 	EntityFactory.createEntity = function (kind, id, name) {

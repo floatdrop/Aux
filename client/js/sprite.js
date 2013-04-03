@@ -1,4 +1,6 @@
-define(['lib/animation', 'sprites', 'lib/underscore'], function (Animation, sprites, _) {
+/* global _ */
+
+define(['lib/animation', 'sprites'], function (Animation, sprites) {
 
 	var imageCache = {},
 	Sprite = Class.extend({
