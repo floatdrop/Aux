@@ -11,12 +11,11 @@ module.exports = World = cls.Class.extend({
 	init: function(config) {
 		var self = this;
 		this.ups = 50;
-		this.engine = new Engine();
+		this.engine = new Engine(config.drawDebug);
 		this.map = new Map(config, this.engine);
 		this.players = [];
 		this.onPlayerConnect(this.playerConnect);
 		this.onPlayerDisconnect(this.playerDisconnect);
-		this.debug = config.drawDebug;
 	},
 
 	findPlayer: function(id) {
