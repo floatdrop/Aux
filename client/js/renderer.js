@@ -1,4 +1,4 @@
-define([], function () {
+define(['underscore'], function (_) {
 	var Renderer = Class.extend({
 		init: function (game, canvas) {
 			this.debug = false;

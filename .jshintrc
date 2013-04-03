@@ -5,7 +5,6 @@
         "Constants": true,
         "Class": false,
         "define": false,
-        "_": false,
         "requestAnimFrame": false
     },
     "maxparams": 5,
