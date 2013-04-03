@@ -1,5 +1,5 @@
-define(['renderer', 'player', 'gameclient', 'entityfactory'], 
-	function(Renderer, Player, GameClient, EntityFactory) {
+define(['renderer', 'player', 'gameclient', 'entityfactory','map'], 
+	function(Renderer, Player, GameClient, EntityFactory,Map) {
 	var Game = Class.extend({
 		init: function() {
 			this.mouse = { x: 0, y: 0 };
@@ -33,9 +33,9 @@ define(['renderer', 'player', 'gameclient', 'entityfactory'],
 			var t = this.currentTime;
 			_.each(this.entities, function(entity) {
 				var anim = entity.currentAnimation;
-                if(anim) {
-                    anim.update(t);
-                }
+				if(anim) {
+					anim.update(t);
+				}
 			});
 			requestAnimFrame(this.tick.bind(this));
 		},
@@ -48,11 +48,19 @@ define(['renderer', 'player', 'gameclient', 'entityfactory'],
 		connect: function() {
 			var self = this;
 			this.client = new GameClient(this.host, this.port);
+			this.map = new Map(this);
 			this.client.onWelcome(function(data) {
 				self.playerId = data.playerId;
 			});
+			this.client.onMap(function(data) {
+				self.map.onMapLoaded(data);
+			});
 			this.client.onEntityList(function(data) {
-                var entities = {};
+				if (data.debugEntities){
+					self.debugEntities = data.debugEntities;
+					self.renderer.debug = true;
+				}
+				var entities = {};
 				for (var i = 0; i < data.length; i ++) {
 					var entity_info = data[i];
 					var kind = entity_info.kind;
@@ -61,6 +69,7 @@ define(['renderer', 'player', 'gameclient', 'entityfactory'],
 					entity.setAnimation(entity_info.animation);
 					entity.setPosition(entity_info.position.x, entity_info.position.y);
 					entity.setAngle(entity_info.angle);
+					entity.update(entity_info);
 					entities[id] = entity;
 				}
 				self.entities = entities;

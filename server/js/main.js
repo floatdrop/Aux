@@ -10,7 +10,7 @@ var Server = module.exports = cls.Class.extend({
 		var	Log = require('log'),
 			WorldServer = require('./worldserver');
 		
-		this.world = new WorldServer();
+		this.world = new WorldServer(config);
 
 		switch (config.debug_level) {
 		case "error":
