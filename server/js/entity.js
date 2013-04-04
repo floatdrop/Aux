@@ -1,12 +1,6 @@
-var cls = require("./lib/class"),
-	_ = require("underscore"),
-	Box2D = require('./lib/box2d');
+var cls = require("./lib/class");
 
 var actions = {};
-var b2BodyDef = Box2D.Dynamics.b2BodyDef,
-	b2Body = Box2D.Dynamics.b2Body,
-	b2FixtureDef = Box2D.Dynamics.b2FixtureDef,
-	b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape;
 
 var GLOBAL_ID_COUNTER = 0;
 
