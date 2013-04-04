@@ -9,8 +9,9 @@ define(['entity', 'sprite'], function(Entity, Sprite) {
     },
 
     update: function(entity_info){
+        this._super(entity_info);
         this.setSprite(new Sprite(entity_info.sprite, 1));
-        }
+    }
     });
 
     return SimpleGameObject;

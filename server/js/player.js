@@ -38,6 +38,7 @@ module.exports = Player = Entity.extend({
 		circleShape.m_radius = 0.1;
 		this.fixtureDef.shape = circleShape;
 	},
+
 	construct: function() {
 		this.body = this.world.CreateBody(this.bodyDef);
 		this.body.m_userData = this;

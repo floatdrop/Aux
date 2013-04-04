@@ -35,7 +35,7 @@ define([], function() {
 
 				var image = new Image();
 				image.src = "img/sprites/ground_64x64.png";
-				image.onload = imageOnload;
+				image.onload = this.imageOnload;
 
 				this.tilesets.push({
 					firstgid: tileset.firstgid,

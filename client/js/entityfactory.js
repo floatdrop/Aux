@@ -24,6 +24,14 @@ define(['player', 'commonEntity'], function(Player, CommonEntity) {
 		return new CommonEntity(id, "CommonEntity");
 	};
 
+	EntityFactory.builders[Constants.Types.Entities.CircleEntity] = function(id, name) {
+		return new CommonEntity(id, "CircleEntity");
+	};
+
+	EntityFactory.builders[Constants.Types.Entities.PolygonEntity] = function(id, name) {
+		return new CommonEntity(id, "PolygonEntity");
+	};
+
 	return EntityFactory;
 
 });
