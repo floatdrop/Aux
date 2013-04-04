@@ -16,13 +16,8 @@ define([], function () {
 				entities = _.sortBy(this.game.entities, function (e) {
 					return e.y;
 				});
-			if (this.debug) {
-				_.each(this.game.debugEntities, function (entity) {
-					self.debugDrawEntity(entity);
-				});
-			}
 			_.each(entities, function (entity) {
-				self.drawEntity(entity);
+				entity.draw(self.context);
 			});
 		},
 		clearScreen: function (ctx) {
@@ -38,39 +33,6 @@ define([], function () {
 			ctx.fillRect(x - width / 2, y - heigth / 2, width, heigth);
 			ctx.fillStyle = "rgb(255, 0, 0)";
 			ctx.fillText(entity.type, x, y);
-		},
-		drawEntity: function (entity) {
-			var os = 1,
-				ds = 1,
-				sprite = entity.sprite,
-				anim = entity.currentAnimation,
-				frame = anim.currentFrame,
-				x = frame.x * os,
-				y = frame.y * os,
-				w = sprite.width * os,
-				h = sprite.height * os,
-				ox = sprite.offsetX * 1,
-				oy = sprite.offsetY * 1,
-				dx = entity.x * this.scale - sprite.width / 2,
-				dy = entity.y * this.scale - sprite.height / 2,
-				dw = w * ds,
-				dh = h * ds;
-
-			this.context.save();
-			if (anim.flipSpriteX) {
-				this.context.translate(dx + dw / 2, dy);
-				this.context.scale(-1, 1);
-			} else if (anim.flipSpriteY) {
-				this.context.translate(dx, dy + dh);
-				this.context.scale(1, -1);
-			} else {
-				this.context.translate(dx, dy);
-			}
-
-			this.context.drawImage(sprite.image, x, y, w, h, ox, oy, dw, dh);
-
-			this.context.restore();
-
 		},
 		drawMap: function (map) {
 			var self = this;

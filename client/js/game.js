@@ -65,10 +65,8 @@ function (Renderer, Player, GameClient, EntityFactory, Map) {
 				var entities = {};
 				_.each(data, function (entity_info) {
 					var id = entity_info.id,
-						entity = id in self.entities ? self.entities[id] : EntityFactory.createEntity(entity_info, id);
-					entity.setAnimation(entity_info.animation);
-					entity.setPosition(entity_info.position.x, entity_info.position.y);
-					entity.setAngle(entity_info.angle);
+						entity = id in self.entities ? self.entities[id] : 
+														EntityFactory.createEntity(entity_info, id);
 					entity.update(entity_info);
 					entities[id] = entity;
 				});
