@@ -1,4 +1,5 @@
 var fs = require('fs'),
+	log = require('./log'),
 	cls = require('./lib/class');
 
 var Server = module.exports = cls.Class.extend({
@@ -7,23 +8,19 @@ var Server = module.exports = cls.Class.extend({
 
 		this.config = config;
 
-		var Log = require('log'),
-			WorldServer = require('./worldserver');
+		var WorldServer = require('./worldserver');
 
-		if (config.debug_level === "error") {
-			global.log = new Log(Log.ERROR);
+		if (config.debug_level === "error") {	
 			this.loglevel = 0;
-		} else if (config.debug_level === "error") {
-			global.log = new Log(Log.DEBUG);
+		} else if (config.debug_level === "debug") {		
 			this.loglevel = 2;
-		} else if (config.debug_level === "error") {
-			global.log = new Log(Log.INFO);
+		} else if (config.debug_level === "info") {
 			this.loglevel = 1;
 		}
 
 		this.world = new WorldServer(config);
 		this.world.onException(function (err) {
-			global.log.error(err);
+			log.error(err);
 		});
 	},
 	configureStaticServer: function () {
@@ -37,11 +34,11 @@ var Server = module.exports = cls.Class.extend({
 			});
 
 		require('http').createServer(function (request, response) {
-			global.log.debug("Static file request: " + request.url);
+			log.debug("Static file request: " + request.url);
 			file.serve(request, response);
 		}).listen(this.config.static_port);
 
-		global.log.info("Starting static server on port " + this.config.static_port);
+		log.info("Starting static server on port " + this.config.static_port);
 	},
 	start: function (started_callback) {
 
@@ -50,7 +47,7 @@ var Server = module.exports = cls.Class.extend({
 				'log level': this.loglevel
 			});
 
-		global.log.info("Starting Aux game server...");
+		log.info("Starting Aux game server...");
 
 		this.configureStaticServer();
 
@@ -59,7 +56,7 @@ var Server = module.exports = cls.Class.extend({
 		});
 
 		process.on('uncaughtException', function (e) {
-			global.log.error('uncaughtException: ' + e + '\n' + e.stack);
+			log.error('uncaughtException: ' + e + '\n' + e.stack);
 		});
 
 		this.world.run(function (err) {

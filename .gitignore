@@ -6,3 +6,5 @@ build.txt
 *.bat
 *.sublime-project
 *.sublime-workspace
+debug.log
+exceptions.log
