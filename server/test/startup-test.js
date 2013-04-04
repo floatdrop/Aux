@@ -22,10 +22,10 @@ vows.describe('Aux').addBatch({
 				should.exists(server);
 				server.should.be.an.instanceof(Server);
 				server.start(this.callback);
-				return server;
 			},
 			'and index page': {
-				topic: function (server) {
+				topic: function (err, server) {
+					server.should.be.an.instanceof(Server);
 					zombie.visit("http://localhost:" + server.config.static_port + "/", {
 						runScripts: false
 					}, this.callback);
