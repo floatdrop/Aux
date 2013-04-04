@@ -30,11 +30,10 @@ vows.describe('Aux').addBatch({
 						runScripts: false
 					}, this.callback);
 				},
-				"should return success": function (e, browser) {
+				"should return success": function (e, browser, statusCode) {
 					should.not.exists(e);
-					should.exists(browser);
-					should.exists(browser.statusCode);
-					browser.statusCode.should.equal(200);
+					should.exists(statusCode);
+					statusCode.should.equal(200);
 				}
 			}
 		}
