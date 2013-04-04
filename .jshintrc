@@ -2,9 +2,12 @@
     "globals": {
         "console": false,
         "jQuery": false,
-        "Constants": false
+        "Constants": true,
+        "Class": false,
+        "define": false,
+        "requestAnimFrame": false
     },
-    "maxparams": 5,
+    "maxparams": 10,
     "maxdepth": 5,
     "maxstatements": 25,
     "maxcomplexity": 10,
@@ -25,7 +28,7 @@
     "noempty": false,
     "nonew": false,
     "nomen": false,
-    "onevar": true,
+    "onevar": false,
     "plusplus": false,
     "regexp": false,
     "undef": true,

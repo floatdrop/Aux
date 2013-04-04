@@ -16,8 +16,5 @@
 		"vows": ">=0.7.0",
 		"should": ">=1.2.2",
 		"zombie": ">=1.4.1"
-	},
-	"scripts": {
-		"test": "vows server/test/* --spec"
 	}
 }

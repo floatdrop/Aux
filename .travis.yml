@@ -5,3 +5,4 @@ before_script:
   - "npm install -g jshint"
 script:
   - "jshint ."
+  - "vows server/test/* --spec"

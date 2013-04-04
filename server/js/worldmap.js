@@ -3,7 +3,7 @@ var fs = require('fs'),
 	_ = require('underscore'),
 	CommonEntity = require('./commonEntity');
 
-var Map = module.exports = cls.Class.extend({
+var WorldMap = module.exports = cls.Class.extend({
 	init: function (config, engine) {
 		this.isLoaded = false;
 		this.data = {};
@@ -29,11 +29,11 @@ var Map = module.exports = cls.Class.extend({
 			setTimeout(this.sendMap, 100);
 		}
 	},
-
+	
 	fillWorld: function (data, engine) {
 
-		var objects = _.find(data.layers, function (layer) {
-			return layer.name === "objects";
+		var objects = _.find(data.layers, function (layer) { 
+			return layer.name === "objects"; 
 		}).objects;
 
 		_.each(objects, function (object) {
@@ -45,4 +45,4 @@ var Map = module.exports = cls.Class.extend({
 	}
 });
 
-return Map;
+return WorldMap;

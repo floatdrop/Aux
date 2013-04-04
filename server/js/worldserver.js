@@ -3,20 +3,22 @@ var cls = require("./lib/class"),
 	_ = require('underscore'),
 	Player = require("./player"),
 	Engine = require("./engine"),
-	Map = require("./map");
+	WorldMap = require("./worldmap");
 
 module.exports = cls.Class.extend({
 	init: function (config) {
 		this.ups = 50;
 		this.engine = new Engine(config);
-		this.map = new Map(config, this.engine);
+		this.map = new WorldMap(config, this.engine);
 		this.players = [];
 		this.onPlayerConnect(this.playerConnect);
 		this.onPlayerDisconnect(this.playerDisconnect);
 	},
 
 	findPlayer: function (id) {
-		return _.find(this.players, function (player) { return player.id === id; });
+		return _.find(this.players, function (player) {
+			return player.id === id;
+		});
 	},
 
 	removePlayer: function (id) {
@@ -31,7 +33,9 @@ module.exports = cls.Class.extend({
 			player = new Player(socket, socket.id, this.engine.b2w);
 		self.map.sendMap(socket);
 		global.log.info("Map send to " + socket.id);
-		socket.on('disconnect', function () { self.disconnect_callback(player.id); });
+		socket.on('disconnect', function () {
+			self.disconnect_callback(player.id);
+		});
 		player.setPosition(1, 1);
 		global.log.info("Player " + player.id + " connected");
 		this.players.push(player);
@@ -59,7 +63,7 @@ module.exports = cls.Class.extend({
 		setInterval(function () {
 			self.engine.tick(1000.0 / self.ups);
 			self.broadcast("entity_list", self.engine.dumpEntities());
-		},	1000 / this.ups);
+		}, 1000 / this.ups);
 		if (callback) {
 			callback(null, this);
 		}

@@ -1,19 +1,21 @@
-define(['text!../sprites/player.json',
-        'text!../sprites/trie.json',
-        'text!../sprites/stone.json',
-        'text!../sprites/stone2.json',
-        'text!../sprites/stone3.json',
-        'text!../sprites/stone4.json',
-        'text!../sprites/stump.json',
-        'text!../sprites/empty.json'], function() {
+/* global _ */
 
-    var sprites = {};
+define(['./lib/text!../sprites/player.json',
+	'./lib/text!../sprites/trie.json',
+	'./lib/text!../sprites/stone.json',
+	'./lib/text!../sprites/stone2.json',
+	'./lib/text!../sprites/stone3.json',
+	'./lib/text!../sprites/stone4.json',
+	'./lib/text!../sprites/stump.json',
+	'./lib/text!../sprites/empty.json'], function () {
 
-    _.each(arguments, function(spriteJson) {
-        var sprite = JSON.parse(spriteJson);
-        sprites[sprite.id] = sprite;
-    });
+	var sprites = {};
 
-    return sprites;
+	_.each(arguments, function (spriteJson) {
+		var sprite = JSON.parse(spriteJson);
+		sprites[sprite.id] = sprite;
+	});
+
+	return sprites;
 
 });

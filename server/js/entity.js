@@ -1,5 +1,6 @@
 var cls = require("./lib/class"),
-	Box2D = require('./box2d');
+	_ = require("underscore"),
+	Box2D = require('./lib/box2d');
 
 var actions = {};
 var b2BodyDef = Box2D.Dynamics.b2BodyDef,
@@ -67,32 +68,6 @@ var Entity = module.exports = cls.Class.extend({
 		};
 	},
 
-	getShapeEntity: function(){
-		var shape = this.fixture.m_shape;
-		var id = this.id + "-debug";
-		if (shape.m_type === 1)
-			return this.getPolygonEntity(id, shape);
-		if (shape.m_type === 0)
-			return this.getCircleEntity(id, shape);
-	},
-
-	getCircleEntity: function(id, shape){
-		return {
-			position: shape.m_p,
-			radius: shape.m_radius,
-			kind: Constants.Types.Entities.CircleEntity,
-			id: id
-		};
-	},
-
-	getPolygonEntity: function(id, shape) {
-		return {
-			points: shape.m_vertices,
-			kind: Constants.Types.Entities.PolygonEntity,
-			id: id
-		};
-	},
-
 	createBox: function (b2w, x, y, width, height) {
 		var body = this.createBody(b2w, x, y);
 		return this.createBoxFixture(body, width, height);
@@ -129,7 +104,7 @@ var Entity = module.exports = cls.Class.extend({
 		var bodyDef = new b2BodyDef();
 		bodyDef.type = b2Body.b2_staticBody;
 		bodyDef.position.x = x;
-		bodyDef.position.y = y;
+		bodyDef.position.y = y;	
 		return b2w.CreateBody(bodyDef);
 	}
 });
