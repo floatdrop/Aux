@@ -1,6 +1,7 @@
 /* global _ */
 
-define(['player', 'commonEntity'], function (Player, CommonEntity) {
+define(['player', 'commonEntity', 'circleEntity', 'polygonEntity'], 
+	function (Player, CommonEntity, CircleEntity, PolygonEntity) {
 	var EntityFactory = {};
 
 	EntityFactory.createEntity = function (entity_info, name) {
@@ -25,6 +26,14 @@ define(['player', 'commonEntity'], function (Player, CommonEntity) {
 
 	EntityFactory.builders[Constants.Types.Entities.CommonEntity] = function (entity_info) {
 		return new CommonEntity(entity_info);
+	};
+
+	EntityFactory.builders[Constants.Types.Entities.PolygonEntity] = function (entity_info) {
+		return new PolygonEntity(entity_info);
+	};
+
+	EntityFactory.builders[Constants.Types.Entities.CircleEntity] = function (entity_info) {
+		return new CircleEntity(entity_info);
 	};
 
 	return EntityFactory;

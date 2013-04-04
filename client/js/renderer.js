@@ -3,7 +3,6 @@
 define([], function () {
 	var Renderer = Class.extend({
 		init: function (game, canvas) {
-			this.debug = false;
 			this.scale = 100;
 			this.game = game;
 			this.canvas = canvas;
@@ -14,6 +13,9 @@ define([], function () {
 			this.drawMap(this.game.map);
 			var self = this,
 				entities = _.sortBy(this.game.entities, function (e) {
+					if (e.id.toString().indexOf("debug") === 0) {
+						return e.y - 1;
+					}
 					return e.y;
 				});
 			_.each(entities, function (entity) {
@@ -22,17 +24,6 @@ define([], function () {
 		},
 		clearScreen: function (ctx) {
 			ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-		},
-		debugDrawEntity: function (entity) {
-			var x = entity.position.x * this.scale,
-				y = entity.position.y * this.scale,
-				width = entity.width * this.scale,
-				heigth = entity.heigth * this.scale,
-				ctx = this.context;
-			ctx.fillStyle = "rgb(0, 0, 0)";
-			ctx.fillRect(x - width / 2, y - heigth / 2, width, heigth);
-			ctx.fillStyle = "rgb(255, 0, 0)";
-			ctx.fillText(entity.type, x, y);
 		},
 		drawMap: function (map) {
 			var self = this;
