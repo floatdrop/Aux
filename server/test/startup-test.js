@@ -9,13 +9,12 @@ var StaticPort = 8085;
 vows.describe('Aux').addBatch({
 	'A server': {
 		topic: function () {
-			var server = new Server({
+			return new Server({
 				port: 8081,
 				static_port: StaticPort,
 				debug_level: "error",
 				map_filepath: "maps/world_server.json",
 			});
-			return server;
 		},
 		'started': {
 			topic: function (server) {

@@ -27,11 +27,11 @@ var WorldMap = module.exports = cls.Class.extend({
 			setTimeout(this.sendMap, 100);
 		}
 	},
-	
+
 	fillWorld: function (data, engine) {
 
 		var objects = _.find(data.layers, function (layer) { 
-			return layer.name === "objects"; 
+			return layer.name === "objects";
 		}).objects;
 
 		_.each(objects, function (object) {

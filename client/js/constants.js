@@ -3,9 +3,8 @@ Constants = {
 		Entities: {
 			PLAYER: 1,
 			CommonEntity: 2,
-			RectangleEntity: 3,
-			CircleEntity: 4,
-			PolygonEntity: 5
+			CircleEntity: 3,
+			PolygonEntity: 4
 		}
 	}
 };

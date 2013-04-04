@@ -62,18 +62,11 @@ function (Renderer, Player, GameClient, EntityFactory, Map) {
 				self.map.onMapLoaded(data);
 			});
 			this.client.onEntityList(function (data) {
-				if (data.debugEntities) {
-					self.debugEntities = data.debugEntities;
-					self.renderer.debug = true;
-				}
 				var entities = {};
 				_.each(data, function (entity_info) {
-					var kind = entity_info.kind,
-						id = entity_info.id,
-						entity = id in self.entities ? self.entities[id] : EntityFactory.createEntity(kind, id);
-					entity.setAnimation(entity_info.animation);
-					entity.setPosition(entity_info.position.x, entity_info.position.y);
-					entity.setAngle(entity_info.angle);
+					var id = entity_info.id,
+						entity = id in self.entities ? self.entities[id] : 
+														EntityFactory.createEntity(entity_info, id);
 					entity.update(entity_info);
 					entities[id] = entity;
 				});

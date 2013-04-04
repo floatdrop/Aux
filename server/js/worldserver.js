@@ -80,6 +80,7 @@ module.exports = cls.Class.extend({
 	onPlayerConnect: function (callback) {
 		this.connect_callback = callback;
 	},
+
 	onPlayerDisconnect: function (callback) {
 		this.disconnect_callback = callback;
 	}

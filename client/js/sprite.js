@@ -51,10 +51,11 @@ define(['lib/animation', 'sprites'], function (Animation, sprites) {
 		},
 
 		createAnimations: function () {
-			var animations = {};
+			var animations = {},
+				self = this;
 
-			_.each(this.animationData, function (animation, name) {
-				animations[name] = new Animation(name, animation.length, animation.row, this.width, this.height,
+			_.each(self.animationData, function (animation, name) {
+				animations[name] = new Animation(name, animation.length, animation.row, self.width, self.height,
 				animation.flipSpriteX, animation.flipSpriteY, animation.speed);
 			});
 

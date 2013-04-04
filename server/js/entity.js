@@ -68,43 +68,31 @@ var Entity = module.exports = cls.Class.extend({
 		};
 	},
 
-	createBox: function (b2w, x, y, width, height) {
-		var body = this.createBody(b2w, x, y);
-		return this.createBoxFixture(body, width, height);
-	},
-	createPolygon: function (b2w, x, y, points) {
-		var body = this.createBody(b2w, x, y);
-		return this.createpolygonFixture(body, points);
+	getShapeEntity: function () {
+		var shape = this.fixture.m_shape;
+		var id = "debug-" + this.id;
+		if (shape.m_type === 1)
+			return this.getPolygonEntity(id, shape);
+		if (shape.m_type === 0)
+			return this.getCircleEntity(id, shape);
 	},
 
-	createBoxFixture: function (body, width, height) {
-		var fixDef = new b2FixtureDef();
-		fixDef.density = 1.5;
-		fixDef.friction = 1;
-		fixDef.restitution = 1;
-		fixDef.shape = new b2PolygonShape();
-		fixDef.shape.SetAsBox(width, height);
-		return body.CreateFixture(fixDef);
+	getCircleEntity: function (id, shape) {
+		return {
+			position: this.getPosition(),
+			radius: shape.m_radius,
+			kind: Constants.Types.Entities.CircleEntity,
+			id: id
+		};
 	},
-	createPolygonFixture: function (body, points) {
-		var fixDef = new b2FixtureDef();
-		fixDef.density = 1.5;
-		fixDef.friction = 1;
-		fixDef.restitution = 1;
 
-		fixDef.shape = new b2PolygonShape();
-		fixDef.shape.vertexCount = points.length;
-		_.each(points, function (point, i) {
-			fixDef.shape.vertices[i].Set(point);
-		});
-		return body.CreateFixture(fixDef);
-	},
-	createBody: function (b2w, x, y) {
-		var bodyDef = new b2BodyDef();
-		bodyDef.type = b2Body.b2_staticBody;
-		bodyDef.position.x = x;
-		bodyDef.position.y = y;	
-		return b2w.CreateBody(bodyDef);
+	getPolygonEntity: function (id, shape) {
+		return {
+			position: this.getPosition(),
+			vertices: shape.m_vertices,
+			kind: Constants.Types.Entities.PolygonEntity,
+			id: id
+		};
 	}
 });
 

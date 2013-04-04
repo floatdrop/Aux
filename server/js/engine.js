@@ -1,10 +1,15 @@
 var Box2D = require('./lib/box2d'),
 	_ = require('underscore'),
-	cls = require('./lib/class'),
-	RectangleEntity = require('./rectangleEntity');
+	cls = require('./lib/class');
 
 var b2Vec2 = Box2D.Common.Math.b2Vec2,
-	b2World = Box2D.Dynamics.b2World;
+	b2World = Box2D.Dynamics.b2World,
+	b2BodyDef = Box2D.Dynamics.b2BodyDef,
+	b2Body = Box2D.Dynamics.b2Body,
+	b2FixtureDef = Box2D.Dynamics.b2FixtureDef,
+	b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape,
+	b2Vec2 = Box2D.Common.Math.b2Vec2,
+	b2CircleShape = Box2D.Collision.Shapes.b2CircleShape;
 
 var Engine = module.exports = cls.Class.extend({
 	init: function (config) {
@@ -25,10 +30,6 @@ var Engine = module.exports = cls.Class.extend({
 		entity.destruct();
 		this.entities.splice(entity.index, 1);
 	},
-	createShape: function (entity) {
-		var id = this.entities.length;
-		return new RectangleEntity(id, this.b2w, entity);
-	},
 	getEntities: function () {
 		return this.entities;
 	},
@@ -37,7 +38,7 @@ var Engine = module.exports = cls.Class.extend({
 		if (this.config.drawDebug) {
 			_.each(this.getEntities(), function (entity) {
 				dump.push(entity.getBaseState());
-				// dump.push(entity.getShapeEntity().getBaseState());
+				dump.push(entity.getShapeEntity());
 			});
 		} else {
 			_.each(this.getEntities(), function (entity) {
@@ -47,5 +48,64 @@ var Engine = module.exports = cls.Class.extend({
 		return dump;
 	}
 });
+
+Engine.createBox = function (b2w, x, y, width, height) {
+	var body = this.createBody(b2w, x, y);
+	return this.createBoxFixture(body, width, height);
+};
+
+Engine.createPolygon = function (b2w, x, y, points) {
+	var body = this.createBody(b2w, x, y);
+	return this.createPolygonFixture(body, points);
+};
+
+Engine.createCircle = function (b2w, x, y, radius) {
+	var body = this.createBody(b2w, x, y);
+	return this.createCircleFixture(body, radius);
+};
+
+Engine.createBoxFixture = function (body, width, height) {
+	var fixDef = new b2FixtureDef();
+	fixDef.density = 1.5;
+	fixDef.friction = 1;
+	fixDef.restitution = 1;
+	fixDef.shape = new b2PolygonShape();
+	fixDef.shape.SetAsBox(width, height);
+	return body.CreateFixture(fixDef);
+};
+
+Engine.createPolygonFixture = function (body, points) {
+	var fixDef = new b2FixtureDef();
+	fixDef.density = 1.5;
+	fixDef.friction = 1;
+	fixDef.restitution = 1;
+
+	fixDef.shape = new b2PolygonShape();
+	var vertices = [];
+	_.each(points, function (point, i) {
+		vertices[i] = new b2Vec2(point.x, point.y);
+	});
+	fixDef.shape.SetAsArray(vertices);
+	return body.CreateFixture(fixDef);
+};
+
+Engine.createCircleFixture = function (body, radius) {
+	var fixDef = new b2FixtureDef();
+	fixDef.density = 1.5;
+	fixDef.friction = 1;
+	fixDef.restitution = 1;
+
+	fixDef.shape = new b2CircleShape();
+	fixDef.shape.m_radius = radius;
+	return body.CreateFixture(fixDef);
+};
+
+Engine.createBody = function (b2w, x, y) {
+	var bodyDef = new b2BodyDef();
+	bodyDef.type = b2Body.b2_staticBody;
+	bodyDef.position.x = x;
+	bodyDef.position.y = y;
+	return b2w.CreateBody(bodyDef);
+};
 
 return Engine;
