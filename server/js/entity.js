@@ -94,7 +94,6 @@ var Entity = module.exports = cls.Class.extend({
 
 		fixDef.shape = new b2PolygonShape();
 		fixDef.shape.vertexCount = points.length;
-		console.log(points.length);
 		_.each(points, function (point, i) {
 			fixDef.shape.vertices[i].Set(point);
 		});

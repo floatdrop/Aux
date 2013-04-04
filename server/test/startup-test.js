@@ -4,25 +4,29 @@ var vows = require('vows'),
 
 var Server = require('../js/main');
 
-var StaticPort = 8080;
+var StaticPort = 8085;
 
 vows.describe('Aux').addBatch({
 	'A server': {
 		topic: function () {
-			return new Server({
+			var server = new Server({
 				port: 8081,
 				static_port: StaticPort,
-				debug_level: "debug",
+				debug_level: "error",
 				map_filepath: "maps/world_server.json",
 			});
+			return server;
 		},
 		'started': {
 			topic: function (server) {
+				should.exists(server);
+				server.should.be.an.instanceof(Server);
 				server.start(this.callback);
+				return server;
 			},
 			'and index page': {
-				topic: function () {
-					zombie.visit("http://localhost:" + StaticPort + "/", {
+				topic: function (server) {
+					zombie.visit("http://localhost:" + server.config.static_port + "/", {
 						runScripts: false
 					}, this.callback);
 				},

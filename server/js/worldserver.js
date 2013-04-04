@@ -8,8 +8,8 @@ var cls = require("./lib/class"),
 module.exports = cls.Class.extend({
 	init: function (config) {
 		this.ups = 50;
+		this.config = config;
 		this.engine = new Engine(config);
-		this.map = new WorldMap(config, this.engine);
 		this.players = [];
 		this.onPlayerConnect(this.playerConnect);
 		this.onPlayerDisconnect(this.playerDisconnect);
@@ -60,6 +60,12 @@ module.exports = cls.Class.extend({
 
 	run: function (callback) {
 		var self = this;
+		try {
+			this.map = new WorldMap(this.config, this.engine);
+		} catch (err) {
+			this.exception_callback(err);
+			return;
+		}
 		setInterval(function () {
 			self.engine.tick(1000.0 / self.ups);
 			self.broadcast("entity_list", self.engine.dumpEntities());
@@ -68,11 +74,12 @@ module.exports = cls.Class.extend({
 			callback(null, this);
 		}
 	},
-
+	onException: function (handler) {
+		this.exception_callback = handler;
+	},
 	onPlayerConnect: function (callback) {
 		this.connect_callback = callback;
 	},
-
 	onPlayerDisconnect: function (callback) {
 		this.disconnect_callback = callback;
 	}

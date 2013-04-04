@@ -29,6 +29,7 @@
     "nonew": false,
     "nomen": false,
     "onevar": false,
+    "lastsemic": true,
     "plusplus": false,
     "regexp": false,
     "undef": true,

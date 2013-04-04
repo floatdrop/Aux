@@ -7,25 +7,24 @@ var Server = module.exports = cls.Class.extend({
 
 		this.config = config;
 
-		var	Log = require('log'),
+		var Log = require('log'),
 			WorldServer = require('./worldserver');
-		
-		this.world = new WorldServer(config);
 
-		switch (config.debug_level) {
-		case "error":
+		if (config.debug_level === "error") {
 			global.log = new Log(Log.ERROR);
 			this.loglevel = 0;
-			break;
-		case "debug":
+		} else if (config.debug_level === "error") {
 			global.log = new Log(Log.DEBUG);
 			this.loglevel = 2;
-			break;
-		case "info":
+		} else if (config.debug_level === "error") {
 			global.log = new Log(Log.INFO);
 			this.loglevel = 1;
-			break;
 		}
+
+		this.world = new WorldServer(config);
+		this.world.onException(function (err) {
+			global.log.error(err);
+		});
 	},
 	configureStaticServer: function () {
 		if (!(this.config.static_port)) {
@@ -33,7 +32,9 @@ var Server = module.exports = cls.Class.extend({
 		}
 
 		var StaticServer = require('node-static').Server,
-			file = new StaticServer('./client', { cache: false });
+			file = new StaticServer('./client', {
+				cache: false
+			});
 
 		require('http').createServer(function (request, response) {
 			global.log.debug("Static file request: " + request.url);
@@ -81,7 +82,7 @@ function getConfigFile(path, callback) {
 }
 
 var main = function () {
-    var defaultConfigPath = './server/config.json',
+	var defaultConfigPath = './server/config.json',
 		customConfigPath = './server/config_local.json';
 
 	process.argv.forEach(function (val, index) {
@@ -107,6 +108,5 @@ var main = function () {
 };
 
 if (require.main === module) {
-    main();
+	main();
 }
-

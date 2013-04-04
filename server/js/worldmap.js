@@ -12,11 +12,10 @@ var WorldMap = module.exports = cls.Class.extend({
 
 		fs.readFile(config.map_filepath, 'utf8', function (err, data) {
 			if (err) {
-				return console.log(err);
+				throw new Error(err);
 			}
 			self.data = JSON.parse(data);
 			self.isLoaded = true;
-			console.log("map loaded");
 			self.fillWorld(self.data, self.engine);
 		});
 	},
@@ -24,7 +23,6 @@ var WorldMap = module.exports = cls.Class.extend({
 	sendMap: function (socket) {
 		if (this.isLoaded) {
 			socket.emit("map", this.data);
-			console.log("map sended");
 		} else {
 			setTimeout(this.sendMap, 100);
 		}
