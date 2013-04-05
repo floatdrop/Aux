@@ -14,7 +14,7 @@ define([], function () {
 			var self = this,
 				entities = _.sortBy(this.game.entities, function (e) {
 					if (e.id.toString().indexOf("debug") === 0) {
-						return e.y - 1;
+						return - 1;
 					}
 					return e.y;
 				});

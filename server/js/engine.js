@@ -76,16 +76,12 @@ Engine.createBoxFixture = function (body, width, height) {
 
 Engine.createPolygonFixture = function (body, points) {
 	var fixDef = new b2FixtureDef();
-	fixDef.density = 1.5;
+	fixDef.density = 15;
 	fixDef.friction = 1;
 	fixDef.restitution = 1;
 
 	fixDef.shape = new b2PolygonShape();
-	var vertices = [];
-	_.each(points, function (point, i) {
-		vertices[i] = new b2Vec2(point.x, point.y);
-	});
-	fixDef.shape.SetAsArray(vertices);
+	fixDef.shape.SetAsArray(points);
 	return body.CreateFixture(fixDef);
 };
 
