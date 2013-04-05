@@ -4,7 +4,8 @@ var logger = new(winston.Logger)({
 	transports: [
 		new(winston.transports.Console)({
 			json: false,
-			timestamp: true
+			timestamp: true,
+			level: 'error'
 		}),
 		new winston.transports.File({
 			filename: __dirname + '/debug.log',
