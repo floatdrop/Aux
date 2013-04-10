@@ -6,5 +6,5 @@
   "debug_level": "error",
   "maximum_players": 50,
   "map_filepath": "./maps/world_server.json",
-	"drawDebug": true
+  "drawDebug": false
 }
