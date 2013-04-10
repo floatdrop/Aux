@@ -1,20 +1,12 @@
-var cls = require("../lib/class"),
-	_ = require("underscore"),
-	Box2D = require('../lib/box2d');
+var cls = require("../lib/class");
 
 var actions = {};
-var b2BodyDef = Box2D.Dynamics.b2BodyDef,
-	b2Body = Box2D.Dynamics.b2Body,
-	b2FixtureDef = Box2D.Dynamics.b2FixtureDef,
-	b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape,
-	b2CircleShape = Box2D.Collision.Shapes.b2CircleShape;
 
 var GLOBAL_ID_COUNTER = 0;
 
 var Entity = module.exports = cls.Class.extend({
 	init: function (id, type, kind) {
 		this.setId(id);
-		this.world = world;
 		this.type = type;
 		this.kind = kind;
 		this.position = {x: 0, y: 0};
