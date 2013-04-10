@@ -38,12 +38,16 @@ var Engine = module.exports = cls.Class.extend({
 		var dump = [];
 		if (this.config.drawDebug) {
 			_.each(this.getEntities(), function (entity) {
-				dump.push(entity.getBaseState());
-				dump.push(EntityFactory.getShapeByEntity(entity).getBaseState());
+				if (entity) {
+					dump.push(entity.getBaseState());
+					dump.push(EntityFactory.getShapeByEntity(entity).getBaseState());
+				}
 			});
 		} else {
 			_.each(this.getEntities(), function (entity) {
-				dump.push(entity.getBaseState());
+				if (entity) {
+					dump.push(entity.getBaseState());
+				}
 			});
 		}
 		return dump;
