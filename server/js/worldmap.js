@@ -1,7 +1,8 @@
 var fs = require('fs'),
 	cls = require('./lib/class'),
 	_ = require('underscore'),
-	CommonEntity = require('./commonEntity');
+	CommonEntity = require('./entities/commonEntity'),
+	Engine = require('./engine');
 
 var WorldMap = module.exports = cls.Class.extend({
 	init: function (config, engine) {
@@ -29,17 +30,41 @@ var WorldMap = module.exports = cls.Class.extend({
 	},
 
 	fillWorld: function (data, engine) {
-
-		var objects = _.find(data.layers, function (layer) { 
+		var self = this,
+			objects = _.find(data.layers, function (layer) { 
 			return layer.name === "objects";
 		}).objects;
 
-		_.each(objects, function (object) {
-			var o = new CommonEntity(null, engine.b2w, object, engine);
-			if (o.type !== "border" && object.width !== 0 && object.height !== 0) {
-				engine.addEntity(o);
-			}
+		_.each(objects, function (entity_info) {
+			var obj = new CommonEntity(null, entity_info.type);
+			self.setParameters(obj, entity_info);
+			self.createPhysicBody(engine.b2w, obj, entity_info);
+			engine.addEntity(obj);
 		});
+	},
+
+	setParameters: function (obj, entity_info) {
+		obj.width = entity_info.width / 100 / 2;
+		obj.height = entity_info.height / 100 / 2;
+		var x = entity_info.x / 100 + obj.width,
+			y = entity_info.y / 100 + obj.height;
+		obj.setPosition(x, y);
+	},
+
+	createPhysicBody: function (world, obj, entity_info) {
+		obj.body = Engine.createBody(world, obj.position.x, obj.position.y);
+		obj.body.m_userData = obj;
+		if (entity_info.polyline) {
+			var vertices = [];
+			for (var i = entity_info.polyline.length - 1; i>0; i--) {
+				var v = entity_info.polyline[i];
+				vertices.push({x: v.x / 100, y: v.y / 100});
+			}
+			obj.fixture = Engine.createPolygonFixture(obj.body, vertices);
+		}
+		else {
+			obj.fixture = Engine.createBoxFixture(obj.body, obj.width, obj.height);
+		}
 	}
 });
 

@@ -44,12 +44,12 @@
   <object type="stone4" x="883" y="113">
    <polyline points="0,0 28,33 44,34 45,-14 -3,-17 -1,-1"/>
   </object>
-  <object type="border" x="4" y="553" width="953" height="21"/>
-  <object type="border" x="939" y="3" width="21" height="548"/>
-  <object type="border" x="1" y="2" width="13" height="549"/>
-  <object type="border" x="13" y="339" width="277" height="13"/>
-  <object type="border" x="193" y="160" width="13" height="34"/>
-  <object type="border" x="17" y="2" width="942" height="15"/>
-  <object type="border" x="179" y="19" width="26" height="138"/>
+  <object type="empty" x="4" y="553" width="953" height="21"/>
+  <object type="empty" x="939" y="3" width="21" height="548"/>
+  <object type="empty" x="1" y="2" width="13" height="549"/>
+  <object type="empty" x="13" y="339" width="277" height="13"/>
+  <object type="empty" x="193" y="160" width="13" height="34"/>
+  <object type="empty" x="17" y="2" width="942" height="15"/>
+  <object type="empty" x="179" y="19" width="26" height="138"/>
  </objectgroup>
 </map>
