@@ -21,7 +21,11 @@ define(['player', 'commonEntity', 'circleEntity', 'polygonEntity', 'sprite'],
 	EntityFactory.builders = [];
 
 	EntityFactory.builders[Constants.Types.Entities.PLAYER] = function (entity_info, name) {
-		return new Player(entity_info.id, name);
+		var entity = new Player(entity_info.id);
+		entity.name = name;
+		entity.setSprite(new Sprite("player", 1));
+		entity.setAnimation("idle_right", 100);
+		return entity;
 	};
 
 	EntityFactory.builders[Constants.Types.Entities.CommonEntity] = function (entity_info) {
