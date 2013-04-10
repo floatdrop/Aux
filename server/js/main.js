@@ -8,6 +8,11 @@ var Server = module.exports = cls.Class.extend({
 
 		this.config = config;
 
+    if (this.config.c9io === true) {
+      this.config.port = process.env.PORT;
+      this.config.host = process.env.IP;
+    }
+
 		var WorldServer = require('./worldserver');
 
 		if (config.debug_level === "error") {	
@@ -36,7 +41,7 @@ var Server = module.exports = cls.Class.extend({
 		require('http').createServer(function (request, response) {
 			log.debug("Static file request: " + request.url);
 			file.serve(request, response);
-		}).listen(this.config.static_port);
+		}).listen(this.config.static_port, this.config.host);
 
 		log.info("Starting static server on port " + this.config.static_port);
 	},
@@ -61,7 +66,7 @@ var Server = module.exports = cls.Class.extend({
 
 		this.world.run(function (err) {
 			if (started_callback) {
-				started_callback(err, this);
+				started_callback(err, self);
 			}
 		});
 	}
