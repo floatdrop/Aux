@@ -1,6 +1,8 @@
 var cls = require("../lib/class"),
 	_ = require("underscore"),
 	Box2D = require('../lib/box2d');
+	// PolygonEntity = require('./polygonEntity'),
+	// CircleEntity = require('./circleEntity');
 
 var actions = {};
 var b2BodyDef = Box2D.Dynamics.b2BodyDef,
@@ -69,30 +71,19 @@ var Entity = module.exports = cls.Class.extend({
 	},
 
 	getShapeEntity: function () {
-		var shape = this.fixture.m_shape;
 		var id = "debug-" + this.id;
 		if (shape.m_type === 1)
-			return this.getPolygonEntity(id, shape);
+			return this.getPolygonEntity(id);
 		if (shape.m_type === 0)
-			return this.getCircleEntity(id, shape);
+			return this.getCircleEntity(id);
 	},
 
-	getCircleEntity: function (id, shape) {
-		return {
-			position: this.getPosition(),
-			radius: shape.m_radius,
-			kind: Constants.Types.Entities.CircleEntity,
-			id: id
-		};
+	getCircleEntity: function (id) {
+		//return new CircleEntity(id, this);
 	},
 
-	getPolygonEntity: function (id, shape) {
-		return {
-			position: this.getPosition(),
-			vertices: shape.m_vertices,
-			kind: Constants.Types.Entities.PolygonEntity,
-			id: id
-		};
+	getPolygonEntity: function (id) {
+		//return new PolygonEntity(id, this);
 	}
 });
 

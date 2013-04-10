@@ -38,7 +38,7 @@ var Engine = module.exports = cls.Class.extend({
 		if (this.config.drawDebug) {
 			_.each(this.getEntities(), function (entity) {
 				dump.push(entity.getBaseState());
-				dump.push(entity.getShapeEntity());
+				//dump.push(entity.getShapeEntity().getBaseState());
 			});
 		} else {
 			_.each(this.getEntities(), function (entity) {
