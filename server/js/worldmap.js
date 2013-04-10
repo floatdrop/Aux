@@ -41,8 +41,7 @@ var WorldMap = module.exports = cls.Class.extend({
 			var obj = new CommonEntity(null, entity_info.type);
 			self.setParameters(obj, entity_info);
 			self.createPhysicBody(engine.b2w, obj, entity_info);
-			if (entity_info.type !== "border")
-				engine.addEntity(obj);
+			engine.addEntity(obj);
 		});
 	},
 
