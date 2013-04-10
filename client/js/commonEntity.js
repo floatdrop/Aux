@@ -6,7 +6,8 @@ define(['entity', 'sprite'], function (Entity, Sprite) {
 		},
 
 		update: function (entity_info) {
-		}
+			this._super(entity_info);
+		},
 	});
 
 	return SimpleGameObject;
