@@ -1,6 +1,7 @@
 var Box2D = require('./lib/box2d'),
 	_ = require('underscore'),
-	cls = require('./lib/class');
+	cls = require('./lib/class'),
+	EntityFactory = require('./entities/entityFactory');
 
 var b2Vec2 = Box2D.Common.Math.b2Vec2,
 	b2World = Box2D.Dynamics.b2World,
@@ -38,7 +39,7 @@ var Engine = module.exports = cls.Class.extend({
 		if (this.config.drawDebug) {
 			_.each(this.getEntities(), function (entity) {
 				dump.push(entity.getBaseState());
-				dump.push(entity.getShapeEntity());
+				dump.push(EntityFactory.getShapeByEntity(entity).getBaseState());
 			});
 		} else {
 			_.each(this.getEntities(), function (entity) {
@@ -48,11 +49,6 @@ var Engine = module.exports = cls.Class.extend({
 		return dump;
 	}
 });
-
-Engine.createBox = function (b2w, x, y, width, height) {
-	var body = this.createBody(b2w, x, y);
-	return this.createBoxFixture(body, width, height);
-};
 
 Engine.createPolygon = function (b2w, x, y, points) {
 	var body = this.createBody(b2w, x, y);
