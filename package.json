@@ -9,7 +9,8 @@
 		"node-static": ">0",
 		"async": ">0",
 		"bison": ">0",
-		"winston": ">0"
+		"winston": ">0",
+    "express": ">0"
 	},
 	"devDependencies": {
 		"jshint": ">=0.9.1",

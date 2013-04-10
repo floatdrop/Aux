@@ -19,7 +19,6 @@ function (Renderer, Player, GameClient, EntityFactory, Map) {
 				'd': this.moveRight.bind(this)
 			};
 			this.host = window.location.hostname;
-			this.port = 8000;
 			this.playerId = null;
 		},
 		run: function () {

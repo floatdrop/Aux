@@ -3,6 +3,7 @@ var cls = require("./lib/class"),
 	_ = require('underscore'),
 	Player = require("./entities/player"),
 	Engine = require("./engine"),
+  log = require('./log'),
 	WorldMap = require("./worldmap");
 
 module.exports = cls.Class.extend({
@@ -32,12 +33,12 @@ module.exports = cls.Class.extend({
 		var self = this,
 			player = new Player(socket, socket.id, this.engine.b2w);
 		self.map.sendMap(socket);
-		global.log.info("Map send to " + socket.id);
+		log.info("Map send to " + socket.id);
 		socket.on('disconnect', function () {
 			self.disconnect_callback(player.id);
 		});
 		player.setPosition(1, 1);
-		global.log.info("Player " + player.id + " connected");
+		log.info("Player " + player.id + " connected");
 		this.players.push(player);
 		this.engine.addEntity(player);
 	},

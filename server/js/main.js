@@ -10,7 +10,6 @@ var Server = module.exports = cls.Class.extend({
 
     if (this.config.c9io === true) {
       this.config.port = Number(process.env.PORT);
-      this.config.static_port = Number(process.env.PORT);
       this.config.host = process.env.IP;
     }
 
@@ -29,33 +28,21 @@ var Server = module.exports = cls.Class.extend({
 			log.error(err);
 		});
 	},
-	configureStaticServer: function () {
-		if (!(this.config.static_port)) {
-			return;
-		}
-
-		var StaticServer = require('node-static').Server,
-			file = new StaticServer('./client', {
-				cache: false
-			});
-
-		require('http').createServer(function (request, response) {
-			log.debug("Static file request: " + request.url);
-			file.serve(request, response);
-		}).listen(this.config.static_port, this.config.host);
-
-		log.info("Starting static server on port " + this.config.static_port);
-	},
 	start: function (started_callback) {
 
-		var self = this,
-			io = require('socket.io').listen(this.config.port, {
-				'log level': this.loglevel
-			});
+		var self = this;
 
 		log.info("Starting Aux game server...");
-
-		this.configureStaticServer();
+    
+    var express = require('express');
+    var io = require('socket.io');
+    this.app = express();
+    this.app.use(express.static('./client'));
+    this.server = require('http').createServer(this.app);
+    this.server.listen(this.config.port);
+    io = io.listen(this.server, {
+      'log level': this.loglevel
+    });
 
 		io.sockets.on('connection', function (socket) {
 			self.world.connect_callback(socket);
@@ -70,6 +57,7 @@ var Server = module.exports = cls.Class.extend({
 				started_callback(err, self);
 			}
 		});
+    
 	}
 });
 

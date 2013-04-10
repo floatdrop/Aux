@@ -6,7 +6,7 @@ define(['lib/socket.io'], function (io) {
 			this.port = port;
 		},
 		connect: function () {
-			this.connection = io.connect("http://" + this.host + ":" + this.port);
+			this.connection = io.connect("http://" + this.host);
 			this.connection.on('entity_list', this.entity_list_callback);
 			this.connection.on('welcome', this.welcome_callback);
 			this.connection.on('map', this.map_callback);
