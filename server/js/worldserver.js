@@ -8,7 +8,7 @@ var cls = require("./lib/class"),
 
 module.exports = cls.Class.extend({
 	init: function (config) {
-		this.ups = 50;
+		this.ups = config.ups;
 		this.config = config;
 		this.engine = new Engine(config);
 		this.players = [];
