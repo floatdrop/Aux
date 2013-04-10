@@ -59,33 +59,6 @@ var Entity = module.exports = cls.Class.extend({
 			angle: this.getAngle(),
 			animation: this.animation
 		};
-	},
-
-	getShapeEntity: function () {
-		var shape = this.fixture.m_shape;
-		var id = "debug-" + this.id;
-		if (shape.m_type === 1)
-			return this.getPolygonEntity(id, shape);
-		if (shape.m_type === 0)
-			return this.getCircleEntity(id, shape);
-	},
-
-	getCircleEntity: function (id, shape) {
-		return {
-			position: this.getPosition(),
-			radius: shape.m_radius,
-			kind: Constants.Types.Entities.CircleEntity,
-			id: id
-		};
-	},
-
-	getPolygonEntity: function (id, shape) {
-		return {
-			position: this.getPosition(),
-			vertices: shape.m_vertices,
-			kind: Constants.Types.Entities.PolygonEntity,
-			id: id
-		};
 	}
 });
 
