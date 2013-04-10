@@ -4,7 +4,7 @@ require('../../../client/js/constants');
 
 var CircleEntity = module.exports = Entity.extend({
 	init: function (id, entity) {
-		this._super(id, entity.world, "CircleEntity", Constants.Types.Entities.CircleEntity);
+		this._super(id, "CircleEntity", Constants.Types.Entities.CircleEntity);
 		this.entity = entity;
 		this.shape = entity.fixture.m_shape;
 	},

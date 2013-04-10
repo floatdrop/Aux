@@ -13,7 +13,8 @@ var Player = module.exports = Entity.extend({
 	init: function (socket, id, world) {
 		var self = this;
 		this.socket = socket;
-		this._super(id, world, "player", Constants.Types.Entities.PLAYER);
+		this._super(id, "player", Constants.Types.Entities.PLAYER);
+		this.world = world;
 
 		this.socket.emit("welcome", {
 			playerId: this.socket.id

@@ -13,9 +13,8 @@ var b2BodyDef = Box2D.Dynamics.b2BodyDef,
 var GLOBAL_ID_COUNTER = 0;
 
 var Entity = module.exports = cls.Class.extend({
-	init: function (id, world, type, kind) {
+	init: function (id, type, kind) {
 		this.setId(id);
-		this.world = world;
 		this.type = type;
 		this.kind = kind;
 		this.position = {x: 0, y: 0};

@@ -4,7 +4,7 @@ require('../../../client/js/constants');
 
 var PolygonEntity = module.exports = Entity.extend({
 	init: function (id, entity) {
-		this._super(id, entity.world, "PolygonEntity", Constants.Types.Entities.PolygonEntity);
+		this._super(id, "PolygonEntity", Constants.Types.Entities.PolygonEntity);
 		this.entity = entity;
 		this.shape = entity.fixture.m_shape;
 	},

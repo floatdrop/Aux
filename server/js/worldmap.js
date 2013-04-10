@@ -38,9 +38,9 @@ var WorldMap = module.exports = cls.Class.extend({
 		}).objects;
 
 		_.each(objects, function (entity_info) {
-			var obj = new CommonEntity(null, engine.b2w, entity_info.type);
+			var obj = new CommonEntity(null, entity_info.type);
 			self.setParameters(obj, entity_info);
-			self.createPhysicBody(obj, entity_info);
+			self.createPhysicBody(engine.b2w, obj, entity_info);
 			if (entity_info.type !== "border")
 				engine.addEntity(obj);
 		});
@@ -54,8 +54,8 @@ var WorldMap = module.exports = cls.Class.extend({
 		obj.setPosition(x, y);
 	},
 
-	createPhysicBody: function (obj, entity_info) {
-		obj.body = Engine.createBody(obj.world, obj.position.x, obj.position.y);
+	createPhysicBody: function (world, obj, entity_info) {
+		obj.body = Engine.createBody(world, obj.position.x, obj.position.y);
 		obj.body.m_userData = obj;
 		if (entity_info.polyline) {
 			var vertices = [];
