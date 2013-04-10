@@ -1,12 +1,8 @@
 define(['entity', 'sprite'], function (Entity, Sprite) {
 
 	var SimpleGameObject = Entity.extend({
-		init: function (entity_info) {
-			var name = entity_info.sprite;
-			this._super(entity_info.id, Constants.Types.Entities.CommonEntity);
-			this.name = name;
-			this.setSprite(new Sprite(name, 1));
-			this.setAnimation("basic", 100);
+		init: function (id) {
+			this._super(id, Constants.Types.Entities.CommonEntity);
 		},
 
 		update: function (entity_info) {

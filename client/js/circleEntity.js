@@ -1,10 +1,8 @@
 define(['entity'], function (Entity) {
 
     var CircleEntity = Entity.extend({
-        init: function (entity_info) {
-            this._super(entity_info.id, Constants.Types.Entities.CircleEntity);
-            this.name = "CircleEntity";
-            this.radius = 0;
+        init: function (id) {
+            this._super(id, Constants.Types.Entities.CircleEntity);
         },
 
         update: function (entity_info) {

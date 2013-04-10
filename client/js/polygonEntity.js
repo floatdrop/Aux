@@ -1,10 +1,8 @@
 define(['entity'], function (Entity) {
 
     var PolygonEntity = Entity.extend({
-        init: function (entity_info) {
-            this._super(entity_info.id, Constants.Types.Entities.PolygonEntity);
-            this.name = "PolygonEntity";
-            this.vertices = [];
+        init: function (id) {
+            this._super(id, Constants.Types.Entities.PolygonEntity);
         },
 
         update: function (entity_info) {
