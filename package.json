@@ -8,7 +8,7 @@
 		"start": "node server/js/main.js"
 	},
 	"engines": {
-		"node": "0.8.22"
+		"node": "0.10.3"
 	},
 	"dependencies": {
 		"underscore": ">0",
