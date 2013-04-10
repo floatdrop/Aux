@@ -1,14 +1,11 @@
 {
 	"name": "Aux",
-	"version": "0.0.1-1",
+	"version": "0.0.1-2",
 	"private": false,
 	"main": "server/js",
 	"subdomain": "floatdrop-Aux",
 	"scripts": {
 		"start": "node server/js/main.js"
-	},
-	"engines": {
-		"node": "0.10.3"
 	},
 	"dependencies": {
 		"underscore": ">0",
@@ -24,5 +21,8 @@
 		"vows": ">=0.7.0",
 		"should": ">=1.2.2",
 		"zombie": ">=1.4.1"
+	},
+	"engines": {
+		"node": "0.8.x"
 	}
 }
