@@ -1,7 +1,7 @@
 var cls = require("./lib/class"),
 	async = require("async"),
 	_ = require('underscore'),
-	Player = require("./player"),
+	Player = require("./entities/player"),
 	Engine = require("./engine"),
 	WorldMap = require("./worldmap");
 

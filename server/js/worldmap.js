@@ -1,7 +1,7 @@
 var fs = require('fs'),
 	cls = require('./lib/class'),
 	_ = require('underscore'),
-	CommonEntity = require('./commonEntity'),
+	CommonEntity = require('./entities/commonEntity'),
 	Engine = require('./engine');
 
 var WorldMap = module.exports = cls.Class.extend({

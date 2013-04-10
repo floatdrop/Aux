@@ -1,6 +1,6 @@
-var cls = require("./lib/class"),
+var cls = require("../lib/class"),
 	_ = require("underscore"),
-	Box2D = require('./lib/box2d');
+	Box2D = require('../lib/box2d');
 
 var actions = {};
 var b2BodyDef = Box2D.Dynamics.b2BodyDef,

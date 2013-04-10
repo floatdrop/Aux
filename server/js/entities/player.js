@@ -1,7 +1,7 @@
-var Box2D = require('./lib/box2d'),
+var Box2D = require('../lib/box2d'),
 	Entity = require('./entity');
 
-require('../../client/js/constants');
+require('../../../client/js/constants');
 
 var b2BodyDef = Box2D.Dynamics.b2BodyDef,
 	b2Body = Box2D.Dynamics.b2Body,
