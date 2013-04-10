@@ -8,7 +8,8 @@ var actions = {};
 var b2BodyDef = Box2D.Dynamics.b2BodyDef,
 	b2Body = Box2D.Dynamics.b2Body,
 	b2FixtureDef = Box2D.Dynamics.b2FixtureDef,
-	b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape;
+	b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape,
+	b2CircleShape = Box2D.Collision.Shapes.b2CircleShape;
 
 var GLOBAL_ID_COUNTER = 0;
 
@@ -70,10 +71,12 @@ var Entity = module.exports = cls.Class.extend({
 	},
 
 	getShapeEntity: function () {
-		var id = "debug-" + this.id;
-		if (shape.m_type === 1)
+		var id = "debug-" + this.id,
+			shape = this.fixture.m_shape;
+
+		if (shape instanceof b2PolygonShape)
 			return this.getPolygonEntity(id);
-		if (shape.m_type === 0)
+		if (shape instanceof b2CircleShape)
 			return this.getCircleEntity(id);
 	},
 
