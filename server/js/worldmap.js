@@ -58,9 +58,10 @@ var WorldMap = module.exports = cls.Class.extend({
 		obj.body.m_userData = obj;
 		if (entity_info.polyline) {
 			var vertices = [];
-			_.each(entity_info.polyline, function (v) {
+			for (var i = entity_info.polyline.length - 1; i>0; i--) {
+				var v = entity_info.polyline[i];
 				vertices.push({x: v.x / 100, y: v.y / 100});
-			});
+			}
 			obj.fixture = Engine.createPolygonFixture(obj.body, vertices);
 		}
 		else {
