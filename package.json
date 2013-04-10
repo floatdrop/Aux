@@ -2,7 +2,10 @@
 	"name": "Aux",
 	"version": "0.0.1",
 	"private": false,
-	"main": "server/js/main.js",
+	"main": "server/js",
+	"Subdomain name": "floatdrop-Aux",
+	"scripts.start": "./server/js/main.js",
+	"engines": "0.8.22",
 	"dependencies": {
 		"underscore": ">0",
 		"socket.io": ">0",
