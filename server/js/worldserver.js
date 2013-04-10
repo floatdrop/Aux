@@ -3,7 +3,7 @@ var cls = require("./lib/class"),
 	_ = require('underscore'),
 	Player = require("./entities/player"),
 	Engine = require("./engine"),
-  log = require('./log'),
+	log = require('./log'),
 	WorldMap = require("./worldmap");
 
 module.exports = cls.Class.extend({
@@ -46,7 +46,7 @@ module.exports = cls.Class.extend({
 	playerDisconnect: function (id) {
 		var player = this.findPlayer(id);
 		if (player) {
-			global.log.info("Player " + player.id + " disconnected");
+			log.info("Player " + player.id + " disconnected");
 			this.removePlayer(player.id);
 			this.engine.removeEntity(player);
 		}
