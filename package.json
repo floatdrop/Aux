@@ -1,11 +1,15 @@
 {
 	"name": "Aux",
-	"version": "0.0.1",
+	"version": "0.0.1-1",
 	"private": false,
 	"main": "server/js",
-	"Subdomain name": "floatdrop-Aux",
-	"scripts.start": "./server/js/main.js",
-	"engines": "0.8.22",
+	"subdomain": "floatdrop-Aux",
+	"scripts": {
+		"start": "node server/js/main.js"
+	},
+	"engines": {
+		"node": "0.8.22"
+	},
 	"dependencies": {
 		"underscore": ">0",
 		"socket.io": ">0",
@@ -13,7 +17,7 @@
 		"async": ">0",
 		"bison": ">0",
 		"winston": ">0",
-    "express": ">0"
+		"express": ">0"
 	},
 	"devDependencies": {
 		"jshint": ">=0.9.1",
