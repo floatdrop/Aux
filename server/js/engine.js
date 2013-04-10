@@ -50,11 +50,6 @@ var Engine = module.exports = cls.Class.extend({
 	}
 });
 
-Engine.createBox = function (b2w, x, y, width, height) {
-	var body = this.createBody(b2w, x, y);
-	return this.createBoxFixture(body, width, height);
-};
-
 Engine.createPolygon = function (b2w, x, y, points) {
 	var body = this.createBody(b2w, x, y);
 	return this.createPolygonFixture(body, points);

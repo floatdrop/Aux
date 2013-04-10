@@ -11,7 +11,7 @@ var PolygonEntity = module.exports = Entity.extend({
 		return {
 			position: this.entity.getPosition(),
 			vertices: this.shape.m_vertices,
-			kind: Constants.Types.Entities.PolygonEntity,
+			kind: this.kind,
 			id: this.id
 		};
 	}

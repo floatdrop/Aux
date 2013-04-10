@@ -11,7 +11,7 @@ var CircleEntity = module.exports = Entity.extend({
 		return {
 			position: this.entity.getPosition(),
 			radius: this.shape.m_radius,
-			kind: Constants.Types.Entities.CircleEntity,
+			kind: this.kind,
 			id: this.id
 		};
 	}
