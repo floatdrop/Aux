@@ -9,7 +9,8 @@ var Server = module.exports = cls.Class.extend({
 		this.config = config;
 
     if (this.config.c9io === true) {
-      this.config.port = process.env.PORT;
+      this.config.port = Number(process.env.PORT);
+      this.config.static_port = Number(process.env.PORT);
       this.config.host = process.env.IP;
     }
 
@@ -95,11 +96,13 @@ var main = function () {
 
 	getConfigFile(customConfigPath, function (customConfig) {
 		if (customConfig) {
-			new Server(customConfig).start();
+			var server = new Server(customConfig);
+      server.start();
 		} else {
 			getConfigFile(defaultConfigPath, function (defaultConfig) {
 				if (defaultConfig) {
-					new Server(defaultConfig).start();
+					var server = new Server(defaultConfig);
+          server.start();
 				} else {
 					console.error("Server cannot start without any configuration file.");
 					process.exit(1);
