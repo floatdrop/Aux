@@ -3,10 +3,8 @@ var Entity = require('./entity');
 require('../../../client/js/constants');
 
 var PolygonEntity = module.exports = Entity.extend({
-	init: function (id, entity) {
+	init: function (id) {
 		this._super(id, "PolygonEntity", Constants.Types.Entities.PolygonEntity);
-		this.entity = entity;
-		this.shape = entity.fixture.m_shape;
 	},
 	
 	getBaseState: function () {
