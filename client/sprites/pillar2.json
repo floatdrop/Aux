@@ -1,0 +1,14 @@
+{
+	"id": "pillar2",
+	"width": 23,
+	"height": 51,
+	"animations": {
+		"basic": {
+				"length": 1,
+				"row": 0,
+				"flipSpriteX": false,
+				"speed": 200
+			}},
+	"offset_x": 0,
+	"offset_y": 0
+}
