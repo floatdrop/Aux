@@ -9,13 +9,15 @@ define(['lib/socket.io', 'lib/bison'], function (io, BISON) {
 			this.connection = io.connect("http://" + this.host, {
 				transports: ["websocket"]
 			});
-			this.connection.on('message', this.decodeMessage);
+			this.connection.on('message', function (message) { this.decodeMessage(message) });
 			this.callbacks = {};
 			this.callbacks[Constants.Types.Messages.Welcome] = this.welcome_callback;
 			this.callbacks[Constants.Types.Messages.Map] =  this.map_callback;
 			this.callbacks[Constants.Types.Messages.EntityList] =  this.entity_list_callback;
 		},
-		decodeMessage: function (event) {
+		decodeMessage: function (message) {
+			var self = self;
+
 			// Normally you'd expect that event.data is a string, but in
 			// binary transfer u get a write-protected Blob of data
 			// which can be read as a stream.
@@ -23,7 +25,7 @@ define(['lib/socket.io', 'lib/bison'], function (io, BISON) {
 			var reader = new FileReader();
 
 			// There is also readAsBinaryString method if you are not using typed arrays
-			reader.readAsArrayBuffer(event.data);
+			reader.readAsArrayBuffer(message);
 
 			// As the stream finish to load we can use the results
 			reader.onloadend = function () {
@@ -44,7 +46,7 @@ define(['lib/socket.io', 'lib/bison'], function (io, BISON) {
 				// Voilà, here comes object that we sent
 				console.log(message);
 
-				this.callbacks[message.t](message.d);
+				self.callbacks[message.t](message.d);
 			};
 		},
 		onEntityList: function (callback) {

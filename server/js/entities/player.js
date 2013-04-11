@@ -63,10 +63,7 @@ var Player = module.exports = Entity.extend({
 		}
 
 		// This is how sending binary data looks like with ws library
-		this.socket.send(uint8Packet, {
-			binary: true,
-			mask: true
-		});
+		this.socket.send(uint8Packet);
 	},
 	construct: function () {
 		this.body = this.world.CreateBody(this.bodyDef);
