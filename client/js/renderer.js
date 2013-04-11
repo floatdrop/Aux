@@ -1,21 +1,23 @@
 /* global _ */
 
-define([], function () {
+define(['camera'], function (Camera) {
 	var Renderer = Class.extend({
 		init: function (game, canvas) {
 			this.scale = 100;
 			this.game = game;
 			this.canvas = canvas;
 			this.context = (canvas && canvas.getContext) ? canvas.getContext("2d") : null;
+			this.camera = new Camera(this);
 		},
 		renderFrame: function () {
 			this.clearScreen(this.context);
+			this.camera.updatePosition(this.context);
 			this.drawMap(this.game.map);
 			var self = this,
 				entities = _.sortBy(this.game.entities, function (e) {
 					//Draw debugEntity after Entity
 					if (e.id.toString().indexOf("debug") === 0) {
-						return e.y - 1;
+						return e.y + 1;
 					}
 					return e.y;
 				});

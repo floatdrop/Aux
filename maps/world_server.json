@@ -365,7 +365,7 @@
  "tilesets":[
         {
          "firstgid":1,
-         "image":"..\/..\/floatdrop jsGame\/client\/img\/sprites\/ground_64x64.png",
+         "image":"..\/client\/img\/sprites\/ground_64x64.png",
          "imageheight":2048,
          "imagewidth":2048,
          "margin":0,
