@@ -21,9 +21,9 @@ var WorldMap = module.exports = cls.Class.extend({
 		});
 	},
 
-	sendMap: function (socket) {
+	sendMap: function (player) {
 		if (this.isLoaded) {
-			socket.emit("map", this.data);
+			player.send(Constants.Types.Messages.Map, this.data);
 		} else {
 			setTimeout(this.sendMap, 100);
 		}
@@ -56,7 +56,7 @@ var WorldMap = module.exports = cls.Class.extend({
 		obj.body.m_userData = obj;
 		if (entity_info.polyline) {
 			var vertices = [];
-			for (var i = entity_info.polyline.length - 1; i>0; i--) {
+			for (var i = entity_info.polyline.length - 1; i > 0; i--) {
 				var v = entity_info.polyline[i];
 				vertices.push({x: v.x / 100, y: v.y / 100});
 			}

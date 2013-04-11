@@ -32,7 +32,7 @@ module.exports = cls.Class.extend({
 	playerConnect: function (socket) {
 		var self = this,
 			player = new Player(socket, socket.id, this.engine.b2w);
-		self.map.sendMap(socket);
+		self.map.sendMap(player);
 		log.info("Map send to " + socket.id);
 		socket.on('disconnect', function () {
 			self.disconnect_callback(player.id);
@@ -54,7 +54,7 @@ module.exports = cls.Class.extend({
 
 	broadcast: function (event, message) {
 		async.each(this.players, function (player, callback) {
-			player.socket.emit(event, message);
+			player.send(event, message);
 			callback(null);
 		}, function () {});
 	},
@@ -69,7 +69,7 @@ module.exports = cls.Class.extend({
 		}
 		setInterval(function () {
 			self.engine.tick(1000.0 / self.ups);
-			self.broadcast("entity_list", self.engine.dumpEntities());
+			self.broadcast(Constants.Types.Messages.EntityList, self.engine.dumpEntities());
 		}, 1000 / this.ups);
 		if (callback) {
 			callback(null, this);

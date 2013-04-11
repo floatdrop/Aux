@@ -8,10 +8,10 @@ var Server = module.exports = cls.Class.extend({
 
 		this.config = config;
 
-    if (this.config.c9io === true) {
-      this.config.port = Number(process.env.PORT);
-      this.config.host = process.env.IP;
-    }
+		if (this.config.c9io === true) {
+			this.config.port = Number(process.env.PORT);
+			this.config.host = process.env.IP;
+		}
 
 		var WorldServer = require('./worldserver');
 
@@ -41,6 +41,7 @@ var Server = module.exports = cls.Class.extend({
 		this.server = require('http').createServer(this.app);
 		this.server.listen(this.config.port);
 		io = io.listen(this.server, {
+			'transports': ['websocket'],
 			'log level': this.loglevel
 		});
 

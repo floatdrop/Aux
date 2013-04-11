@@ -1,5 +1,6 @@
 var Box2D = require('../lib/box2d'),
-	Entity = require('./entity');
+	Entity = require('./entity'),
+	BISON = require('bison');
 
 require('../../../client/js/constants');
 
@@ -41,6 +42,31 @@ var Player = module.exports = Entity.extend({
 		var circleShape = new b2CircleShape();
 		circleShape.m_radius = 0.1;
 		this.fixtureDef.shape = circleShape;
+	},
+	send: function (event, message) {
+		message = { t: event, d: message };
+
+		// Encode packet with BiSON to safe up to 50% against JSON.stringify
+		var bisonPacket = BISON.encode(message);
+
+		// A tricky part is that you will get nothing sending data as-is.
+		// Our bison string is build of chars with indexes from 0 to 255.
+		// utf-8 uses extra byte to encode char beyond index 127 so u will end up
+		// sending value which can be represented by one byte in two bytes.
+		// To take advantage of binary transport we will have to convert our data
+		// to javascript typed array. Unsigned Int 8 will do best.
+
+		var uint8Packet = new Uint8Array(bisonPacket.length);
+
+		for (var i = 0, len = bisonPacket.length; i < len; i++) {
+			uint8Packet[i] = bisonPacket.charCodeAt(i);
+		}
+
+		// This is how sending binary data looks like with ws library
+		this.socket.send(uint8Packet, {
+			binary: true,
+			mask: true
+		});
 	},
 	construct: function () {
 		this.body = this.world.CreateBody(this.bodyDef);
