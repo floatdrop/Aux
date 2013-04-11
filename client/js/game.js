@@ -10,6 +10,7 @@ function (Renderer, Player, GameClient, EntityFactory, Map) {
 				y: 0
 			};
 			this.renderer = null;
+			this.player = null;
 			this.entities = [];
 			this.keyboard = {};
 			this.keybindings = {
@@ -54,8 +55,10 @@ function (Renderer, Player, GameClient, EntityFactory, Map) {
 			var self = this;
 			this.client = new GameClient(this.host, this.port);
 			this.map = new Map(this);
-			this.client.onWelcome(function (data) {
-				self.playerId = data.playerId;
+			this.client.onWelcome(function (entity_info) {
+				self.playerId = entity_info.id;
+				self.player = EntityFactory.createEntity(entity_info, "PlayerName");
+				self.entities.push(self.player);
 			});
 			this.client.onMap(function (data) {
 				self.map.onMapLoaded(data);

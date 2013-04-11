@@ -21,9 +21,7 @@ define([], function () {
 			this.angle = a;
 		},
 		update: function (entity_info) {
-			this.setAnimation(entity_info.animation);
 			this.setPosition(entity_info.position.x, entity_info.position.y);
-			this.setAngle(entity_info.angle);
 		},
 		draw: function (context) {
             var os = 1,

@@ -15,10 +15,6 @@ var Player = module.exports = Entity.extend({
 		this.socket = socket;
 		this._super(id, "player", Constants.Types.Entities.PLAYER);
 		this.world = world;
-
-		this.socket.emit("welcome", {
-			playerId: this.socket.id
-		});
 		this.animation = "idle_right";
 
 		this.socket.on('action', function (data) {

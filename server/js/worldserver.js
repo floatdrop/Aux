@@ -41,6 +41,7 @@ module.exports = cls.Class.extend({
 		log.info("Player " + player.id + " connected");
 		this.players.push(player);
 		this.engine.addEntity(player);
+		player.socket.emit("welcome", player.getBaseState());
 	},
 
 	playerDisconnect: function (id) {

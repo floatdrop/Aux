@@ -1,10 +1,10 @@
 {
-  "c9io": true,
+  "c9io": false,
   "host": "0.0.0.0",
-  "port": 8000,
-  "ups": 10,
+  "port": 8080,
+  "ups": 60,
   "debug_level": "error",
-  "static_port": 8080,
+  "static_port": 8000,
   "maximum_players": 15,
   "map_filepath": "./maps/world_server.json",
 	"drawDebug": true
