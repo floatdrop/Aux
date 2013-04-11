@@ -15,7 +15,7 @@ define([], function () {
 				entities = _.sortBy(this.game.entities, function (e) {
 					//Draw debugEntity after Entity
 					if (e.id.toString().indexOf("debug") === 0) {
-						return e.y + 1;
+						return e.y - 1;
 					}
 					return e.y;
 				});

@@ -39,6 +39,9 @@ define([], function () {
                 dh = h * ds;
 
             context.save();
+            if (this.currentAnimation){
+            	context.translate(this.currentAnimation.offset_x, this.currentAnimation.offset_y);
+            }
             if (this.currentAnimation.flipSpriteX) {
                 context.translate(dx + dw / 2, dy);
                 context.scale(-1, 1);
