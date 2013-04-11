@@ -48,8 +48,8 @@ define(['camera'], function (Camera) {
 				tileH = tileSet.tileHeight,
 				x = ((value - 1) % tileSet.width) * tileW,
 				y = Math.floor(value / tileSet.width) * tileH,
-				dx = (index % map.width) * tileW,
-				dy = Math.floor(index / map.width) * tileH;
+				dx = (index % map.tileCountInRow) * tileW,
+				dy = Math.floor(index / map.tileCountInRow) * tileH;
 
 			this.context.drawImage(tileSet.image, x, y, tileW, tileH, dx, dy, tileW, tileH);
 		}

@@ -5,7 +5,6 @@ define([], function () {
 			this.game = renderer.game;
 			this.linkedEntity = null;
 			this.center = {x: window.innerWidth / 2, y: window.innerHeight / 2};
-			this.position = {x: 0, y: 0};
 		},
 
 		linkToEntity: function (entity) {
@@ -15,15 +14,15 @@ define([], function () {
 
 		updatePosition: function (context) {
 			if (this.linkedEntity){
-				var x = this.linkedEntity.x * 100,
-					y = this.linkedEntity.y * 100,
+				var x = this.linkedEntity.x * this.renderer.scale,
+					y = this.linkedEntity.y * this.renderer.scale,
 					offset_x = x - this.oldPosition.x,
 					offset_y = y - this.oldPosition.y;
 
-				if (x - this.center.x < 0) {
+				if (x - this.center.x < 0 || this.game.map.width - x < this.center.x) {
 					offset_x = 0;
 				}
-				if (y - this.center.y < 0) {
+				if (y - this.center.y < 0 || this.game.map.height - y < this.center.y) {
 					offset_y = 0;
 				}
 

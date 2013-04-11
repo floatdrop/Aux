@@ -9,14 +9,16 @@ define([], function () {
 			this.game = game;
 			this.width = 0;
 			this.height = 0;
+			this.tileCountInRow = 0;
+			this.tileCountInCol = 0;
 		},
 
 		onMapRecived: function (data) {
 			this.layers = data.layers;
-			this.width = data.width;
-			this.height = data.height;
-			//this.w = 960;
-			//this.h = 576;
+			this.tileCountInRow = data.width;
+			this.tileCountInCol = data.height;
+			this.width = data.width * data.tilewidth;
+			this.height = data.height * data.tileheight;
 			this.loadtilesets(data.tilesets);
 		},
 
