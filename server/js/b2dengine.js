@@ -19,17 +19,21 @@ var Engine = module.exports = cls.Class.extend({
 		entity.body = this.b2w.CreateBody(entity.bodyDef);
 		entity.body.m_userData = entity;
 		entity.fixture = entity.body.CreateFixture(entity.fixtureDef);
-		entity.getPosition = function () {
-			return this.body.GetPosition();
-		};
 		entity.setPosition = function (x, y) {
 			this.body.SetPosition(new b2Vec2(x, y));
 		};
-		entity.getAngle = function () {
-			return this.body.GetAngle();
+		var position = entity.getPosition();
+		entity.setPosition(position.x, position.y);
+		entity.getPosition = function () {
+			var b2dPosition = this.body.GetPosition();
+			return { x: b2dPosition.x, y: b2dPosition.y };
 		};
 		entity.setAngle = function (a) {
 			this.body.SetAngle(a);
+		};
+		entity.setAngle(entity.getAngle());
+		entity.getAngle = function () {
+			return this.body.GetAngle();
 		};
 	},
 	removeEntity: function (id) {

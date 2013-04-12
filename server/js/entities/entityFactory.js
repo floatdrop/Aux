@@ -41,6 +41,9 @@ EntityFactory.createPolygonEntity = function (id, entity) {
 	var polygonEntity = new PolygonEntity(id);
 	polygonEntity.entity = entity;
 	polygonEntity.shape = entity.fixture.m_shape;
+	var position = entity.getPosition();
+	polygonEntity.setPosition(position.x, position.y);
+	polygonEntity.setAngle(polygonEntity.getAngle());
 	return polygonEntity;
 };
 
@@ -48,6 +51,9 @@ EntityFactory.createCircleEntity = function (id, entity) {
 	var circleEntity = new CircleEntity(id);
 	circleEntity.entity = entity;
 	circleEntity.shape = entity.fixture.m_shape;
+	var position = entity.getPosition();
+	circleEntity.setPosition(position.x, position.y);
+	circleEntity.setAngle(circleEntity.getAngle());
 	return circleEntity;
 };
 

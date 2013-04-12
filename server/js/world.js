@@ -28,19 +28,11 @@ module.exports = cls.Class.extend({
 	},
 	run: function () {
 		var self = this;
-		try {
-			this.map = new WorldMap(this.map_filepath, this.engine);
-		} catch (err) {
-			this.exception_callback(err);
-			return;
-		}
+		this.map = new WorldMap(this.map_filepath, this.engine);
 		setInterval(function () {
 			self.engine.tick(1000.0 / self.ups);
 			self.server.broadcast({t: Constants.Types.Messages.EntityList, d: self.engine.dumpEntities()});
 		}, 1000 / this.ups);
-	},
-	onException: function (handler) {
-		this.exception_callback = handler;
 	},
 	onPlayerConnect: function (callback) {
 		this.connect_callback = callback;

@@ -11,8 +11,8 @@ define(['entity'], function (Entity) {
         },
 
         draw: function (context) {
-            var x = this.x * this.scale,
-                y = this.y * this.scale,
+            var x = this.position.x * this.scale,
+                y = this.position.y * this.scale,
                 radius = this.radius * this.scale;
 
             context.beginPath();

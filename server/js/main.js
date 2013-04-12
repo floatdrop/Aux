@@ -40,9 +40,6 @@ var Server = module.exports = cls.Class.extend({
 
 		this.engine = new Box2dEngine();
 		this.world = new World(this.config.ups, this.config.map_filepath, this.engine, this._server);
-		this.world.onException(function (err) {
-			log.error(err);
-		});
 		this.world.run();
 	}
 });

@@ -4,8 +4,7 @@ define([], function () {
 		init: function (id, kind) {
 			this.id = id;
 			this.kind = kind;
-			this.x = 0;
-			this.y = 0;
+			this.position = { x: 0, y: 0 };
 			this.sprite = null;
 			this.flipSpriteX = false;
 			this.flipSpriteY = false;
@@ -14,8 +13,8 @@ define([], function () {
 			this.scale = 100;
 		},
 		setPosition: function (x, y) {
-			this.x = x;
-			this.y = y;
+			this.position.x = x;
+			this.position.y = y;
 		},
 		setAngle: function (a) {
 			this.angle = a;
@@ -35,8 +34,8 @@ define([], function () {
                 h = this.sprite.height * os,
                 ox = this.sprite.offsetX * 1,
                 oy = this.sprite.offsetY * 1,
-                dx = this.x * this.scale - this.sprite.width / 2,
-                dy = this.y * this.scale - this.sprite.height / 2,
+                dx = this.position.x * this.scale - this.sprite.width / 2,
+                dy = this.position.y * this.scale - this.sprite.height / 2,
                 dw = w * ds,
                 dh = h * ds;
 
