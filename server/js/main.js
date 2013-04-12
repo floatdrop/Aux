@@ -38,7 +38,7 @@ var Server = module.exports = cls.Class.extend({
 			log.error(Array.prototype.join.call(arguments, ", "));
 		});
 
-		this.engine = new Box2dEngine();
+		this.engine = new Box2dEngine(this.config.drawDebug);
 		this.world = new World(this.config.ups, this.config.map_filepath, this.engine, this._server);
 		this.world.run();
 	}

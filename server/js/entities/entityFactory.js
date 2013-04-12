@@ -14,7 +14,7 @@ EntityFactory.createEntity = function (entity_info) {
 	} else {
 		points = EntityFactory.getBoxPoints(entity_info.width, entity_info.height);
 	}
-	var entity = new PolygonEntity(null, EntityFactory.getBoxPoints(entity_info.width, entity_info.height));
+	var entity = new PolygonEntity(null, points);
 	entity.setPosition(entity_info.x, entity_info.y);
 	return entity;
 };
@@ -38,7 +38,7 @@ EntityFactory.getShapeByEntity = function (entity) {
 };
 
 EntityFactory.createPolygonEntity = function (id, entity) {
-	var polygonEntity = new PolygonEntity(id);
+	var polygonEntity = new PolygonEntity(id, entity.fixtureDef.shape.m_vertices);
 	polygonEntity.entity = entity;
 	polygonEntity.shape = entity.fixture.m_shape;
 	var position = entity.getPosition();

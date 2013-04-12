@@ -53,10 +53,11 @@ var Engine = module.exports = cls.Class.extend({
 		return entities;
 	},
 	dumpEntities: function () {
-		var dump = [];
+		var self = this,
+			dump = [];
 		_.each(this.getEntities(), function (entity) {
 			dump.push(entity.getBaseState());
-			if (this.debug) {
+			if (self.debug) {
 				dump.push(EntityFactory.getShapeByEntity(entity).getBaseState());
 			}
 		});
