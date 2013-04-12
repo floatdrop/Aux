@@ -1,5 +1,6 @@
 var PolygonEntity = require('./polygonEntity'),
 	CircleEntity = require('./circleEntity'),
+	CommonEntity = require('./commonEntity'),
 	cls = require('../lib/class'),
 	Box2D = require('../lib/box2d'),
 	b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape,
@@ -8,13 +9,12 @@ var PolygonEntity = require('./polygonEntity'),
 var EntityFactory = module.exports = cls.Class.extend({});
 
 EntityFactory.createEntity = function (entity_info) {
-	var points;
+	var entity = new CommonEntity(null, entity_info.type);
 	if (entity_info.points) {
-		points = entity_info.points;
+		entity.setBodyDefAsPoly(entity_info.points);
 	} else {
-		points = EntityFactory.getBoxPoints(entity_info.width, entity_info.height);
+		entity.setBodyDefAsPoly(EntityFactory.getBoxPoints(entity_info.width, entity_info.height));
 	}
-	var entity = new PolygonEntity(null, points);
 	entity.setPosition(entity_info.x, entity_info.y);
 	return entity;
 };
