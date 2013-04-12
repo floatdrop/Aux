@@ -1,6 +1,7 @@
 var PolygonEntity = require('./polygonEntity'),
 	CircleEntity = require('./circleEntity'),
 	CommonEntity = require('./commonEntity'),
+	_ = require('underscore'),
 	cls = require('../lib/class'),
 	Box2D = require('../lib/box2d'),
 	b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape,
@@ -21,12 +22,19 @@ EntityFactory.createEntity = function (entity_info) {
 
 
 EntityFactory.getBoxPoints = function (width, height) {
-	return [ 
-		{x: 0, y: 0},
-		{x: width, y: 0},
-		{x: width, y: height},
-		{x: 0, y: height},
-	];
+	return [{
+		x: 0,
+		y: 0
+	}, {
+		x: width,
+		y: 0
+	}, {
+		x: width,
+		y: height
+	}, {
+		x: 0,
+		y: height
+	}, ];
 };
 
 EntityFactory.getShapeByEntity = function (entity) {
@@ -37,8 +45,19 @@ EntityFactory.getShapeByEntity = function (entity) {
 	if (shape instanceof b2CircleShape) return EntityFactory.createCircleEntity(id, entity, shape);
 };
 
+EntityFactory.ConvertB2VecToJson = function (b2vecpoints) {
+	var points = [];
+	_.each(b2vecpoints, function (point) {
+		points.push({
+			x: point.x,
+			y: point.y
+		});
+	});
+	return points;
+};
+
 EntityFactory.createPolygonEntity = function (id, entity) {
-	var polygonEntity = new PolygonEntity(id, entity.fixtureDef.shape.m_vertices);
+	var polygonEntity = new PolygonEntity(id, EntityFactory.ConvertB2VecToJson(entity.fixtureDef.shape.m_vertices));
 	polygonEntity.entity = entity;
 	polygonEntity.shape = entity.fixture.m_shape;
 	var position = entity.getPosition();

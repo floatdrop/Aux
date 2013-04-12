@@ -4,7 +4,7 @@ var cls = require("./lib/class"),
 	worlizeRequest = require('websocket').request,
 	http = require('http'),
 	_ = require('underscore'),
-	BISON = require('bison'),
+	BISON = require('./lib/bison'),
 	WS = {},
 	log = require("./log"),
 	useBison = false;
@@ -190,19 +190,9 @@ WS.worlizeWebSocketConnection = Connection.extend({
 		this._connection.on('message', function (message) {
 			if (self.listen_callback) {
 				if (message.type === 'utf8') {
-					if (useBison) {
-						self.listen_callback(BISON.decode(message.utf8Data));
-					} else {
-						try {
-							self.listen_callback(JSON.parse(message.utf8Data));
-						} catch (e) {
-							if (e instanceof SyntaxError) {
-								self.close("Received message was not valid JSON.");
-							} else {
-								throw e;
-							}
-						}
-					}
+					self.listen_callback(JSON.parse(message.utf8Data));
+				} else {
+					self.listen_callback(BISON.decode(message.binaryData));
 				}
 			}
 		});
@@ -217,15 +207,17 @@ WS.worlizeWebSocketConnection = Connection.extend({
 	},
 
 	send: function (message) {
-		var data;
 		if (useBison) {
-			data = BISON.encode(message);
+			var encoded = BISON.encode(message);
+			var decoded = BISON.decode(encoded);
+			this.sendBytes(new Buffer(encoded, "utf-8"));
 		} else {
-			data = JSON.stringify(message);
+			this.sendUTF8(JSON.stringify(message));
 		}
-		this.sendUTF8(data);
 	},
-
+	sendBytes: function (data) {
+		this._connection.sendBytes(data);
+	},
 	sendUTF8: function (data) {
 		this._connection.sendUTF(data);
 	}
@@ -244,11 +236,7 @@ WS.miksagoWebSocketConnection = Connection.extend({
 
 		this._connection.addListener("message", function (message) {
 			if (self.listen_callback) {
-				if (useBison) {
-					self.listen_callback(BISON.decode(message));
-				} else {
-					self.listen_callback(JSON.parse(message));
-				}
+				self.listen_callback(JSON.parse(message));
 			}
 		});
 
@@ -262,13 +250,7 @@ WS.miksagoWebSocketConnection = Connection.extend({
 	},
 
 	send: function (message) {
-		var data;
-		if (useBison) {
-			data = BISON.encode(message);
-		} else {
-			data = JSON.stringify(message);
-		}
-		this.sendUTF8(data);
+		this.sendUTF8(JSON.stringify(message));
 	},
 
 	sendUTF8: function (data) {

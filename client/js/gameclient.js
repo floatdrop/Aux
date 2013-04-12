@@ -1,14 +1,14 @@
-define(['lib/bison'], function () {
+define(function () {
 	var GameClient = Class.extend({
 		init: function (host, port) {
 			this.socket = null;
 			this.host = host;
 			this.port = port;
-			this.useBison = false;
 		},
 		connect: function () {
 			var self = this;
 			this.socket = new WebSocket("ws://" + this.host);
+			this.socket.binaryType = 'arraybuffer';
 			this.socket.onmessage = function (event) {
 				var message = self.decodeMessage(event);
 				self.callbacks[message.t](message.d);
@@ -25,10 +25,12 @@ define(['lib/bison'], function () {
 			this.callbacks[Constants.Types.Messages.EntityList] = this.entity_list_callback;
 		},
 		decodeMessage: function (event) {
-			if (this.useBison) {
-				return window.BISON.decode(event.data);
-			} else {
+			if (typeof event.data === "string") {
 				return JSON.parse(event.data);
+			} else {
+				var bytes = new Uint8Array(event.data);
+				var msg = String.fromCharCode.apply(null, bytes);
+				return window.BISON.decode(msg);
 			}
 		},
 		send: function (message) {
