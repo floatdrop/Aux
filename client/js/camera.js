@@ -13,7 +13,7 @@ define([], function () {
 		},
 
 		updatePosition: function (context) {
-			if (this.linkedEntity){
+			if (this.linkedEntity) {
 				var x = this.linkedEntity.x * this.renderer.scale,
 					y = this.linkedEntity.y * this.renderer.scale,
 					offset_x = x - this.oldPosition.x,

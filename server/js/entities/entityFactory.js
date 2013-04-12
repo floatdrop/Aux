@@ -18,7 +18,7 @@ EntityFactory.getShapeByEntity = function (entity) {
 	if (shape instanceof b2CircleShape)
 		return EntityFactory.createCircleEntity(id, entity, shape);
 	log.error('Unknown shape is ' + shape);
-	throw new Error('Unknown shape in EntityFactory');
+	return EntityFactory.createEmptyCircleEntity(id);
 };
 
 EntityFactory.createPolygonEntity = function (id, entity, shape) {
@@ -32,6 +32,19 @@ EntityFactory.createCircleEntity = function (id, entity, shape) {
 	var circleEntity = new CircleEntity(id);
 	circleEntity.entity = entity;
 	circleEntity.shape = shape;
+	return circleEntity;
+};
+
+EntityFactory.createEmptyCircleEntity = function (id) {
+	var circleEntity = new CircleEntity(id);
+	circleEntity.getBaseState = function () {
+		return {
+			position: {x: 0, y: 0},
+			radius: 0,
+			kind: this.kind,
+			id: this.id
+		};
+	};
 	return circleEntity;
 };
 

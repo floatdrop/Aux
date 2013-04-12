@@ -37,13 +37,13 @@ var WorldMap = module.exports = cls.Class.extend({
 
 		_.each(objects, function (entity_info) {
 			var obj = new CommonEntity(null, entity_info.type);
-			self.setParameters(obj, entity_info);
+			self.adjustParameters(obj, entity_info);
 			self.createPhysicBody(engine.b2w, obj, entity_info);
 			engine.addEntity(obj);
 		});
 	},
 
-	setParameters: function (obj, entity_info) {
+	adjustParameters: function (obj, entity_info) {
 		obj.width = entity_info.width / 100 / 2;
 		obj.height = entity_info.height / 100 / 2;
 		var x = entity_info.x / 100 + obj.width,
@@ -51,12 +51,12 @@ var WorldMap = module.exports = cls.Class.extend({
 		obj.setPosition(x, y);
 	},
 
-	createPhysicBody: function (world, obj, entity_info) {
-		obj.body = Engine.createBody(world, obj.position.x, obj.position.y);
+	createPhysicBody: function (b2w, obj, entity_info) {
+		obj.body = Engine.createBody(b2w, obj.position.x, obj.position.y);
 		obj.body.m_userData = obj;
 		if (entity_info.polyline) {
 			var vertices = [];
-			for (var i = entity_info.polyline.length - 1; i>0; i--) {
+			for (var i = entity_info.polyline.length - 1; i > 0; i--) {
 				var v = entity_info.polyline[i];
 				vertices.push({x: v.x / 100, y: v.y / 100});
 			}

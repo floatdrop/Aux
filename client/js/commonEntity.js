@@ -1,4 +1,4 @@
-define(['entity', 'sprite'], function (Entity, Sprite) {
+define(['entity'], function (Entity) {
 
 	var SimpleGameObject = Entity.extend({
 		init: function (id) {
