@@ -37,7 +37,7 @@ var Entity = module.exports = cls.Class.extend({
 	construct: function () {
 
 	},
-	destruct: function () {
+	destruct: function (world) {
 
 	},
 	scheduleAction: function (action, timeout, id) {

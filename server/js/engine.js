@@ -24,12 +24,12 @@ var Engine = module.exports = cls.Class.extend({
 	},
 	addEntity: function (entity) {
 		entity.construct();
-		entity.index = this.entities.length;
 		this.entities.push(entity);
 	},
 	removeEntity: function (entity) {
-		entity.destruct();
-		this.entities.splice(entity.index, 1);
+		var index = this.entities.indexOf(entity);
+		this.entities.splice(index, 1);
+		entity.destruct(this.b2w);		
 	},
 	getEntities: function () {
 		return this.entities;

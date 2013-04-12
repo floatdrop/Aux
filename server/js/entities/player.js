@@ -55,8 +55,8 @@ var Player = module.exports = Entity.extend({
 			this.body.SetAngle(a);
 		};
 	},
-	destruct: function () {
-		this.world.DestroyBody(this.body);
+	destruct: function (world) {
+		world.DestroyBody(this.body);
 	},
 	move_up: function () {
 		var self = this;

@@ -17,7 +17,7 @@ EntityFactory.getShapeByEntity = function (entity) {
 		return EntityFactory.createPolygonEntity(id, entity, shape);
 	if (shape instanceof b2CircleShape)
 		return EntityFactory.createCircleEntity(id, entity, shape);
-	log.error('Unknown shape is ' + shape);
+	log.error('Unknown shape is ' + shape + "\r\nEntity is " + entity);
 	return EntityFactory.createEmptyCircleEntity(id);
 };
 
