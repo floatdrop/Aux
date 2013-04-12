@@ -25,8 +25,8 @@ var Player = module.exports = Entity.extend({
 		});
 
 		this.callbacks = {};
-		this.callbacks[Constants.Types.Messages.Action] = this.onAction;
-		this.callbacks[Constants.Types.Messages.Action] = this.onAngle;
+		this.callbacks[Constants.Types.Messages.Action] = function (data) { self.onAction(data); };
+		this.callbacks[Constants.Types.Messages.Angle] = function (data) { self.onAngle(data); };
 
 		this.bodyDef = new b2BodyDef();
 		this.bodyDef.type = b2Body.b2_dynamicBody;

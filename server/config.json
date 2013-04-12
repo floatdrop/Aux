@@ -2,7 +2,7 @@
   "c9io": false,
   "host": "0.0.0.0",
   "port": 8000,
-  "ups": 10,
+  "ups": 50,
   "debug_level": "debug",
   "maximum_players": 50,
   "map_filepath": "./maps/world_server.json",
