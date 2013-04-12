@@ -3,7 +3,7 @@
   "host": "0.0.0.0",
   "port": 8000,
   "ups": 10,
-  "debug_level": "error",
+  "debug_level": "debug",
   "maximum_players": 50,
   "map_filepath": "./maps/world_server.json",
   "drawDebug": false

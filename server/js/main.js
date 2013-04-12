@@ -1,6 +1,9 @@
 var fs = require('fs'),
 	log = require('./log'),
-	cls = require('./lib/class');
+	cls = require('./lib/class'),
+	ws = require("./ws"),
+	World = require('./world'),
+	Box2dEngine = require('./b2dengine');
 
 var Server = module.exports = cls.Class.extend({
 	init: function (config) {
@@ -13,52 +16,34 @@ var Server = module.exports = cls.Class.extend({
 			this.config.host = process.env.IP;
 		}
 
-		var WorldServer = require('./worldserver');
-
-		if (config.debug_level === "error") {	
+		if (config.debug_level === "error") {
 			this.loglevel = 0;
-		} else if (config.debug_level === "debug") {		
+		} else if (config.debug_level === "debug") {
 			this.loglevel = 2;
 		} else if (config.debug_level === "info") {
 			this.loglevel = 1;
 		}
-
-		this.world = new WorldServer(config);
-		this.world.onException(function (err) {
-			log.error(err);
-		});
 	},
-	start: function (started_callback) {
+	start: function () {
+
+		log.info("Starting Aux game server...");
 
 		var self = this;
 
-		log.info("Starting Aux game server...");
-    
-		var express = require('express');
-		var io = require('socket.io');
-		this.app = express();
-		this.app.use(express.static('./client'));
-		this.server = require('http').createServer(this.app);
-		this.server.listen(this.config.port);
-		io = io.listen(this.server, {
-			'transports': ['websocket'],
-			'log level': this.loglevel
+		this._server = new ws.MultiVersionWebsocketServer(this.config.port);
+		this._server.onConnect(function (connection) {
+			self.world.connect_callback(connection);
+		});
+		this._server.onError(function () {
+			log.error(Array.prototype.join.call(arguments, ", "));
 		});
 
-		io.sockets.on('connection', function (socket) {
-			self.world.connect_callback(socket);
+		this.engine = new Box2dEngine();
+		this.world = new World(this.config.ups, this.config.map_filepath, this.engine, this._server);
+		this.world.onException(function (err) {
+			log.error(err);
 		});
-
-		process.on('uncaughtException', function (e) {
-			log.error('uncaughtException: ' + e + '\n' + e.stack);
-		});
-
-		this.world.run(function (err) {
-			if (started_callback) {
-				started_callback(err, self);
-			}
-		});
-    
+		this.world.run();
 	}
 });
 

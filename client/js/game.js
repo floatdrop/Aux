@@ -18,7 +18,7 @@ function (Renderer, Player, GameClient, EntityFactory, Map) {
 				'a': this.moveLeft.bind(this),
 				'd': this.moveRight.bind(this)
 			};
-			this.host = window.location.hostname;
+			this.host = window.location.host;
 			this.playerId = null;
 		},
 		run: function () {
@@ -74,8 +74,8 @@ function (Renderer, Player, GameClient, EntityFactory, Map) {
 			this.client.connect();
 		},
 		moveCursor: function () {
-			var angle = 0;
-			return this.client.angle(angle);
+			//var angle = 0;
+			//return this.client.angle(angle);
 		},
 		moveUp: function () {
 			return this.client.action('up');

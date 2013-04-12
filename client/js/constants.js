@@ -9,7 +9,9 @@ Constants = {
 		Messages: {
 			Welcome: 0,
 			Map: 1,
-			EntityList: 2
+			EntityList: 2,
+			Action: 3,
+			Angle: 4
 		}
 	}
 };
