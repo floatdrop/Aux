@@ -16,13 +16,15 @@ define(['camera'], function (Camera) {
 			var self = this,
 				entities = _.sortBy(this.game.entities, function (e) {
 					//Draw debugEntity after Entity
-					if (e.id.toString().indexOf("debug") === 0) {
+					if (e.isDebug()) {
 						return e.y + 1;
 					}
 					return e.y;
 				});
 			_.each(entities, function (entity) {
-				entity.draw(self.context);
+				if (entity.isDebug() || self.camera.isVisible(entity)) {
+					entity.draw(self.context);
+				}
 			});
 		},
 		clearScreen: function (ctx) {

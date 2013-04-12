@@ -23,6 +23,9 @@ define([], function () {
 		update: function (entity_info) {
 			this.setPosition(entity_info.position.x, entity_info.position.y);
 		},
+		isDebug: function () {
+			return this.id.toString().indexOf("debug") === 0;
+		},
 		draw: function (context) {
 			var os = 1,
 			ds = 1,

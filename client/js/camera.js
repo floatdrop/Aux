@@ -50,7 +50,6 @@ define([], function () {
 				}
 			}
 
-			console.log(startX + " " + endX);
 			return this.getVisibleAreaStructure(startX, endX, startY, endY);
 		},
 
@@ -61,6 +60,42 @@ define([], function () {
 				startY: startY,
 				endY: endY
 			};
+		},
+
+		isVisible: function (entity) {
+			if (this.linkedEntity === null) {
+				return false;
+			}
+
+			var x = this.linkedEntity.x * this.renderer.scale,
+				y = this.linkedEntity.y * this.renderer.scale,
+				x1 = entity.x * this.renderer.scale,
+				y1 = entity.y * this.renderer.scale,
+				leftX = x - this.center.x,
+				leftY = y - this.center.y,
+				rightX = x + this.center.x,
+				rightY = y + this.center.y;
+
+			if (leftX < 0) {
+				rightX = this.center.x * 2;
+			}
+			if (rightX > this.map.width) {
+				leftX = rightX - this.center.x * 2;
+			}
+
+			if (leftY < 0) {
+				rightY = this.center.y * 2;
+			}
+			if (rightY > this.map.height) {
+				leftY = rightY - this.center.y * 2;
+			}
+
+			leftX -= entity.sprite.width;
+			rightX += entity.sprite.width;
+			leftY -= entity.sprite.height;
+			rightY += entity.sprite.height;
+
+			return x1 >= leftX && x1 <= rightX && y1 >= leftY && y1 <= rightY;
 		},
 
 		updatePosition: function (context) {
