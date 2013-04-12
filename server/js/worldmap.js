@@ -23,11 +23,14 @@ var WorldMap = module.exports = cls.Class.extend({
 		var scale = 100;
 		if (entity_info.polyline) {
 			entity_info.polyline.shift();
+			entity_info.points = [];
 			_.each(
 				entity_info.polyline, function (point) {
 				point.x = point.x / scale,
 				point.y = point.y / scale;
+				entity_info.points.push({x: point.x, y: point.y});
 			});
+			entity_info.points.reverse();
 		}
 		entity_info.width = entity_info.width / scale / 2;
 		entity_info.height = entity_info.height / scale / 2;

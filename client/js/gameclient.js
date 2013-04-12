@@ -31,6 +31,13 @@ define(['lib/bison'], function () {
 				return JSON.parse(event.data);
 			}
 		},
+		send: function (message) {
+			if (this.useBison) {
+				this.socket.send(window.BISON.encode(message));
+			} else {
+				this.socket.send(JSON.stringify(message));
+			}
+		},
 		onEntityList: function (callback) {
 			this.entity_list_callback = callback;
 		},
@@ -41,16 +48,16 @@ define(['lib/bison'], function () {
 			this.map_callback = callback;
 		},
 		action: function (action) {
-			this.socket.send(window.BISON.encode({
+			this.send({
 				t: Constants.Types.Messages.Action,
 				d: action
-			}));
+			});
 		},
 		angle: function (angle) {
-			this.socket.send(window.BISON.encode({
+			this.send({
 				t: Constants.Types.Messages.Angle,
 				d: angle
-			}));
+			});
 		}
 	});
 	return GameClient;
