@@ -5,7 +5,8 @@
         "Constants": true,
         "Class": false,
         "define": false,
-        "requestAnimFrame": false
+        "requestAnimFrame": false,
+        "msgpack": false
     },
     "maxparams": 10,
     "maxdepth": 5,

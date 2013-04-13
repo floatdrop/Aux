@@ -4,6 +4,7 @@ define(function () {
 			this.socket = null;
 			this.host = host;
 			this.port = port;
+			this.useBison = false;
 		},
 		connect: function () {
 			var self = this;
@@ -29,16 +30,17 @@ define(function () {
 				callback(JSON.parse(event.data));
 			} else {
 				var reader = new FileReader();
-				reader.readAsBinaryString(event.data);
+				reader.readAsArrayBuffer(event.data);
 				reader.onloadend = function () {
-					var message = window.BISON.decode(this.result);
+					var message = msgpack.decode(this.result);
 					callback(message);
 				};
 			}
 		},
 		send: function (message) {
 			if (this.useBison) {
-				this.socket.send(window.BISON.encode(message));
+				// this.socket.send(new Buffer(msgpack.encode(message), "binary").buffer);
+				throw "Not implemented yet";
 			} else {
 				this.socket.send(JSON.stringify(message));
 			}

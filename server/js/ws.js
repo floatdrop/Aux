@@ -4,7 +4,7 @@ var cls = require("./lib/class"),
 	worlizeRequest = require('websocket').request,
 	http = require('http'),
 	_ = require('underscore'),
-	BISON = require('./lib/bison'),
+	msgpack = require('msgpack'),
 	WS = {},
 	log = require("./log"),
 	useBison = true;
@@ -190,7 +190,7 @@ WS.worlizeWebSocketConnection = Connection.extend({
 		this._connection.on('message', function (message) {
 			if (self.listen_callback) {
 				if (message.type !== "utf8") {
-					var decoded = BISON.decode(message.binaryData);
+					var decoded = msgpack.unpack(message.binaryData);
 					self.listen_callback(decoded);
 				} else {
 					self.listen_callback(JSON.parse(message.utf8Data));
@@ -209,7 +209,7 @@ WS.worlizeWebSocketConnection = Connection.extend({
 
 	send: function (message) {
 		if (useBison) {
-			var encoded = BISON.encode(message);
+			var encoded = msgpack.pack(message);
 			this.sendBytes(new Buffer(encoded, "binary"));
 		} else {
 			this.sendUTF8(JSON.stringify(message));

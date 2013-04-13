@@ -12,6 +12,7 @@
 		"websocket": ">0",
 		"websocket-server": ">0",
 		"async": ">0",
+		"msgpack": ">0",
 		"winston": ">0",
 		"node-static": ">0"
 	},
