@@ -59,7 +59,7 @@ EntityFactory.ConvertB2VecToJson = function (b2vecpoints) {
 	return points;
 };
 
-EntityFactory.createPolygonEntity = function (id, entity) {
+EntityFactory.createPolygonEntity = function (id, entity, shape) {
 	var polygonEntity = new PolygonEntity(id, EntityFactory.ConvertB2VecToJson(entity.fixtureDef.shape.m_vertices));
 	polygonEntity.entity = entity;
 	polygonEntity.shape = shape;
@@ -69,7 +69,7 @@ EntityFactory.createPolygonEntity = function (id, entity) {
 	return polygonEntity;
 };
 
-EntityFactory.createCircleEntity = function (id, entity) {
+EntityFactory.createCircleEntity = function (id, entity, shape) {
 	var circleEntity = new CircleEntity(id);
 	circleEntity.entity = entity;
 	circleEntity.shape = shape;

@@ -14,10 +14,6 @@ var Player = module.exports = Entity.extend({
 		var self = this;
 		this.connection = connection;
 		this._super(id, "player", Constants.Types.Entities.PLAYER);
-
-		this.send(Constants.Types.Messages.Welcome, {
-			id: id
-		});
 		this.animation = "idle_right";
 
 		this.connection.listen(function (message) {
