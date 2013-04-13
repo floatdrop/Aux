@@ -1,6 +1,9 @@
 var fs = require('fs'),
 	log = require('./log'),
-	cls = require('./lib/class');
+	cls = require('./lib/class'),
+	ws = require("./ws"),
+	World = require('./world'),
+	Box2dEngine = require('./b2dengine');
 
 var Server = module.exports = cls.Class.extend({
 	init: function (config) {
@@ -8,56 +11,36 @@ var Server = module.exports = cls.Class.extend({
 
 		this.config = config;
 
-    if (this.config.c9io === true) {
-      this.config.port = Number(process.env.PORT);
-      this.config.host = process.env.IP;
-    }
+		if (this.config.c9io === true) {
+			this.config.port = Number(process.env.PORT);
+			this.config.host = process.env.IP;
+		}
 
-		var WorldServer = require('./worldserver');
-
-		if (config.debug_level === "error") {	
+		if (config.debug_level === "error") {
 			this.loglevel = 0;
-		} else if (config.debug_level === "debug") {		
+		} else if (config.debug_level === "debug") {
 			this.loglevel = 2;
 		} else if (config.debug_level === "info") {
 			this.loglevel = 1;
 		}
-
-		this.world = new WorldServer(config);
-		this.world.onException(function (err) {
-			log.error(err);
-		});
 	},
-	start: function (started_callback) {
+	start: function () {
+
+		log.info("Starting Aux game server...");
 
 		var self = this;
 
-		log.info("Starting Aux game server...");
-    
-    var express = require('express');
-    var io = require('socket.io');
-    this.app = express();
-    this.app.use(express.static('./client'));
-    this.server = require('http').createServer(this.app);
-    this.server.listen(this.config.port);
-    io = io.listen(this.server, {
-      'log level': this.loglevel
-    });
-
-		io.sockets.on('connection', function (socket) {
-			self.world.connect_callback(socket);
+		this._server = new ws.MultiVersionWebsocketServer(this.config.port);
+		this._server.onConnect(function (connection) {
+			self.world.connect_callback(connection);
+		});
+		this._server.onError(function () {
+			log.error(Array.prototype.join.call(arguments, ", "));
 		});
 
-		process.on('uncaughtException', function (e) {
-			log.error('uncaughtException: ' + e + '\n' + e.stack);
-		});
-
-		this.world.run(function (err) {
-			if (started_callback) {
-				started_callback(err, self);
-			}
-		});
-    
+		this.engine = new Box2dEngine(this.config.drawDebug);
+		this.world = new World(this.config.ups, this.config.map_filepath, this.engine, this._server);
+		this.world.run();
 	}
 });
 
@@ -85,12 +68,12 @@ var main = function () {
 	getConfigFile(customConfigPath, function (customConfig) {
 		if (customConfig) {
 			var server = new Server(customConfig);
-      server.start();
+			server.start();
 		} else {
 			getConfigFile(defaultConfigPath, function (defaultConfig) {
 				if (defaultConfig) {
 					var server = new Server(defaultConfig);
-          server.start();
+					server.start();
 				} else {
 					console.error("Server cannot start without any configuration file.");
 					process.exit(1);

@@ -10,23 +10,26 @@ var b2BodyDef = Box2D.Dynamics.b2BodyDef,
 	b2CircleShape = Box2D.Collision.Shapes.b2CircleShape;
 
 var Player = module.exports = Entity.extend({
-	init: function (socket, id, world) {
+	init: function (connection, id) {
 		var self = this;
-		this.socket = socket;
+		this.connection = connection;
 		this._super(id, "player", Constants.Types.Entities.PLAYER);
-		this.world = world;
+
+		this.send(Constants.Types.Messages.Welcome, {
+			id: id
+		});
 		this.animation = "idle_right";
 
-		this.socket.on('action', function (data) {
-			self.onAction(data);
+		this.connection.listen(function (message) {
+			self.callbacks[message.t](message.d);
 		});
-		this.socket.on('angle', function (data) {
-			self.onAngle(data);
-		});
+
+		this.callbacks = {};
+		this.callbacks[Constants.Types.Messages.Action] = function (data) { self.onAction(data); };
+		this.callbacks[Constants.Types.Messages.Angle] = function (data) { self.onAngle(data); };
 
 		this.bodyDef = new b2BodyDef();
 		this.bodyDef.type = b2Body.b2_dynamicBody;
-		this.bodyDef.position = this.position;
 		this.bodyDef.linearDamping = 4;
 
 		this.fixtureDef = new b2FixtureDef();
@@ -38,25 +41,11 @@ var Player = module.exports = Entity.extend({
 		circleShape.m_radius = 0.1;
 		this.fixtureDef.shape = circleShape;
 	},
-	construct: function () {
-		this.body = this.world.CreateBody(this.bodyDef);
-		this.body.m_userData = this;
-		this.fixture = this.body.CreateFixture(this.fixtureDef);
-		this.getPosition = function () {
-			return this.body.GetPosition();
-		};
-		this.setPosition = function (x, y) {
-			this.body.SetPosition(new b2Vec2(x, y));
-		};
-		this.getAngle = function () {
-			return this.body.GetAngle();
-		};
-		this.setAngle = function (a) {
-			this.body.SetAngle(a);
-		};
-	},
-	destruct: function (world) {
-		world.DestroyBody(this.body);
+	send: function (event, message) {
+		this.connection.send({
+			t: event,
+			d: message
+		});
 	},
 	move_up: function () {
 		var self = this;

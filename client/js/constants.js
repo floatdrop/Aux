@@ -5,6 +5,13 @@ Constants = {
 			CommonEntity: 2,
 			CircleEntity: 3,
 			PolygonEntity: 4
+		},
+		Messages: {
+			Welcome: 0,
+			Map: 1,
+			EntityList: 2,
+			Action: 3,
+			Angle: 4
 		}
 	}
 };

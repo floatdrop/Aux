@@ -1,70 +1,63 @@
 var fs = require('fs'),
 	cls = require('./lib/class'),
 	_ = require('underscore'),
-	CommonEntity = require('./entities/commonEntity'),
-	Engine = require('./engine');
+	EntityFactory = require('./entities/entityFactory');
 
 var WorldMap = module.exports = cls.Class.extend({
-	init: function (config, engine) {
+	init: function (map_filepath, engine) {
 		this.isLoaded = false;
 		this.data = {};
-		this.engine = engine;
 		var self = this;
 
-		fs.readFile(config.map_filepath, 'utf8', function (err, data) {
+		fs.readFile(map_filepath, 'utf8', function (err, data) {
 			if (err) {
 				throw new Error(err);
 			}
 			self.data = JSON.parse(data);
 			self.isLoaded = true;
-			self.fillWorld(self.data, self.engine);
+			self.fillWorld(self.data, engine);
 		});
 	},
 
-	sendMap: function (socket) {
+	adjustInfo: function (entity_info) {
+		var scale = 100;
+		if (entity_info.polyline) {
+			entity_info.polyline.shift();
+			entity_info.points = [];
+			_.each(
+				entity_info.polyline, function (point) {
+				point.x = point.x / scale,
+				point.y = point.y / scale;
+				entity_info.points.push({x: point.x, y: point.y});
+			});
+			entity_info.points.reverse();
+		}
+		entity_info.width = entity_info.width / scale / 2;
+		entity_info.height = entity_info.height / scale / 2;
+		entity_info.x = entity_info.x / scale + entity_info.width;
+		entity_info.y = entity_info.y / scale + entity_info.height;
+	},
+
+	sendMap: function (player) {
 		if (this.isLoaded) {
-			socket.emit("map", this.data);
+			player.send(Constants.Types.Messages.Map, this.data);
 		} else {
-			setTimeout(this.sendMap, 100);
+			setTimeout(this.sendMap, 1000);
 		}
 	},
 
 	fillWorld: function (data, engine) {
-		var self = this,
-			objects = _.find(data.layers, function (layer) { 
+		var self = this;
+
+		var objects = _.find(data.layers, function (layer) { 
 			return layer.name === "objects";
 		}).objects;
 
 		_.each(objects, function (entity_info) {
-			var obj = new CommonEntity(null, entity_info.type);
-			self.adjustParameters(obj, entity_info);
-			self.createPhysicBody(engine.b2w, obj, entity_info);
+			self.adjustInfo(entity_info);
+			var obj = EntityFactory.createEntity(entity_info);
 			engine.addEntity(obj);
 		});
-	},
-
-	adjustParameters: function (obj, entity_info) {
-		obj.width = entity_info.width / 100 / 2;
-		obj.height = entity_info.height / 100 / 2;
-		var x = entity_info.x / 100 + obj.width,
-			y = entity_info.y / 100 + obj.height;
-		obj.setPosition(x, y);
-	},
-
-	createPhysicBody: function (b2w, obj, entity_info) {
-		obj.body = Engine.createBody(b2w, obj.position.x, obj.position.y);
-		obj.body.m_userData = obj;
-		if (entity_info.polyline) {
-			var vertices = [];
-			for (var i = entity_info.polyline.length - 1; i > 0; i--) {
-				var v = entity_info.polyline[i];
-				vertices.push({x: v.x / 100, y: v.y / 100});
-			}
-			obj.fixture = Engine.createPolygonFixture(obj.body, vertices);
-		}
-		else {
-			obj.fixture = Engine.createBoxFixture(obj.body, obj.width, obj.height);
-		}
 	}
 });
 

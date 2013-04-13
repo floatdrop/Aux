@@ -5,21 +5,28 @@ var logger = new(winston.Logger)({
 		new(winston.transports.Console)({
 			json: false,
 			timestamp: true,
-			level: 'error'
+			level: 'error',
+			colorize: true,
+			prettyPrint: true,
 		}),
 		new winston.transports.File({
 			filename: __dirname + '/debug.log',
-			json: false
+			json: false,
+			prettyPrint: true
 		})
 	],
 	exceptionHandlers: [
 		new(winston.transports.Console)({
 			json: false,
-			timestamp: true
+			timestamp: true,
+			colorize: true,
+			prettyPrint: true
 		}),
 		new winston.transports.File({
 			filename: __dirname + '/exceptions.log',
-			json: false
+			json: false,
+			handleExceptions: true,
+			prettyPrint: true
 		})
 	],
 	exitOnError: false

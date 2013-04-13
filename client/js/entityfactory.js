@@ -7,7 +7,7 @@ define(['player', 'commonEntity', 'circleEntity', 'polygonEntity', 'sprite'],
 	EntityFactory.createEntity = function (entity_info, name) {
 		var kind = entity_info.kind;
 		if (!kind) {
-			console.log.error("kind is undefined", true);
+			console.log("kind is undefined", entity_info);
 			return;
 		}
 
