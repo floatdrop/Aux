@@ -8,10 +8,10 @@ define(function () {
 		connect: function () {
 			var self = this;
 			this.socket = new WebSocket("ws://" + this.host);
-			this.socket.binaryType = 'arraybuffer';
 			this.socket.onmessage = function (event) {
-				var message = self.decodeMessage(event);
-				self.callbacks[message.t](message.d);
+				self.decodeMessage(event, function (message) {
+					self.callbacks[message.t](message.d);
+				});
 			};
 			this.socket.onerror = function (error) {
 				console.log(error);
@@ -24,13 +24,16 @@ define(function () {
 			this.callbacks[Constants.Types.Messages.Map] = this.map_callback;
 			this.callbacks[Constants.Types.Messages.EntityList] = this.entity_list_callback;
 		},
-		decodeMessage: function (event) {
+		decodeMessage: function (event, callback) {
 			if (typeof event.data === "string") {
-				return JSON.parse(event.data);
+				callback(JSON.parse(event.data));
 			} else {
-				var bytes = new Uint8Array(event.data);
-				var msg = String.fromCharCode.apply(null, bytes);
-				return window.BISON.decode(msg);
+				var reader = new FileReader();
+				reader.readAsBinaryString(event.data);
+				reader.onloadend = function () {
+					var message = window.BISON.decode(this.result);
+					callback(message);
+				};
 			}
 		},
 		send: function (message) {

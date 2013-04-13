@@ -7,7 +7,7 @@ var cls = require("./lib/class"),
 	BISON = require('./lib/bison'),
 	WS = {},
 	log = require("./log"),
-	useBison = false;
+	useBison = true;
 
 module.exports = WS;
 
@@ -189,10 +189,11 @@ WS.worlizeWebSocketConnection = Connection.extend({
 
 		this._connection.on('message', function (message) {
 			if (self.listen_callback) {
-				if (message.type === 'utf8') {
-					self.listen_callback(JSON.parse(message.utf8Data));
+				if (message.type !== "utf8") {
+					var decoded = BISON.decode(message.binaryData);
+					self.listen_callback(decoded);
 				} else {
-					self.listen_callback(BISON.decode(message.binaryData));
+					self.listen_callback(JSON.parse(message.utf8Data));
 				}
 			}
 		});
@@ -209,8 +210,7 @@ WS.worlizeWebSocketConnection = Connection.extend({
 	send: function (message) {
 		if (useBison) {
 			var encoded = BISON.encode(message);
-			var decoded = BISON.decode(encoded);
-			this.sendBytes(new Buffer(encoded, "utf-8"));
+			this.sendBytes(new Buffer(encoded, "binary"));
 		} else {
 			this.sendUTF8(JSON.stringify(message));
 		}
