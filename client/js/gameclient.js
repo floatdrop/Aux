@@ -4,7 +4,7 @@ define(function () {
 			this.socket = null;
 			this.host = host;
 			this.port = port;
-			this.useBison = false;
+			this.useBison = true;
 		},
 		connect: function () {
 			var self = this;
@@ -37,10 +37,13 @@ define(function () {
 				};
 			}
 		},
+		byteValue: function (x) {
+			return x.charCodeAt(0) & 0xff;
+		},
 		send: function (message) {
 			if (this.useBison) {
-				// this.socket.send(new Buffer(msgpack.encode(message), "binary").buffer);
-				throw "Not implemented yet";
+				var encoded = msgpack.encode(message);
+				this.socket.send(encoded);
 			} else {
 				this.socket.send(JSON.stringify(message));
 			}

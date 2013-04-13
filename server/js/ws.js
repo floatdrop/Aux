@@ -190,7 +190,8 @@ WS.worlizeWebSocketConnection = Connection.extend({
 		this._connection.on('message', function (message) {
 			if (self.listen_callback) {
 				if (message.type !== "utf8") {
-					var decoded = msgpack.unpack(message.binaryData);
+					var msg = String.fromCharCode.apply(null, new Uint8Array(message.binaryData));
+					var decoded = msgpack.unpack(new Buffer(msg, "binary"));
 					self.listen_callback(decoded);
 				} else {
 					self.listen_callback(JSON.parse(message.utf8Data));
