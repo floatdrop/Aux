@@ -33,11 +33,10 @@ define([], function () {
 			});
 		},
 		drawLayer: function (map, layer) {
-			var self = this,
-				i = 0;
-			_.each(layer.data, function (tile) {
-				if (tile !== 0) self.drawTile(map, i, tile);
-				i++;
+			var self = this;
+			_.each(layer.data, function (tile, index) {
+				if (tile !== 0) 
+					self.drawTile(map, index, tile);
 			});
 		},
 		drawTile: function (map, index, value) {

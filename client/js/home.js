@@ -1,3 +1,3 @@
-define(['lib/class', 'lib/underscore', 'lib/stacktrace', 'constants', 'utils'], function () {
+define(['lib/class', 'lib/underscore', 'constants'], function () {
 	require(["main"]);
 });

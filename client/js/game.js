@@ -1,71 +1,53 @@
 /* global _ */
 
-define(['renderer', 'player', 'gameclient', 'entityfactory', 'map'],
-
-function (Renderer, Player, GameClient, EntityFactory, Map) {
+define(['entities/player', 'gameclient', 'entityfactory', 'map'], function (Player, GameClient, EntityFactory, Map) {
 	var Game = Class.extend({
-		init: function () {
-			this.mouse = {
-				x: 0,
-				y: 0
-			};
-			this.renderer = null;
-			this.entities = [];
-			this.keyboard = {};
-			this.keybindings = {
-				'w': this.moveUp.bind(this),
-				's': this.moveDown.bind(this),
-				'a': this.moveLeft.bind(this),
-				'd': this.moveRight.bind(this)
-			};
-			this.host = window.location.host;
-			this.playerId = null;
+		map: new Map(),
+
+		init: function (renderer) {
+			this.renderer = renderer;
+
+			this.keybindings['w'] = this.moveUp.bind(this);
+			this.keybindings['s'] = this.moveDown.bind(this);
+			this.keybindings['a'] = this.moveLeft.bind(this);
+			this.keybindings['d'] = this.moveRight.bind(this);
 		},
 		run: function () {
 			this.camera = this.renderer.camera;
 			this.tick();
 		},
 		tick: function () {
-			this.currentTime = new Date().getTime();
-
-			var self = this,
-				t = this.currentTime;
-
-			this.renderer.renderFrame();
+			this.renderer.render(this.stage);
+			this._handleKeyboard();
+			requestAnimFrame(this.tick.bind(this));
+		},
+		_handleKeyboard: function () {
+			var self = this;
 			_.each(this.keyboard, function (pressed, key) {
 				if (pressed) self.keybindings[key]();
 			});
-
-			_.each(this.entities, function (entity) {
-				var anim = entity.currentAnimation;
-				if (anim) {
-					anim.update(t);
-				}
-			});
-			requestAnimFrame(this.tick.bind(this));
-		},
-		setup: function (canvas) {
-			this.setRenderer(new Renderer(this, canvas));
-		},
-		setRenderer: function (renderer) {
-			this.renderer = renderer;
 		},
 		connect: function () {
 			var self = this;
+
+			this.map.onMapLoaded(function () {
+				_.each(self.map.getDisplayObjects(), function (displayObject) {
+					self.stage.addChild(displayObject);
+				});
+			});
+
 			this.client = new GameClient(this.host, this.port);
-			this.map = new Map(this);
 			this.client.onWelcome(function (data) {
 				self.playerId = data.playerId;
 			});
-			this.client.onMap(function (data) {
-				self.map.onMapLoaded(data);
+			this.client.onMap(function (mapinfo) {
+				self.map.load(mapinfo);
 			});
-			this.client.onEntityList(function (data) {
+			this.client.onEntityList(function (entitieslist) {
 				var entities = {};
-				_.each(data, function (entity_info) {
+				_.each(entitieslist, function (entity_info) {
 					var id = entity_info.id,
-						entity = id in self.entities ? self.entities[id] : 
-														EntityFactory.createEntity(entity_info, id);
+						entity = id in self.entities ? self.entities[id] : EntityFactory.createEntity(entity_info, id);
 					entity.update(entity_info);
 					entities[id] = entity;
 				});
@@ -75,20 +57,30 @@ function (Renderer, Player, GameClient, EntityFactory, Map) {
 		},
 		moveCursor: function () {
 			//var angle = 0;
-			//return this.client.angle(angle);
+			//return this.client.sendAngle(angle);
 		},
 		moveUp: function () {
-			return this.client.action('up');
+			return this.client.sendAction('up');
 		},
 		moveDown: function () {
-			return this.client.action('down');
+			return this.client.sendAction('down');
 		},
 		moveLeft: function () {
-			return this.client.action('left');
+			return this.client.sendAction('left');
 		},
 		moveRight: function () {
-			return this.client.action('right');
+			return this.client.sendAction('right');
 		},
+		stage: new PIXI.Stage(0x000000),
+		entities: [],
+		keyboard: {},
+		keybindings: {},
+		mouse: {
+			x: 0,
+			y: 0
+		},
+		host: window.location.host,
+		playerId: null
 	});
 
 	return Game;

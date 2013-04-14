@@ -1,46 +1,73 @@
 /* global _ */
 
-define([], function () {
+define(['lib/async', 'tileset'], function (async, TileSet) {
 	var Map = Class.extend({
-		init: function (game) {
-			this.isLoaded = false;
-			this.tilesets = [];
-			this.layers = [];
-			this.game = game;
+
+		tilesets: [],
+		layers: [],
+
+		init: function () {
 		},
 
-		onMapLoaded: function (data) {
-			this.layers = data.layers;
-			this.width = data.width;
-			this.loadtilesets(data.tilesets);
+		load: function (mapinfo) {
+			this.layers = mapinfo.layers,
+			this.width = mapinfo.width;
+			this.height = mapinfo.height;
+			this._loadTileSets(mapinfo.tilesets);
 		},
 
-		getTileSet: function (tileIndex) {
-			for (var i = 0; i < this.tilesets.length; i++) {
-				if (this.tilesets[i].firstgid < tileIndex) return this.tilesets[i];
-			}
+		getDisplayObjects: function () {
+			var self = this;
+			var displayObjects = [];
+			_.each(this.layers, function (layer) {
+				displayObjects.push(self._layerToDisplayObjects(layer));
+			});
+			return displayObjects;
 		},
 
-		loadtilesets: function (tilesets) {
-			var countTileSets = tilesets.length,
-				self = this;
-			_.each(tilesets, function (tileset) {
-				var image = new Image();
-				image.src = "img/sprites/ground_64x64.png";
-				image.onload = function () {
-					countTileSets--;
-					if (countTileSets === 0) {
-						self.isloaded = true;
-					}
+		_layerToDisplayObjects: function (layer) {
+			var self = this;
+			var displayObject = new PIXI.DisplayObjectContainer();
+			_.each(layer.tiles, function (tileindex, index) {
+				var tileSet = self.getTileSet(tileindex);
+				var texture = tileSet.getTexture(tileindex);
+				var tileSprite = new PIXI.Sprite(texture);
+				tileSprite.position = new PIXI.Point(
+					(index % layer.width) * layer.tilewidth,
+					(index / layer.width) * layer.tileheight 
+				);
+				displayObject.addChild(tileSprite);
+			});
+			return displayObject;
+		},
+
+		getTileSet: function (tileindex) {
+			return _.first(this.tilesets, function (tileset) {
+				return tileset.firstindex >= tileindex && tileindex < tileset.lastindex;
+			});
+		},
+
+		onMapLoaded: function (callback) {
+			this.maploaded_callback = callback;
+		},
+
+		_loadTileSet: function (tileset, callback) {
+			callback(null, new TileSet(tileset));
+		},
+
+		_loadTileSets: function (tilesets) {
+			var self = this;
+
+			/* This can be more beautiful */
+			async.parallel(
+			_.map(tilesets, function (tileset) {
+				return function (callback) {
+					self._loadTileSet(tileset, callback);
 				};
-
-				self.tilesets.push({
-					firstgid: tileset.firstgid,
-					tileWidth: tileset.tilewidth,
-					tileHeight: tileset.tileheight,
-					width: tileset.imagewidth / tileset.tilewidth,
-					image: image
-				});
+			}),
+			function (err, results) {
+				self.tilesets = results;
+				self.maploaded_callback(null, this);
 			});
 		}
 	});

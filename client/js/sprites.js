@@ -1,7 +1,7 @@
 /* global _ */
 
 define(['./lib/text!../sprites/player.json',
-	'./lib/text!../sprites/trie.json',
+	'./lib/text!../sprites/tree.json',
 	'./lib/text!../sprites/stone.json',
 	'./lib/text!../sprites/stone2.json',
 	'./lib/text!../sprites/stone3.json',

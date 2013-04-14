@@ -36,6 +36,12 @@ var Engine = module.exports = cls.Class.extend({
 			return this.body.GetAngle();
 		};
 	},
+	addEntities: function (entities_list) {
+		var self = this;
+		_.each(entities_list, function (entity) {
+			self.addEntity(entity);
+		});
+	},
 	removeEntity: function (id) {
 		var entities = this.getEntities();
 		var entity = _.find(entities, function (entity) {

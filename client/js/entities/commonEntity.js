@@ -1,4 +1,4 @@
-define(['entity'], function (Entity) {
+define(['entities/entity'], function (Entity) {
 
 	var CommonEntity = Entity.extend({
 		init: function (id) {

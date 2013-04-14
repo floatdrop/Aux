@@ -28,7 +28,7 @@
   <properties>
    <property name="client" value="false"/>
   </properties>
-  <object type="trie" x="608" y="240" width="64" height="35"/>
+  <object type="tree" x="608" y="240" width="64" height="35"/>
   <object type="stump" x="546" y="289" width="59" height="49"/>
   <object type="stump" x="674" y="257" width="59" height="49"/>
   <object type="stone" x="420" y="110">
