@@ -1,9 +1,9 @@
-var PolygonEntity = require('./polygonEntity'),
-	CircleEntity = require('./circleEntity'),
-	CommonEntity = require('./commonEntity'),
+var PolygonEntity = require('./entities/polygonEntity'),
+	CircleEntity = require('./entities/circleEntity'),
+	CommonEntity = require('./entities/commonEntity'),
 	_ = require('underscore'),
-	cls = require('../lib/class'),
-	Box2D = require('../lib/box2d'),
+	cls = require('./lib/class'),
+	Box2D = require('./lib/box2d'),
 	b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape,
 	b2CircleShape = Box2D.Collision.Shapes.b2CircleShape;
 

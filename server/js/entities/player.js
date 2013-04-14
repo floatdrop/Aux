@@ -1,5 +1,5 @@
 var Box2D = require('../lib/box2d'),
-	Entity = require('./entity'),
+	Entity = require('../entity'),
 	_ = require('underscore');
 
 require('../../../client/js/constants');

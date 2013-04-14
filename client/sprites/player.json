@@ -2,23 +2,24 @@
 	"id": "player",
 	"width": 32,
 	"height": 32,
+	"image": "img/1/player.png",
 	"animations": {
 		"atk_left": {
 			"length": 5,
 			"row": 0,
-			"flipSpriteX": true,
+			"scalex": -1,
 			"speed": 200
 		},
 		"walk_left": {
 			"length": 4,
 			"row": 1,
-			"flipSpriteX": true,
+			"scalex": -1,
 			"speed": 200
 		},
 		"idle_left": {
 			"length": 2,
 			"row": 2,
-			"flipSpriteX": true,
+			"scalex": -1,
 			"speed": 2000
 		},
 		"atk_right": {

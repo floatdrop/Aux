@@ -1,6 +1,8 @@
 define(['entities/entity'], function (Entity) {
 
     var CircleEntity = Entity.extend({
+        radius: 0,
+        
         init: function (id) {
             this._super(id, Constants.Types.Entities.CircleEntity);
         },

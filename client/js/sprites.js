@@ -2,20 +2,50 @@
 
 define(['./lib/text!../sprites/player.json',
 	'./lib/text!../sprites/tree.json',
-	'./lib/text!../sprites/stone.json',
-	'./lib/text!../sprites/stone2.json',
-	'./lib/text!../sprites/stone3.json',
-	'./lib/text!../sprites/stone4.json',
-	'./lib/text!../sprites/stump.json',
-	'./lib/text!../sprites/empty.json'], function () {
+	'./lib/text!../sprites/stone.json'], function () {
 
-	var sprites = {};
+	var Sprites = { definitions: {} };
 
 	_.each(arguments, function (spriteJson) {
 		var sprite = JSON.parse(spriteJson);
-		sprites[sprite.id] = sprite;
+		var def = { 
+			width: sprite.width,
+			height: sprite.height,
+			texture: PIXI.Texture.fromImage(sprite.image),
+			offsetx: sprite.offsetx || 0,
+			offsety: sprite.offsety || 0,
+			animations: {}
+		};
+		_.each(sprite.animations, function (animation, name) {
+			var adef = {
+				length: animation.length,
+				row: animation.row,
+				scale: new PIXI.Point(animation.scalex || 1, animation.scaley || 1),
+				speed: animation.speed,
+				position: new PIXI.Point(animation.offsetx || def.offsetx, animation.offsety || def.offsety),
+				textures: []
+			};
+			for (var i = 0; i < adef.length; i++) {
+				adef.textures.push(new PIXI.Texture(def.texture, 
+					new PIXI.Rectangle(i * def.width, adef.row * def.height, def.width, def.height)));
+			}
+			def.animations[name] = adef;
+		});
+		Sprites.definitions[sprite.id] = def;
 	});
 
-	return sprites;
+	Sprites.ApplyAnimation = function (entity, sprite, animation) {
+		if (sprite === undefined || animation === undefined)
+			return;
+		var adef = Sprites.definitions[sprite].animations["idle_right"];
+		var movieclip = new PIXI.MovieClip(adef.textures);
+		movieclip.animationSpeed = adef.speed;
+		movieclip.scale = adef.scale;
+		movieclip.position = adef.position;
+		entity.movieclip = movieclip;
+		entity.animated = true;
+	};
+
+	return Sprites;
 
 });

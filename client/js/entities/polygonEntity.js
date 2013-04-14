@@ -1,13 +1,15 @@
 define(['entities/entity'], function (Entity) {
 
     var PolygonEntity = Entity.extend({
+        points: [],
+
         init: function (id) {
             this._super(id, Constants.Types.Entities.PolygonEntity);
         },
 
         update: function (entity_info) {
             this.setPosition(entity_info.position.x, entity_info.position.y);
-            this.vertices = entity_info.vertices;
+            this.points = entity_info.points;
         },
 
         draw: function (context) {
@@ -15,9 +17,9 @@ define(['entities/entity'], function (Entity) {
                 y = this.position.y * this.scale;
 
             context.beginPath();
-            for (var i = 0; i < this.vertices.length;i++) {
-                var x1 = this.vertices[i].x * this.scale + x,
-                    y1 = this.vertices[i].y * this.scale + y;
+            for (var i = 0; i < this.points.length;i++) {
+                var x1 = this.points[i].x * this.scale + x,
+                    y1 = this.points[i].y * this.scale + y;
 
                 context.lineTo(x1, y1);
             }

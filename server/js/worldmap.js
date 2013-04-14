@@ -2,7 +2,7 @@ var fs = require('fs'),
 	cls = require('./lib/class'),
 	_ = require('underscore'),
 	
-	EntityFactory = require('./entities/entityFactory');
+	EntityFactory = require('./entityFactory');
 
 var WorldMap = module.exports = cls.Class.extend({
 	entities: [],
