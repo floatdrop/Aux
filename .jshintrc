@@ -6,7 +6,7 @@
         "Class": false,
         "define": false,
         "requestAnimFrame": false,
-        "msgpack": false
+        "msgpack": true 
     },
     "maxparams": 10,
     "maxdepth": 5,
