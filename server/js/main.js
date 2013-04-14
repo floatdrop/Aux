@@ -23,6 +23,10 @@ var Server = module.exports = cls.Class.extend({
 		} else if (config.debug_level === "info") {
 			this.loglevel = 1;
 		}
+
+		this.ready_callback = function () {
+			log.info("Server started");
+		};
 	},
 	start: function () {
 
@@ -40,7 +44,11 @@ var Server = module.exports = cls.Class.extend({
 
 		this.engine = new Box2dEngine(this.config.drawDebug);
 		this.world = new World(this.config.ups, this.config.map_filepath, this.engine, this._server);
+		this.world.onReady(this.ready_callback);
 		this.world.run();
+	},
+	onReady: function (callback) {
+		this.ready_callback = callback;
 	}
 });
 

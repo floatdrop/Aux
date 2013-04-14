@@ -11,6 +11,7 @@ module.exports = cls.Class.extend({
 		this.map_filepath = map_filepath;
 		this.onPlayerConnect(this.playerConnect);
 		this.onPlayerDisconnect(this.playerDisconnect);
+		this.ready_callback = function () { log.info("World started"); };
 	},
 	playerConnect: function (connection) {
 		var self = this,
@@ -33,11 +34,17 @@ module.exports = cls.Class.extend({
 			self.engine.tick(1000.0 / self.ups);
 			self.server.broadcast({t: Constants.Types.Messages.EntityList, d: self.engine.dumpEntities()});
 		}, 1000 / this.ups);
+		setTimeout(function () {
+			self.ready_callback();
+		}, 1000 / this.ups);
 	},
 	onPlayerConnect: function (callback) {
 		this.connect_callback = callback;
 	},
 	onPlayerDisconnect: function (callback) {
 		this.disconnect_callback = callback;
+	},
+	onReady: function (callback) {
+		this.ready_callback = callback;
 	}
 });
