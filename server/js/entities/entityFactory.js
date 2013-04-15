@@ -80,16 +80,7 @@ EntityFactory.createCircleEntity = function (id, entity, shape) {
 };
 
 EntityFactory.createEmptyCircleEntity = function (id) {
-	var circleEntity = new CircleEntity(id);
-	circleEntity.getBaseState = function () {
-		return {
-			position: {x: 0, y: 0},
-			radius: 0,
-			kind: this.kind,
-			id: this.id
-		};
-	};
-	return circleEntity;
+	return new CircleEntity(id);
 };
 
 return EntityFactory;
