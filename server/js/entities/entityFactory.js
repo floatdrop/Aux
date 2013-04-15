@@ -10,7 +10,7 @@ var PolygonEntity = require('./polygonEntity'),
 
 var EntityFactory = module.exports = cls.Class.extend({});
 
-EntityFactory.createEntity = function (entity_info) {
+EntityFactory.createEntity = function (entity_info) {	
 	var entity = new CommonEntity(null, entity_info.type);
 	if (entity_info.points) {
 		entity.setBodyDefAsPoly(entity_info.points);

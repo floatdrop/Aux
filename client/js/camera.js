@@ -4,7 +4,8 @@ define([], function () {
 			this.renderer = renderer;
 			this.map = renderer.game.map;
 			this.linkedEntity = null;
-			this.center = {x: window.innerWidth / 2, y: window.innerHeight / 2};
+			this.center = {x: this.renderer.canvas.width / 2, y: this.renderer.canvas.height / 2};
+			this.countAdditionalTiles = 5; // draw tiles with reserve
 		},
 
 		linkToEntity: function (entity) {
@@ -17,14 +18,21 @@ define([], function () {
 				return this.getVisibleAreaStructure(0, 0, 0, 0);
 			}
 
-			var x = this.linkedEntity.x * this.renderer.scale,
-				y = this.linkedEntity.y * this.renderer.scale,
+			var x = this.linkedEntity.position.x * this.renderer.scale,
+				y = this.linkedEntity.position.y * this.renderer.scale,
 				startX = Math.floor((x - this.center.x) / this.map.tileWidth),
 				startY = Math.floor((y - this.center.y) / this.map.tileHeight),
-				maxTileInRow = Math.floor(this.center.x * 2 / this.map.tileWidth),
-				maxTileInCol = Math.floor(this.center.y * 2 / this.map.tileHeight),
-				endX = startX + maxTileInRow + 1,
-				endY = startY + maxTileInCol + 1;
+				maxTileInRow = Math.floor(this.center.x * 2 / this.map.tileWidth) + this.countAdditionalTiles,
+				maxTileInCol = Math.floor(this.center.y * 2 / this.map.tileHeight) + this.countAdditionalTiles,
+				endX = startX + maxTileInRow,
+				endY = startY + maxTileInCol;
+
+			if (startX > this.countAdditionalTiles) {
+				startX -= this.countAdditionalTiles;
+			}
+			if (startY > this.countAdditionalTiles) {
+				startY -= this.countAdditionalTiles;
+			}
 
 			if (startX < 0) {
 				startX = 0;
@@ -67,8 +75,8 @@ define([], function () {
 				return false;
 			}
 
-			var x = this.linkedEntity.x * this.renderer.scale,
-				y = this.linkedEntity.y * this.renderer.scale,
+			var x = this.linkedEntity.position.x * this.renderer.scale,
+				y = this.linkedEntity.position.y * this.renderer.scale,
 				x1 = entity.x * this.renderer.scale,
 				y1 = entity.y * this.renderer.scale,
 				leftX = x - this.center.x,
@@ -100,8 +108,8 @@ define([], function () {
 
 		updatePosition: function (context) {
 			if (this.linkedEntity) {
-				var x = this.linkedEntity.x * this.renderer.scale,
-					y = this.linkedEntity.y * this.renderer.scale,
+				var x = this.linkedEntity.position.x * this.renderer.scale,
+					y = this.linkedEntity.position.y * this.renderer.scale,
 					offset_x = x - this.oldPosition.x,
 					offset_y = y - this.oldPosition.y;
 
