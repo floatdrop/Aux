@@ -37,7 +37,7 @@ define(['./lib/text!../sprites/player.json',
 	Sprites.ApplyAnimation = function (entity, sprite, animation) {
 		if (sprite === undefined || animation === undefined)
 			return;
-		var adef = Sprites.definitions[sprite].animations["idle_right"];
+		var adef = Sprites.definitions[sprite].animations[animation];
 		var movieclip = new PIXI.MovieClip(adef.textures);
 		movieclip.animationSpeed = adef.speed;
 		movieclip.scale = adef.scale;

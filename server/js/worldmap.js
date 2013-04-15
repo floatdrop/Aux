@@ -8,7 +8,7 @@ var WorldMap = module.exports = cls.Class.extend({
 	entities: [],
 
 	init: function (map_filepath, engine) {
-		this.json = fs.readFileSync(map_filepath, 'utf8');
+		this.json = JSON.parse(fs.readFileSync(map_filepath, 'utf8'));
 		this.createObjects(this.json, engine);
 	},
 

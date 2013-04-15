@@ -1,7 +1,5 @@
 define(function () {
 	var TileSet = Class.extend({
-		tilecahce: [],
-
 		init: function (tileset_info) {
 			this.texture = PIXI.Texture.fromImage(tileset_info.image);
 			this.imagewidth = tileset_info.imagewidth;
@@ -11,6 +9,7 @@ define(function () {
 			this.tileheight = tileset_info.tileheight;
 			this.firstindex = tileset_info.firstgid;
 			this.tilecount = this.imagewidth * this.imageheight / (this.tilewidth * this.tileheight);
+			this.tilecache = new Array(this.tilecount);
 			this.lastindex = this.tilecount + this.firstindex;
 			this.width = this.imagewidth / this.tilewidth;
 			this.height = this.imageheight / this.tileheight;

@@ -28,7 +28,9 @@ define(['lib/async', 'tileset'], function (async, TileSet) {
 		_layerToDisplayObjects: function (layer) {
 			var self = this;
 			var displayObject = new PIXI.DisplayObjectContainer();
-			_.each(layer.tiles, function (tileindex, index) {
+			_.each(layer.data, function (tileindex, index) {
+				if (tileindex <= 0)
+					return;
 				var tileSet = self.getTileSet(tileindex);
 				var texture = tileSet.getTexture(tileindex);
 				var tileSprite = new PIXI.Sprite(texture);
@@ -42,8 +44,8 @@ define(['lib/async', 'tileset'], function (async, TileSet) {
 		},
 
 		getTileSet: function (tileindex) {
-			return _.first(this.tilesets, function (tileset) {
-				return tileset.firstindex >= tileindex && tileindex < tileset.lastindex;
+			return _.find(this.tilesets, function (tileset) {
+				return tileset.firstindex <= tileindex && tileindex < tileset.lastindex;
 			});
 		},
 
