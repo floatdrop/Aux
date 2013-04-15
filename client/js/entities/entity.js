@@ -22,7 +22,7 @@ define(['sprites'], function (Sprites) {
 			// this.movieclip.rotation = a;
 		},
 		update: function (entity_info) {
-			Sprites.ApplyAnimation(this, this.name, entity_info.animation);
+			Sprites.ApplyAnimation(this, this.kind, entity_info.animation);
 			this.setPosition(entity_info.position.x, entity_info.position.y);
 			this.setAngle(entity_info.angle);
 		}
