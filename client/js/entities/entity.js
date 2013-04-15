@@ -18,8 +18,8 @@ define(['sprites'], function (Sprites) {
 		getAngle: function () {
 			return this.movieclip.rotation;
 		},
-		setAngle: function (a) {
-			this.movieclip.rotation = a;
+		setAngle: function () {
+			// this.movieclip.rotation = a;
 		},
 		update: function (entity_info) {
 			Sprites.ApplyAnimation(this, this.name, entity_info.animation);
