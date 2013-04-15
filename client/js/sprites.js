@@ -11,7 +11,7 @@ define(['./lib/text!../sprites/player.json',
 		var def = { 
 			width: sprite.width,
 			height: sprite.height,
-			texture: PIXI.Texture.fromImage(sprite.image),
+			baseTexture: PIXI.Texture.fromImage(sprite.image).baseTexture,
 			offsetx: sprite.offsetx || 0,
 			offsety: sprite.offsety || 0,
 			animations: {}
@@ -26,7 +26,7 @@ define(['./lib/text!../sprites/player.json',
 				textures: []
 			};
 			for (var i = 0; i < adef.length; i++) {
-				adef.textures.push(new PIXI.Texture(def.texture, 
+				adef.textures.push(new PIXI.Texture(def.baseTexture, 
 					new PIXI.Rectangle(i * def.width, adef.row * def.height, def.width, def.height)));
 			}
 			def.animations[name] = adef;

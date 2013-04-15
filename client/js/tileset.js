@@ -1,7 +1,7 @@
 define(function () {
 	var TileSet = Class.extend({
 		init: function (tileset_info) {
-			this.texture = PIXI.Texture.fromImage(tileset_info.image);
+			this.baseTexture = PIXI.Texture.fromImage(tileset_info.image).baseTexture;
 			this.imagewidth = tileset_info.imagewidth;
 			this.imageheight = tileset_info.imageheight;
 			this.name = tileset_info.name;
@@ -25,7 +25,7 @@ define(function () {
 				i / this.width * this.tileheight, 
 				this.tilewidth, 
 				this.tileheight);
-			this.tilecache[index] = new PIXI.Texture(this.texture, frame);
+			this.tilecache[index] = new PIXI.Texture(this.baseTexture, frame);
 			return this.tilecache[index];
 		}
 	});

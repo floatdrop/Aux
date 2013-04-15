@@ -6,10 +6,11 @@ define(['lib/async', 'tileset'], function (async, TileSet) {
 		tilesets: [],
 		layers: [],
 
-		init: function () {
-		},
+		init: function () {},
 
 		load: function (mapinfo) {
+			this.tilewidth = mapinfo.tilewidth;
+			this.tileheight = mapinfo.tileheight;
 			this.layers = mapinfo.layers,
 			this.width = mapinfo.width;
 			this.height = mapinfo.height;
@@ -29,15 +30,12 @@ define(['lib/async', 'tileset'], function (async, TileSet) {
 			var self = this;
 			var displayObject = new PIXI.DisplayObjectContainer();
 			_.each(layer.data, function (tileindex, index) {
-				if (tileindex <= 0)
-					return;
+				if (tileindex <= 0) return;
 				var tileSet = self.getTileSet(tileindex);
 				var texture = tileSet.getTexture(tileindex);
 				var tileSprite = new PIXI.Sprite(texture);
 				tileSprite.position = new PIXI.Point(
-					(index % layer.width) * layer.tilewidth,
-					(index / layer.width) * layer.tileheight 
-				);
+				(index % layer.width) * self.tilewidth, (index / layer.width) * self.tileheight);
 				displayObject.addChild(tileSprite);
 			});
 			return displayObject;
@@ -67,6 +65,7 @@ define(['lib/async', 'tileset'], function (async, TileSet) {
 					self._loadTileSet(tileset, callback);
 				};
 			}),
+
 			function (err, results) {
 				self.tilesets = results;
 				self.maploaded_callback(null, this);

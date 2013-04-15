@@ -4,7 +4,7 @@ define(['jquery', 'game'], function ($, Game) {
 	document.body.appendChild(renderer.view);
 
 	var game = new Game(renderer);
-
+	
 	/*$(document).mousemove(function (event) {
 		var gamePos = $('#gamecanvas').offset(),
 			mouse = game.mouse;

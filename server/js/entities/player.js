@@ -55,7 +55,11 @@ var Player = module.exports = Entity.extend({
 	sendMap: function (map) {
 		this.send(Constants.Types.Messages.Map, {
 			tilesets: map.json.tilesets,
-			layers: _.where(map.json.layers, {type: "tilelayer"})
+			layers: _.where(map.json.layers, {type: "tilelayer"}),
+			width: map.json.width,
+			height: map.json.height,
+			tilewidth: map.json.tilewidth,
+			tileheight: map.json.tileheight
 		});
 	},
 	move_up: function () {
