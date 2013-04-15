@@ -24,7 +24,7 @@ var WorldMap = module.exports = cls.Class.extend({
 	adjustInfo: function (entity_info) {
 		var scale = 100;
 		if (entity_info.polygon) {
-			entity_info.polyline = 	entity_info.polygon;
+			entity_info.polyline = entity_info.polygon;
 		}
 		if (entity_info.polyline) {
 			entity_info.polyline.shift();
