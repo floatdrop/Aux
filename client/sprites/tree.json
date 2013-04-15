@@ -9,6 +9,6 @@
 				"row": 0,
 				"speed": 200
 			}},
-	"offset_x": 0,
-	"offset_y": -90
+	"anchor_x": 0.5,
+	"anchor_y": 0.5
 }

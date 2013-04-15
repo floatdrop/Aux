@@ -12,9 +12,8 @@ define(['./lib/text!../sprites/player.json',
 			width: sprite.width,
 			height: sprite.height,
 			baseTexture: PIXI.Texture.fromImage(sprite.image).baseTexture,
-			offsetx: sprite.offsetx || 0,
-			offsety: sprite.offsety || 0,
-			animations: {}
+			animations: {},
+			anchor: new PIXI.Point(sprite.anchor_x, sprite.anchor_y)
 		};
 		_.each(sprite.animations, function (animation, name) {
 			var adef = {
@@ -37,12 +36,24 @@ define(['./lib/text!../sprites/player.json',
 	Sprites.ApplyAnimation = function (entity, sprite, animation) {
 		if (sprite === undefined || animation === undefined)
 			return;
-		var adef = Sprites.definitions[sprite].animations[animation];
-		var movieclip = new PIXI.MovieClip(adef.textures);
-		movieclip.animationSpeed = adef.speed;
-		movieclip.scale = adef.scale;
-		entity.movieclip = movieclip;
-		entity.animated = true;
+		if (animation !== entity.animation) {
+			var def = Sprites.definitions[sprite];
+			var adef = def.animations[animation];
+			if (entity.movieclip instanceof PIXI.MovieClip) {
+				entity.movieclip.textures = adef.textures;
+				entity.movieclip.setTexture(adef.textures[0]);
+			} else {
+				entity.movieclip = new PIXI.MovieClip(adef.textures);
+				entity.animated = true;
+			}
+			entity.movieclip.animationSpeed = adef.speed;
+			entity.movieclip.scale = adef.scale;
+			entity.movieclip.anchor = def.anchor;
+			entity.movieclip.play();
+			entity.animation = animation;
+		} else {
+			entity.animated = false;
+		}
 	};
 
 	return Sprites;
