@@ -35,7 +35,8 @@ define(['lib/async', 'tileset'], function (async, TileSet) {
 				var texture = tileSet.getTexture(tileindex);
 				var tileSprite = new PIXI.Sprite(texture);
 				tileSprite.position = new PIXI.Point(
-				(index % layer.width) * self.tilewidth, (index / layer.width) * self.tileheight);
+					((index % layer.width) | 0) * self.tilewidth, 
+					((index / layer.width) | 0) * self.tileheight);
 				displayObject.addChild(tileSprite);
 			});
 			return displayObject;

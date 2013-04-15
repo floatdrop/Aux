@@ -21,8 +21,8 @@ define(function () {
 			}
 			var i = index - this.firstindex;
 			var frame = new PIXI.Rectangle(
-				i % this.width * this.tilewidth, 
-				i / this.width * this.tileheight, 
+				((i % this.width) | 0) * this.tilewidth, 
+				((i / this.width) | 0) * this.tileheight, 
 				this.tilewidth, 
 				this.tileheight);
 			this.tilecache[index] = new PIXI.Texture(this.baseTexture, frame);
