@@ -8,64 +8,64 @@
 			"length": 5,
 			"row": 0,
 			"scalex": -1,
-			"speed": 200
+			"speed": 0.01
 		},
 		"walk_left": {
 			"length": 4,
 			"row": 1,
 			"scalex": -1,
-			"speed": 200
+			"speed": 0.01
 		},
 		"idle_left": {
 			"length": 2,
 			"row": 2,
 			"scalex": -1,
-			"speed": 2000
+			"speed": 0.001
 		},
 		"atk_right": {
 			"length": 5,
 			"row": 0,
-			"speed": 200
+			"speed": 0.01
 		},
 		"walk_right": {
 			"length": 4,
 			"row": 1,
-			"speed": 200
+			"speed": 0.01
 		},
 		"idle_right": {
 			"length": 2,
 			"row": 2,
-			"speed": 2000
+			"speed": 0.001
 		},
 		"atk_up": {
 			"length": 5,
 			"row": 3,
-			"speed": 200
+			"speed": 0.01
 		},
 		"walk_up": {
 			"length": 4,
 			"row": 4,
-			"speed": 200
+			"speed": 0.01
 		},
 		"idle_up": {
 			"length": 2,
 			"row": 5,
-			"speed": 2000
+			"speed": 0.001
 		},
 		"atk_down": {
 			"length": 5,
 			"row": 6,
-			"speed": 200
+			"speed": 0.01
 		},
 		"walk_down": {
 			"length": 4,
 			"row": 7,
-			"speed": 200
+			"speed": 0.01
 		},
 		"idle_down": {
 			"length": 2,
 			"row": 8,
-			"speed": 2000
+			"speed": 0.001
 		}
 	},
 	"offset_x": -8,
