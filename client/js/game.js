@@ -50,7 +50,7 @@ define(['entities/player', 'gameclient', 'entityfactory', 'map'], function (Play
 					var entity = id in self.entities ? self.entities[id] :
 						entity = EntityFactory.createEntity(entity_info, id);
 					if (entity.animated)
-						self.stage.addChild(entity.movieclip);
+						self.stage.addChild(entity.docontainer);
 					entity.update(entity_info);
 					entities[id] = entity;
 				});

@@ -13,7 +13,8 @@ define(['./lib/text!../sprites/player.json',
 			height: sprite.height,
 			baseTexture: PIXI.Texture.fromImage(sprite.image).baseTexture,
 			animations: {},
-			anchor: new PIXI.Point(sprite.anchor_x, sprite.anchor_y)
+			offset: new PIXI.Point(sprite.offset_x, sprite.offset_y),
+			anchor: new PIXI.Point(sprite.anchor_x || 0.5, sprite.anchor_y || 0.5)
 		};
 		_.each(sprite.animations, function (animation, name) {
 			var adef = {
@@ -44,6 +45,9 @@ define(['./lib/text!../sprites/player.json',
 				entity.movieclip.setTexture(adef.textures[0]);
 			} else {
 				entity.movieclip = new PIXI.MovieClip(adef.textures);
+				entity.docontainer = new PIXI.DisplayObjectContainer();
+				entity.docontainer.addChild(entity.movieclip);
+				entity.docontainer.position = def.offset;
 				entity.animated = true;
 			}
 			entity.movieclip.animationSpeed = adef.speed;
