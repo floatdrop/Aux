@@ -41,7 +41,6 @@ define(['./lib/text!../sprites/player.json',
 		var movieclip = new PIXI.MovieClip(adef.textures);
 		movieclip.animationSpeed = adef.speed;
 		movieclip.scale = adef.scale;
-		movieclip.position = adef.position;
 		entity.movieclip = movieclip;
 		entity.animated = true;
 	};
