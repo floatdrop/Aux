@@ -45,7 +45,7 @@ define(['entities/player', 'gameclient', 'entityfactory', 'map'], function (Play
 			});
 			this.client.onEntityList(function (entitieslist) {
 				var entities = {};
-				/*_.each(entitieslist, function (entity_info) {
+				_.each(entitieslist, function (entity_info) {
 					var id = entity_info.id;
 					var entity = id in self.entities ? self.entities[id] :
 						entity = EntityFactory.createEntity(entity_info, id);
@@ -53,7 +53,7 @@ define(['entities/player', 'gameclient', 'entityfactory', 'map'], function (Play
 						self.stage.addChild(entity.movieclip);
 					entity.update(entity_info);
 					entities[id] = entity;
-				});*/
+				});
 				self.entities = entities;
 			});
 			this.client.connect();
