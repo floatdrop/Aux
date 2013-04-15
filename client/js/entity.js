@@ -16,6 +16,9 @@ define([], function () {
 			this.position.x = x;
 			this.position.y = y;
 		},
+		getPosition: function () {
+			return {x: this.position.x, y: this.position.y};
+		},
 		setAngle: function (a) {
 			this.angle = a;
 		},
@@ -35,13 +38,13 @@ define([], function () {
 			h = this.sprite.height * os,
 			ox = this.sprite.offsetX * 1,
 			oy = this.sprite.offsetY * 1,
-			dx = this.x * this.scale - this.sprite.width / 2,
-			dy = this.y * this.scale - this.sprite.height / 2,
+			dx = this.position.x * this.scale - this.sprite.width / 2,
+			dy = this.position.y * this.scale - this.sprite.height / 2,
 			dw = w * ds,
 			dh = h * ds;
 
 			context.save();
-			if (this.currentAnimation) {
+			if (this.currentAnimation.offset) {
 				context.translate(this.currentAnimation.offset_x, this.currentAnimation.offset_y);
 			}
 			if (this.currentAnimation.flipSpriteX) {

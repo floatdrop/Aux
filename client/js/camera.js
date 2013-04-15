@@ -18,8 +18,9 @@ define([], function () {
 				return this.getVisibleAreaStructure(0, 0, 0, 0);
 			}
 
-			var x = this.linkedEntity.position.x * this.renderer.scale,
-				y = this.linkedEntity.position.y * this.renderer.scale,
+			var pos =  this.linkedEntity.getPosition(),
+				x = pos.x * this.renderer.scale,
+				y = pos.y * this.renderer.scale,
 				startX = Math.floor((x - this.center.x) / this.map.tileWidth),
 				startY = Math.floor((y - this.center.y) / this.map.tileHeight),
 				maxTileInRow = Math.floor(this.center.x * 2 / this.map.tileWidth) + this.countAdditionalTiles,
@@ -75,10 +76,12 @@ define([], function () {
 				return false;
 			}
 
-			var x = this.linkedEntity.position.x * this.renderer.scale,
-				y = this.linkedEntity.position.y * this.renderer.scale,
-				x1 = entity.x * this.renderer.scale,
-				y1 = entity.y * this.renderer.scale,
+			var pos = this.linkedEntity.getPosition(),
+				entity_pos = entity.getPosition(),
+				x = pos.x * this.renderer.scale,
+				y = pos.y * this.renderer.scale,
+				x1 = entity_pos.x * this.renderer.scale,
+				y1 = entity_pos.y * this.renderer.scale,
 				leftX = x - this.center.x,
 				leftY = y - this.center.y,
 				rightX = x + this.center.x,
@@ -108,8 +111,9 @@ define([], function () {
 
 		updatePosition: function (context) {
 			if (this.linkedEntity) {
-				var x = this.linkedEntity.position.x * this.renderer.scale,
-					y = this.linkedEntity.position.y * this.renderer.scale,
+				var pos =  this.linkedEntity.getPosition(),
+					x = pos.x * this.renderer.scale,
+					y = pos.y * this.renderer.scale,
 					offset_x = x - this.oldPosition.x,
 					offset_y = y - this.oldPosition.y;
 
