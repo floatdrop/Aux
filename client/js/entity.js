@@ -16,47 +16,53 @@ define([], function () {
 			this.position.x = x;
 			this.position.y = y;
 		},
+		getPosition: function () {
+			return {x: this.position.x, y: this.position.y};
+		},
 		setAngle: function (a) {
 			this.angle = a;
 		},
 		update: function (entity_info) {
-			if (entity_info.animation !== undefined)
-				this.setAnimation(entity_info.animation);
 			this.setPosition(entity_info.position.x, entity_info.position.y);
-			this.setAngle(entity_info.angle);
+		},
+		isDebug: function () {
+			return this.id.toString().indexOf("debug") === 0;
 		},
 		draw: function (context) {
-            var os = 1,
-                ds = 1,
-                frame = this.currentAnimation.currentFrame,
-                x = frame.x * os,
-                y = frame.y * os,
-                w = this.sprite.width * os,
-                h = this.sprite.height * os,
-                ox = this.sprite.offsetX * 1,
-                oy = this.sprite.offsetY * 1,
-                dx = this.position.x * this.scale - this.sprite.width / 2,
-                dy = this.position.y * this.scale - this.sprite.height / 2,
-                dw = w * ds,
-                dh = h * ds;
+			var os = 1,
+			ds = 1,
+			frame = this.currentAnimation.currentFrame,
+			x = frame.x * os,
+			y = frame.y * os,
+			w = this.sprite.width * os,
+			h = this.sprite.height * os,
+			ox = this.sprite.offsetX * 1,
+			oy = this.sprite.offsetY * 1,
+			dx = this.position.x * this.scale - this.sprite.width / 2,
+			dy = this.position.y * this.scale - this.sprite.height / 2,
+			dw = w * ds,
+			dh = h * ds;
 
-            context.save();
-            if (this.currentAnimation.flipSpriteX) {
-                context.translate(dx + dw / 2, dy);
-                context.scale(-1, 1);
-            }
-            else if (this.currentAnimation.flipSpriteY) {
-                context.translate(dx, dy + dh);
-                context.scale(1, -1);
-            }
-            else {
-                context.translate(dx, dy);
-            }
+			context.save();
+			if (this.currentAnimation.offset) {
+				context.translate(this.currentAnimation.offset_x, this.currentAnimation.offset_y);
+			}
+			if (this.currentAnimation.flipSpriteX) {
+				context.translate(dx + dw / 2, dy);
+				context.scale(-1, 1);
+			}
+			else if (this.currentAnimation.flipSpriteY) {
+				context.translate(dx, dy + dh);
+				context.scale(1, -1);
+			}
+			else {
+				context.translate(dx, dy);
+			}
 
-            context.drawImage(this.sprite.image, x, y, w, h, ox, oy, dw, dh);
+			context.drawImage(this.sprite.image, x, y, w, h, ox, oy, dw, dh);
 
-            context.restore();
-        },
+			context.restore();
+		},
 		setSprite: function (sprite) {
 			if (!sprite) {
 				console.log(this.id + " : sprite is null", true);

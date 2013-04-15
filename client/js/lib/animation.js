@@ -1,7 +1,7 @@
 define(function () {
 
 	var Animation = Class.extend({
-		init: function (name, length, row, width, height, flipX, flipY, speed) {
+		init: function (name, length, row, width, height, flipX, flipY, speed, offset, offset_x, offset_y) {
 			this.name = name;
 			this.length = length;
 			this.row = row;
@@ -10,6 +10,11 @@ define(function () {
 			this.speed = speed;
 			this.flipSpriteX = flipX;
 			this.flipSpriteY = flipY;
+			this.offset = offset;
+			if (this.offset){
+				this.offset_x = (offset_x !== undefined) ? offset_x : 0;
+				this.offset_y = (offset_y !== undefined) ? offset_y : 0;
+			}
 			this.reset();
 		},
 

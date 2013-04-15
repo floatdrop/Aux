@@ -33,7 +33,6 @@ var Server = module.exports = cls.Class.extend({
 		log.info("Starting Aux game server...");
 
 		var self = this;
-
 		this._server = new ws.MultiVersionWebsocketServer(this.config.port);
 		this._server.onConnect(function (connection) {
 			self.world.connect_callback(connection);

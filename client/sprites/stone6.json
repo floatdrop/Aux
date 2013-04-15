@@ -1,0 +1,14 @@
+{
+	"id": "stone6",
+	"width": 59,
+	"height": 63,
+	"animations": {
+		"basic": {
+				"length": 1,
+				"row": 0,
+				"flipSpriteX": false,
+				"speed": 200
+			}},
+	"offset_x": 0,
+	"offset_y": 0
+}

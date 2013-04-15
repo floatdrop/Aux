@@ -56,7 +56,7 @@ define(['lib/animation', 'sprites'], function (Animation, sprites) {
 
 			_.each(self.animationData, function (animation, name) {
 				animations[name] = new Animation(name, animation.length, animation.row, self.width, self.height,
-				animation.flipSpriteX, animation.flipSpriteY, animation.speed);
+				animation.flipSpriteX, animation.flipSpriteY, animation.speed, animation.offset, animation.offset_x, animation.offset_y);
 			});
 
 			return animations;
