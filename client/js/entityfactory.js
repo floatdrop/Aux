@@ -1,7 +1,7 @@
 /* global _ */
 
-define(['player', 'commonEntity', 'circleEntity', 'polygonEntity', 'sprite'], 
-	function (Player, CommonEntity, CircleEntity, PolygonEntity, Sprite) {
+define(['entities/player', 'entities/commonEntity', 'entities/circleEntity', 'entities/polygonEntity'], 
+	function (Player, CommonEntity, CircleEntity, PolygonEntity) {
 	var EntityFactory = {};
 
 	EntityFactory.createEntity = function (entity_info, name) {
@@ -20,34 +20,23 @@ define(['player', 'commonEntity', 'circleEntity', 'polygonEntity', 'sprite'],
 
 	EntityFactory.builders = [];
 
-	EntityFactory.builders[Constants.Types.Entities.PLAYER] = function (entity_info, name) {
-		var entity = new Player(entity_info.id);
-		entity.name = name;
-		entity.setSprite(new Sprite("player", 1));
-		entity.setAnimation("idle_right", 100);
-		return entity;
-	};
-
 	EntityFactory.builders[Constants.Types.Entities.CommonEntity] = function (entity_info) {
-		var entity = new CommonEntity(entity_info.id);
-		var name = entity_info.sprite;
-		entity.name = name;
-		entity.setSprite(new Sprite(name, 1));
-		entity.setAnimation("basic", 100);
+		var entity = new CommonEntity(entity_info.id, entity_info.sprite);
+		entity.setAnimation(entity_info.sprite, "default");
 		return entity;
 	};
 
 	EntityFactory.builders[Constants.Types.Entities.PolygonEntity] = function (entity_info) {
-		var entity = new PolygonEntity(entity_info.id);
-		entity.name = "PolygonEntity";
-		entity.vertices = [];
-		return entity;
+		return new PolygonEntity(entity_info.id, "PolygonEntity");
 	};
 
 	EntityFactory.builders[Constants.Types.Entities.CircleEntity] = function (entity_info) {
-		var entity = new CircleEntity(entity_info.id);
-		entity.name = "CircleEntity";
-		entity.radius = 0;
+		return new CircleEntity(entity_info.id, "CircleEntity");
+	};
+
+	EntityFactory.builders[Constants.Types.Entities.PLAYER] = function (entity_info) {
+		var entity = new Player(entity_info.id);
+		entity.setAnimation("player", "idle_right");
 		return entity;
 	};
 

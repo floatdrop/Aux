@@ -1,57 +1,77 @@
 /* global _ */
 
-define([], function () {
+define(['lib/async', 'tileset'], function (async, TileSet) {
 	var Map = Class.extend({
-		init: function (game) {
-			this.isLoaded = false;
-			this.tilesets = [];
-			this.layers = [];
-			this.game = game;
-			this.width = 0;
-			this.height = 0;
-			this.countTileInRow = 0;
-			this.countTileInCol = 0;
-			this.tileWidth = 0;
-			this.tileHeight = 0;
+
+		tilesets: [],
+		layers: [],
+
+		init: function () {},
+
+		load: function (mapinfo) {
+			this.tilewidth = mapinfo.tilewidth;
+			this.tileheight = mapinfo.tileheight;
+			this.layers = mapinfo.layers,
+			this.width = mapinfo.width;
+			this.pixelwidth = this.width * this.tilewidth;
+			this.pixelheight = this.height * this.tileheight;
+			this.height = mapinfo.height;
+			this._loadTileSets(mapinfo.tilesets);
 		},
 
-		onMapRecived: function (data) {
-			this.layers = data.layers;
-			this.countTileInRow = data.width;
-			this.countTileInCol = data.height;
-			this.tileWidth = data.tilewidth;
-			this.tileHeight = data.tileheight;
-			this.width = data.width * data.tilewidth;
-			this.height = data.height * data.tileheight;
-			this.loadtilesets(data.tilesets);
+		getDisplayObjects: function () {
+			var self = this;
+			var displayObjects = [];
+			_.each(this.layers, function (layer) {
+				displayObjects.push(self._layerToDisplayObjects(layer));
+			});
+			return displayObjects;
 		},
 
-		getTileSet: function (tileIndex) {
-			for (var i = 0; i < this.tilesets.length; i++) {
-				if (this.tilesets[i].firstgid < tileIndex) return this.tilesets[i];
-			}
+		_layerToDisplayObjects: function (layer) {
+			var self = this;
+			var displayObject = new PIXI.DisplayObjectContainer();
+			_.each(layer.data, function (tileindex, index) {
+				if (tileindex <= 0) return;
+				var tileSet = self.getTileSet(tileindex);
+				var texture = tileSet.getTexture(tileindex);
+				var tileSprite = new PIXI.Sprite(texture);
+				tileSprite.position = new PIXI.Point(
+					((index % layer.width) | 0) * self.tilewidth, 
+					((index / layer.width) | 0) * self.tileheight);
+				displayObject.addChild(tileSprite);
+			});
+			return displayObject;
 		},
 
-		loadtilesets: function (tilesets) {
-			var countTileSets = tilesets.length,
-				self = this;
-			_.each(tilesets, function (tileset) {
-				var image = new Image();
-				image.src = "img/sprites/ground_64x64.png";
-				image.onload = function () {
-					countTileSets--;
-					if (countTileSets === 0) {
-						self.isloaded = true;
-					}
+		getTileSet: function (tileindex) {
+			return _.find(this.tilesets, function (tileset) {
+				return tileset.firstindex <= tileindex && tileindex < tileset.lastindex;
+			});
+		},
+
+		onMapLoaded: function (callback) {
+			this.maploaded_callback = callback;
+		},
+
+		_loadTileSet: function (tileset, callback) {
+			callback(null, new TileSet(tileset));
+		},
+
+		_loadTileSets: function (tilesets) {
+			var self = this;
+
+			/* This can be more beautiful */
+			async.parallel(
+			_.map(tilesets, function (tileset) {
+				return function (callback) {
+					self._loadTileSet(tileset, callback);
 				};
+			}),
 
-				self.tilesets.push({
-					firstgid: tileset.firstgid,
-					tileWidth: tileset.tilewidth,
-					tileHeight: tileset.tileheight,
-					width: tileset.imagewidth / tileset.tilewidth,
-					image: image
-				});
+			function (err, results) {
+				self.tilesets = results;
+				self.maploaded_callback(null, this);
 			});
 		}
 	});

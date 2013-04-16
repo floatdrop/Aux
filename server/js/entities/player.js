@@ -1,5 +1,6 @@
 var Box2D = require('../lib/box2d'),
-	Entity = require('./entity');
+	Entity = require('../entity'),
+	_ = require('underscore');
 
 require('../../../client/js/constants');
 
@@ -21,8 +22,12 @@ var Player = module.exports = Entity.extend({
 		});
 
 		this.callbacks = {};
-		this.callbacks[Constants.Types.Messages.Action] = function (data) { self.onAction(data); };
-		this.callbacks[Constants.Types.Messages.Angle] = function (data) { self.onAngle(data); };
+		this.callbacks[Constants.Types.Messages.Action] = function (data) {
+			self.onAction(data);
+		};
+		this.callbacks[Constants.Types.Messages.Angle] = function (data) {
+			self.onAngle(data);
+		};
 
 		this.bodyDef = new b2BodyDef();
 		this.bodyDef.type = b2Body.b2_dynamicBody;
@@ -41,6 +46,16 @@ var Player = module.exports = Entity.extend({
 		this.connection.send({
 			t: event,
 			d: message
+		});
+	},
+	sendMap: function (map) {
+		this.send(Constants.Types.Messages.Map, {
+			tilesets: map.json.tilesets,
+			layers: _.where(map.json.layers, {type: "tilelayer"}),
+			width: map.json.width,
+			height: map.json.height,
+			tilewidth: map.json.tilewidth,
+			tileheight: map.json.tileheight
 		});
 	},
 	move_up: function () {

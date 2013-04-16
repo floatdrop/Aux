@@ -1,10 +1,11 @@
 define(['jquery', 'game'], function ($, Game) {
 
-	var canvas = document.getElementById("gamecanvas"),
-		game = new Game();
-	game.setup(canvas);
+	var renderer = PIXI.autoDetectRenderer(800, 600);
+	document.body.appendChild(renderer.view);
 
-	$(document).mousemove(function (event) {
+	var game = new Game(renderer);
+	
+	/*$(document).mousemove(function (event) {
 		var gamePos = $('#gamecanvas').offset(),
 			mouse = game.mouse;
 
@@ -12,7 +13,7 @@ define(['jquery', 'game'], function ($, Game) {
 		mouse.y = event.pageY - gamePos.top;
 
 		game.moveCursor();
-	});
+	});*/
 
 	$(document).bind("keydown", function (e) {
 		var key = e.which;

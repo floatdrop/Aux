@@ -926,7 +926,7 @@
  "tilesets":[
         {
          "firstgid":1,
-         "image":"..\/client\/img\/sprites\/ground_64x64.png",
+         "image":"img\/tileset.png",
          "imageheight":2048,
          "imagewidth":2048,
          "margin":0,

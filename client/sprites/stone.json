@@ -2,13 +2,8 @@
 	"id": "stone",
 	"width": 51,
 	"height": 50,
-	"animations": {
-		"basic": {
-				"length": 1,
-				"row": 0,
-				"flipSpriteX": false,
-				"speed": 200
-			}},
+	"image": "img/1/stone.png",
+	"animations": { "default": {} },
 	"offset_x": 26,
 	"offset_y": -14
 }
