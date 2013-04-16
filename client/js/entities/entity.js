@@ -16,8 +16,8 @@ define(['sprites'], function (Sprites) {
 			return this.movieclip.position;
 		},
 		setPosition: function (x, y) {
-			this.movieclip.position.x = x * 100;
-			this.movieclip.position.y = y * 100;
+			this.movieclip.position.x = (x * 100) | 0;
+			this.movieclip.position.y = (y * 100) | 0;
 		},
 		getAngle: function () {
 			return this.movieclip.rotation;
