@@ -6,6 +6,8 @@ var Box2D = require('./lib/box2d'),
 var b2Vec2 = Box2D.Common.Math.b2Vec2,
 	b2World = Box2D.Dynamics.b2World;
 
+var Scale = 100;
+
 var Engine = module.exports = cls.Class.extend({
 	init: function (debug) {
 		this.b2w = new b2World(new b2Vec2(0, 0), false);
@@ -20,13 +22,13 @@ var Engine = module.exports = cls.Class.extend({
 		entity.body.m_userData = entity;
 		entity.fixture = entity.body.CreateFixture(entity.fixtureDef);
 		entity.setPosition = function (x, y) {
-			this.body.SetPosition(new b2Vec2(x, y));
+			this.body.SetPosition(new b2Vec2(x / Scale, y / Scale));
 		};
 		var position = entity.getPosition();
 		entity.setPosition(position.x, position.y);
 		entity.getPosition = function () {
 			var b2dPosition = this.body.GetPosition();
-			return { x: b2dPosition.x, y: b2dPosition.y };
+			return { x: b2dPosition.x * Scale, y: b2dPosition.y * Scale };
 		};
 		entity.setAngle = function (a) {
 			this.body.SetAngle(a);

@@ -28,7 +28,6 @@ var WorldMap = module.exports = cls.Class.extend({
 });
 
 WorldMap.adjustInfo = function (entity_info) {
-	var scale = 100;
 	if (entity_info.polygon) {
 		entity_info.polyline = entity_info.polygon;
 	}
@@ -37,8 +36,8 @@ WorldMap.adjustInfo = function (entity_info) {
 		entity_info.points = [];
 		_.each(
 		entity_info.polyline, function (point) {
-			point.x = point.x / scale,
-			point.y = point.y / scale;
+			point.x = point.x,
+			point.y = point.y;
 			entity_info.points.push({
 				x: point.x,
 				y: point.y
@@ -46,10 +45,10 @@ WorldMap.adjustInfo = function (entity_info) {
 		});
 		entity_info.points.reverse();
 	}
-	entity_info.width = entity_info.width / scale / 2;
-	entity_info.height = entity_info.height / scale / 2;
-	entity_info.x = entity_info.x / scale + entity_info.width;
-	entity_info.y = entity_info.y / scale + entity_info.height;
+	entity_info.width = entity_info.width / 2;
+	entity_info.height = entity_info.height / 2;
+	entity_info.x = entity_info.x + entity_info.width;
+	entity_info.y = entity_info.y + entity_info.height;
 };
 
 return WorldMap;

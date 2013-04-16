@@ -30,12 +30,12 @@ define(['./lib/text!../sprites/player.json',
 		_.each(sprite.animations, function (animation, name) {
 			var adef = {
 				length: animation.length,
-				row: animation.row,
+				row: animation.row || 0,
 				scale: new PIXI.Point(animation.scale_x || 1, animation.scale_y || 1),
 				speed: animation.speed || 0,
 				textures: []
 			};
-			for (var i = 0; i < adef.length; i++) {
+			for (var i = 0; i < (adef.length || 1); i++) {
 				adef.textures.push(new PIXI.Texture(def.baseTexture, 
 					new PIXI.Rectangle(i * def.width, (adef.row || 0) * def.height, def.width, def.height)));
 			}

@@ -16,8 +16,8 @@ define(['sprites'], function (Sprites) {
 			return this.movieclip.position;
 		},
 		setPosition: function (x, y) {
-			this.movieclip.position.x = (x * 100) | 0;
-			this.movieclip.position.y = (y * 100) | 0;
+			this.movieclip.position.x = x | 0;
+			this.movieclip.position.y = y | 0;
 		},
 		getAngle: function () {
 			return this.movieclip.rotation;
@@ -40,7 +40,8 @@ define(['sprites'], function (Sprites) {
 			this.movieclip.animationSpeed = adef.speed;
 			this.movieclip.scale = adef.scale;
 			this.movieclip.anchor = def.anchor;
-			this.movieclip.play();
+			if (adef.speed !== 0)
+				this.movieclip.play();
 			this.animation = animation;
 
 		},

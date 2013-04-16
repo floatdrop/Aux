@@ -16,7 +16,7 @@ module.exports = cls.Class.extend({
 	playerConnect: function (connection) {
 		var self = this;
 		var player = new Player(connection, connection.id);
-
+		player.setPosition(100, 100);
 		log.info("Player " + player.id + " connected");
 
 		connection.onClose(function () {
