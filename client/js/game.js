@@ -37,26 +37,31 @@ define(['entities/player', 'gameclient', 'entityfactory', 'map'], function (Play
 			});
 
 			this.client = new GameClient(this.host, this.port);
+
 			this.client.onWelcome(function (data) {
 				self.playerId = data.playerId;
 			});
+
 			this.client.onMap(function (mapinfo) {
 				self.map.load(mapinfo);
 			});
+
 			this.client.onEntityList(function (entitieslist) {
-				var entities = {};
-				_.each(entitieslist, function (entity_info) {
-					var id = entity_info.id;
-					var entity = id in self.entities ? self.entities[id] :
-						entity = EntityFactory.createEntity(entity_info, id);
-					entity.update(entity_info);
-					if (entity.isAnimated())
-						self.stage.addChild(entity.getDisplayObject());
-					entities[id] = entity;
-				});
-				self.entities = entities;
+				self.entitylist(entitieslist);
 			});
+
 			this.client.connect();
+		},
+		entityList: function (list) {
+			var entities = {};
+			_.each(list, function (entity_info) {
+				var id = entity_info.id;
+				var entity = id in this.entities ? this.entities[id] : entity = EntityFactory.createEntity(entity_info, id);
+				entity.update(entity_info);
+				if (entity.isAnimated()) this.stage.addChild(entity.getDisplayObject());
+				entities[id] = entity;
+			});
+			this.entities = entities;
 		},
 		moveCursor: function () {
 			//var angle = 0;
