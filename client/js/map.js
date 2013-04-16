@@ -1,6 +1,6 @@
 /* global _ */
 
-define([], function () {
+define(['lib/async', 'tileset'], function (async, TileSet) {
 	var Map = Class.extend({
 
 		tilesets: [],
