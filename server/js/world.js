@@ -25,6 +25,8 @@ module.exports = cls.Class.extend({
 
 		player.sendMap(this.map);
 		this.engine.addEntity(player);
+		player.send(Constants.Types.Messages.Welcome, player.getBaseState());
+		log.info("Send Welcome to player " + player.id);
 	},
 	playerDisconnect: function (id) {
 		this.engine.removeEntity(id);

@@ -1,8 +1,6 @@
 /* global _ */
 
-define(['entities/player', 'client', 'entityfactory', 'map'], function (Player, Client, EntityFactory, Map) {
-	var Game = Class.extend({
-		map: new Map(),
+define(['renderer', 'player', 'gameclient', 'entityfactory', 'map'],
 
 		init: function (renderer) {
 			this.renderer = renderer;

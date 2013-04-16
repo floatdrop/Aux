@@ -43,6 +43,8 @@ EntityFactory.getShapeByEntity = function (entity) {
 
 	if (shape instanceof b2PolygonShape) return EntityFactory.createPolygonEntity(id, entity, shape);
 	if (shape instanceof b2CircleShape) return EntityFactory.createCircleEntity(id, entity, shape);
+	log.error('Unknown shape is ' + shape + "\r\nEntity is " + entity);
+	return EntityFactory.createEmptyCircleEntity(id);
 };
 
 EntityFactory.ConvertB2VecToJson = function (b2vecpoints) {
@@ -74,6 +76,10 @@ EntityFactory.createCircleEntity = function (id, entity) {
 	circleEntity.setPosition(position.x, position.y);
 	circleEntity.setAngle(circleEntity.getAngle());
 	return circleEntity;
+};
+
+EntityFactory.createEmptyCircleEntity = function (id) {
+	return new CircleEntity(id);
 };
 
 return EntityFactory;
