@@ -1,6 +1,7 @@
 var fs = require('fs'),
 	cls = require('./lib/class'),
 	_ = require('underscore'),
+	log = require('./log'),
 	EntityFactory = require('./entities/entityFactory');
 
 var WorldMap = module.exports = cls.Class.extend({
@@ -15,12 +16,16 @@ var WorldMap = module.exports = cls.Class.extend({
 			}
 			self.data = JSON.parse(data);
 			self.isLoaded = true;
+			log.info("WorldMap filling world");
 			self.fillWorld(self.data, engine);
 		});
 	},
 
 	adjustInfo: function (entity_info) {
 		var scale = 100;
+		if (entity_info.polygon) {
+			entity_info.polyline = entity_info.polygon;
+		}
 		if (entity_info.polyline) {
 			entity_info.polyline.shift();
 			entity_info.points = [];

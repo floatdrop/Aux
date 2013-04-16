@@ -3,13 +3,14 @@ var PolygonEntity = require('./polygonEntity'),
 	CommonEntity = require('./commonEntity'),
 	_ = require('underscore'),
 	cls = require('../lib/class'),
+	log = require('../log'),
 	Box2D = require('../lib/box2d'),
 	b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape,
 	b2CircleShape = Box2D.Collision.Shapes.b2CircleShape;
 
 var EntityFactory = module.exports = cls.Class.extend({});
 
-EntityFactory.createEntity = function (entity_info) {
+EntityFactory.createEntity = function (entity_info) {	
 	var entity = new CommonEntity(null, entity_info.type);
 	if (entity_info.points) {
 		entity.setBodyDefAsPoly(entity_info.points);
@@ -43,6 +44,8 @@ EntityFactory.getShapeByEntity = function (entity) {
 
 	if (shape instanceof b2PolygonShape) return EntityFactory.createPolygonEntity(id, entity, shape);
 	if (shape instanceof b2CircleShape) return EntityFactory.createCircleEntity(id, entity, shape);
+	log.error('Unknown shape is ' + shape + "\r\nEntity is " + entity);
+	return EntityFactory.createEmptyCircleEntity(id);
 };
 
 EntityFactory.ConvertB2VecToJson = function (b2vecpoints) {
@@ -56,24 +59,28 @@ EntityFactory.ConvertB2VecToJson = function (b2vecpoints) {
 	return points;
 };
 
-EntityFactory.createPolygonEntity = function (id, entity) {
+EntityFactory.createPolygonEntity = function (id, entity, shape) {
 	var polygonEntity = new PolygonEntity(id, EntityFactory.ConvertB2VecToJson(entity.fixtureDef.shape.m_vertices));
 	polygonEntity.entity = entity;
-	polygonEntity.shape = entity.fixture.m_shape;
+	polygonEntity.shape = shape;
 	var position = entity.getPosition();
 	polygonEntity.setPosition(position.x, position.y);
 	polygonEntity.setAngle(polygonEntity.getAngle());
 	return polygonEntity;
 };
 
-EntityFactory.createCircleEntity = function (id, entity) {
+EntityFactory.createCircleEntity = function (id, entity, shape) {
 	var circleEntity = new CircleEntity(id);
 	circleEntity.entity = entity;
-	circleEntity.shape = entity.fixture.m_shape;
+	circleEntity.shape = shape;
 	var position = entity.getPosition();
 	circleEntity.setPosition(position.x, position.y);
 	circleEntity.setAngle(circleEntity.getAngle());
 	return circleEntity;
+};
+
+EntityFactory.createEmptyCircleEntity = function (id) {
+	return new CircleEntity(id);
 };
 
 return EntityFactory;
