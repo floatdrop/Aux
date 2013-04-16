@@ -28,7 +28,10 @@ var Engine = module.exports = cls.Class.extend({
 		entity.setPosition(position.x, position.y);
 		entity.getPosition = function () {
 			var b2dPosition = this.body.GetPosition();
-			return { x: b2dPosition.x * Scale, y: b2dPosition.y * Scale };
+			return {
+				x: b2dPosition.x * Scale,
+				y: b2dPosition.y * Scale
+			};
 		};
 		entity.setAngle = function (a) {
 			this.body.SetAngle(a);
@@ -72,6 +75,17 @@ var Engine = module.exports = cls.Class.extend({
 		return dump;
 	}
 });
+
+Engine.getPoints = function (points) {
+	var scaledPoints = [];
+	_.each(points, function (point) {
+		scaledPoints.push({
+			x: point.x / Scale,
+			y: point.y / Scale
+		});
+	});
+	return scaledPoints;
+};
 
 Engine.getBoxPoints = function (width, height) {
 	return [{

@@ -14,7 +14,7 @@ var Engine = require('./b2dengine');
 EntityFactory.createEntity = function (entity_info) {
 	var entity = new CommonEntity(null, entity_info.type);
 	if (entity_info.points) {
-		entity.setBodyDefAsPoly(entity_info.points);
+		entity.setBodyDefAsPoly(Engine.getPoints(entity_info.points));
 	} else {
 		entity.setBodyDefAsPoly(Engine.getBoxPoints(entity_info.width, entity_info.height));
 	}
