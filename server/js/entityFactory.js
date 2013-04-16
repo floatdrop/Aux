@@ -9,33 +9,17 @@ var PolygonEntity = require('./entities/polygonEntity'),
 	b2CircleShape = Box2D.Collision.Shapes.b2CircleShape;
 
 var EntityFactory = module.exports = cls.Class.extend({});
+var Engine = require('./b2dengine');
 
 EntityFactory.createEntity = function (entity_info) {
 	var entity = new CommonEntity(null, entity_info.type);
 	if (entity_info.points) {
 		entity.setBodyDefAsPoly(entity_info.points);
 	} else {
-		entity.setBodyDefAsPoly(EntityFactory.getBoxPoints(entity_info.width, entity_info.height));
+		entity.setBodyDefAsPoly(Engine.getBoxPoints(entity_info.width, entity_info.height));
 	}
 	entity.setPosition(entity_info.x, entity_info.y);
 	return entity;
-};
-
-
-EntityFactory.getBoxPoints = function (width, height) {
-	return [{
-		x: 0,
-		y: 0
-	}, {
-		x: width,
-		y: 0
-	}, {
-		x: width,
-		y: height
-	}, {
-		x: 0,
-		y: height
-	}, ];
 };
 
 EntityFactory.getShapeByEntity = function (entity) {
