@@ -22,7 +22,7 @@ define(['entities/player', 'entities/commonEntity', 'entities/circleEntity', 'en
 
 	EntityFactory.builders[Constants.Types.Entities.CommonEntity] = function (entity_info) {
 		var entity = new CommonEntity(entity_info.id, entity_info.sprite);
-		Sprites.ApplyAnimation(entity, entity_info.sprite, "default");
+		entity.setAnimation(entity_info.sprite, "default");
 		return entity;
 	};
 
@@ -36,7 +36,7 @@ define(['entities/player', 'entities/commonEntity', 'entities/circleEntity', 'en
 
 	EntityFactory.builders[Constants.Types.Entities.PLAYER] = function (entity_info) {
 		var entity = new Player(entity_info.id);
-		Sprites.ApplyAnimation(entity, "player", "idle_right");
+		entity.setAnimation("player", "idle_right");
 		return entity;
 	};
 

@@ -7,6 +7,10 @@ define(['sprites'], function (Sprites) {
 			this.movieclip = {
 				position: new PIXI.Point()
 			};
+			this._container = new PIXI.DisplayObjectContainer();
+		},
+		getDisplayObject: function () {
+			return this._container;
 		},
 		getPosition: function () {
 			return this.movieclip.position;
@@ -21,8 +25,31 @@ define(['sprites'], function (Sprites) {
 		setAngle: function () {
 			// this.movieclip.rotation = a;
 		},
+		setAnimation: function (sprite, animation) {
+			if (sprite === undefined || animation === undefined) return;
+			if (animation !== this.animation) {
+				var def = Sprites.definitions[sprite];
+				var adef = def.animations[animation];
+				var movieclip = new PIXI.MovieClip(adef.textures);
+
+				if (this.isAnimated())
+					this._container.removeChild(this.movieclip);
+				this.movieclip = movieclip;
+				this._container.addChild(this.movieclip);
+
+				this._container.position = def.offset;
+				this.movieclip.animationSpeed = adef.speed;
+				this.movieclip.scale = adef.scale;
+				this.movieclip.anchor = def.anchor;
+				this.movieclip.play();
+				this.animation = animation;
+			}
+		},
+		isAnimated: function () {
+			return this.movieclip instanceof PIXI.MovieClip;
+		},
 		update: function (entity_info) {
-			Sprites.ApplyAnimation(this, this.kind, entity_info.animation);
+			this.setAnimation(entity_info.sprite || this.kind, entity_info.animation);
 			this.setPosition(entity_info.position.x, entity_info.position.y);
 			this.setAngle(entity_info.angle);
 		}

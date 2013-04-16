@@ -34,32 +34,6 @@ define(['./lib/text!../sprites/player.json',
 		Sprites.definitions[sprite.id] = def;
 	});
 
-	Sprites.ApplyAnimation = function (entity, sprite, animation) {
-		if (sprite === undefined || animation === undefined)
-			return;
-		if (animation !== entity.animation) {
-			var def = Sprites.definitions[sprite];
-			var adef = def.animations[animation];
-			if (entity.movieclip instanceof PIXI.MovieClip) {
-				entity.movieclip.textures = adef.textures;
-				entity.movieclip.setTexture(adef.textures[0]);
-			} else {
-				entity.movieclip = new PIXI.MovieClip(adef.textures);
-				entity.docontainer = new PIXI.DisplayObjectContainer();
-				entity.docontainer.addChild(entity.movieclip);
-				entity.docontainer.position = def.offset;
-				entity.animated = true;
-			}
-			entity.movieclip.animationSpeed = adef.speed;
-			entity.movieclip.scale = adef.scale;
-			entity.movieclip.anchor = def.anchor;
-			entity.movieclip.play();
-			entity.animation = animation;
-		} else {
-			entity.animated = false;
-		}
-	};
-
 	return Sprites;
 
 });
