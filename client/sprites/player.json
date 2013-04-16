@@ -7,19 +7,19 @@
 		"atk_left": {
 			"length": 5,
 			"row": 0,
-			"scalex": -1,
+			"scale_x": -1,
 			"speed": 0.1
 		},
 		"walk_left": {
 			"length": 4,
 			"row": 1,
-			"scalex": -1,
+			"scale_x": -1,
 			"speed": 0.1
 		},
 		"idle_left": {
 			"length": 2,
 			"row": 2,
-			"scalex": -1,
+			"scale_x": -1,
 			"speed": 0.01
 		},
 		"atk_right": {
@@ -68,8 +68,6 @@
 			"speed": 0.01
 		}
 	},
-	"offset_x": -8,
-	"offset_y": -12,
-	"anchor_x": 0.5,
-	"anchor_y": 0.5
+	"offset_x": 0,
+	"offset_y": -6
 }

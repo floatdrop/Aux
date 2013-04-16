@@ -3,14 +3,7 @@
 	"width": 51,
 	"height": 50,
 	"image": "img/1/stone.png",
-	"animations": {
-		"default": {
-				"length": 1,
-				"row": 0,
-				"speed": 200
-			}},
-	"anchor_x": 0.5,
-	"anchor_y": 0.5,
+	"animations": { "default": {} },
 	"offset_x": 26,
 	"offset_y": -14
 }

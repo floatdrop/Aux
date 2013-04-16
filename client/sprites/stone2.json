@@ -1,0 +1,9 @@
+{
+	"id": "stone2",
+	"width": 42,
+	"height": 31,
+	"image": "img/1/stone2.png",
+	"animations": { "default": {} },
+	"offset_x": 0,
+	"offset_y": 0
+}

@@ -1,14 +1,7 @@
 {
 	"id": "pillar2",
 	"width": 23,
+	"image": "img/1/pillar2.png",
 	"height": 51,
-	"animations": {
-		"basic": {
-				"length": 1,
-				"row": 0,
-				"flipSpriteX": false,
-				"speed": 200
-			}},
-	"offset_x": 0,
-	"offset_y": 0
+	"animations": { "default": {} }
 }

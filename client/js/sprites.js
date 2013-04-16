@@ -31,14 +31,13 @@ define(['./lib/text!../sprites/player.json',
 			var adef = {
 				length: animation.length,
 				row: animation.row,
-				scale: new PIXI.Point(animation.scalex || 1, animation.scaley || 1),
-				speed: animation.speed,
-				position: new PIXI.Point(animation.offsetx || def.offsetx, animation.offsety || def.offsety),
+				scale: new PIXI.Point(animation.scale_x || 1, animation.scale_y || 1),
+				speed: animation.speed || 0,
 				textures: []
 			};
 			for (var i = 0; i < adef.length; i++) {
 				adef.textures.push(new PIXI.Texture(def.baseTexture, 
-					new PIXI.Rectangle(i * def.width, adef.row * def.height, def.width, def.height)));
+					new PIXI.Rectangle(i * def.width, (adef.row || 0) * def.height, def.width, def.height)));
 			}
 			def.animations[name] = adef;
 		});

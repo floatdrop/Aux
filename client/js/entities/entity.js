@@ -30,7 +30,7 @@ define(['sprites'], function (Sprites) {
 
 			var def = Sprites.definitions[sprite];
 			var adef = def.animations[animation];
-			var movieclip = new PIXI.MovieClip(adef.textures);
+			var movieclip = adef.speed === 0 ? new PIXI.Sprite(adef.textures[0]) : new PIXI.MovieClip(adef.textures);
 
 			if (this.isAnimated()) this._container.removeChild(this.movieclip);
 			this.movieclip = movieclip;

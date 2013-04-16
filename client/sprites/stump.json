@@ -1,0 +1,9 @@
+{
+	"id": "stump",
+	"width": 58,
+	"height": 49,
+	"image": "img/1/stump.png",
+	"animations": { "default": {} },
+	"offset_x": 0,
+	"offset_y": 0
+}
