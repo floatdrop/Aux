@@ -26,24 +26,23 @@ define(['sprites'], function (Sprites) {
 			// this.movieclip.rotation = a;
 		},
 		setAnimation: function (sprite, animation) {
-			if (sprite === undefined || animation === undefined) return;
-			if (animation !== this.animation) {
-				var def = Sprites.definitions[sprite];
-				var adef = def.animations[animation];
-				var movieclip = new PIXI.MovieClip(adef.textures);
+			if (sprite === undefined || animation === undefined || animation === this.animation) return;
 
-				if (this.isAnimated())
-					this._container.removeChild(this.movieclip);
-				this.movieclip = movieclip;
-				this._container.addChild(this.movieclip);
+			var def = Sprites.definitions[sprite];
+			var adef = def.animations[animation];
+			var movieclip = new PIXI.MovieClip(adef.textures);
 
-				this._container.position = def.offset;
-				this.movieclip.animationSpeed = adef.speed;
-				this.movieclip.scale = adef.scale;
-				this.movieclip.anchor = def.anchor;
-				this.movieclip.play();
-				this.animation = animation;
-			}
+			if (this.isAnimated()) this._container.removeChild(this.movieclip);
+			this.movieclip = movieclip;
+			this._container.addChild(this.movieclip);
+
+			this._container.position = def.offset;
+			this.movieclip.animationSpeed = adef.speed;
+			this.movieclip.scale = adef.scale;
+			this.movieclip.anchor = def.anchor;
+			this.movieclip.play();
+			this.animation = animation;
+
 		},
 		isAnimated: function () {
 			return this.movieclip instanceof PIXI.MovieClip;
