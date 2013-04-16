@@ -13,6 +13,8 @@ define(['lib/async', 'tileset'], function (async, TileSet) {
 			this.tileheight = mapinfo.tileheight;
 			this.layers = mapinfo.layers,
 			this.width = mapinfo.width;
+			this.pixelwidth = this.width * this.tilewidth;
+			this.pixelheight = this.height * this.tileheight;
 			this.height = mapinfo.height;
 			this._loadTileSets(mapinfo.tilesets);
 		},

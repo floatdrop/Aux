@@ -1,6 +1,7 @@
 /* global _ */
 
-define(['entities/player', 'client', 'entityfactory', 'map'], function (Player, Client, EntityFactory, Map) {
+define(['entities/player', 'client', 'entityfactory', 'map', 'view'], 
+	function (Player, Client, EntityFactory, Map, View) {
 	var Game = Class.extend({
 		map: new Map(),
 
@@ -11,12 +12,17 @@ define(['entities/player', 'client', 'entityfactory', 'map'], function (Player, 
 			this.keybindings['s'] = this.moveDown.bind(this);
 			this.keybindings['a'] = this.moveLeft.bind(this);
 			this.keybindings['d'] = this.moveRight.bind(this);
+
+			this.stage = new PIXI.Stage(0x000000);
+			this.view = new View(this.renderer.width, this.renderer.height, 2048, 2048);
+			this.stage.addChild(this.view);
 		},
 		run: function () {
-			this.camera = this.renderer.camera;
+			
 			this.tick();
 		},
 		tick: function () {
+			this.view.update();
 			this.renderer.render(this.stage);
 			this._handleKeyboard();
 			requestAnimFrame(this.tick.bind(this));
@@ -31,16 +37,22 @@ define(['entities/player', 'client', 'entityfactory', 'map'], function (Player, 
 			var self = this;
 
 			this.map.onMapLoaded(function () {
+				self.view.setLimits(self.map.pixelwidth, self.map.pixelheight);
 				_.each(self.map.getDisplayObjects(), function (displayObject) {
-					self.stage.addChild(displayObject);
+					self.view.addChild(displayObject);
 				});
 			});
 
 			this.client = new Client(this.host, this.port);
 
-			this.client.onWelcome(function (data) {
-				self.playerId = data.playerId;
+
+			this.client.onWelcome(function (entity_info) {
+				self.playerId = entity_info.id;
+				self.player = EntityFactory.createEntity(entity_info, "PlayerName");
+				self.entities[entity_info.id] = self.player;
+				self.view.linkToEntity(self.player);
 			});
+
 
 			this.client.onMap(function (mapinfo) {
 				self.map.load(mapinfo);
@@ -59,7 +71,7 @@ define(['entities/player', 'client', 'entityfactory', 'map'], function (Player, 
 				var id = entity_info.id;
 				var entity = id in self.entities ? self.entities[id] : entity = EntityFactory.createEntity(entity_info, id);
 				entity.update(entity_info);
-				if (entity.isAnimated()) self.stage.addChild(entity.getDisplayObject());
+				if (entity.isAnimated()) self.view.addChild(entity.getDisplayObject());
 				entities[id] = entity;
 			});
 			this.entities = entities;
@@ -80,7 +92,6 @@ define(['entities/player', 'client', 'entityfactory', 'map'], function (Player, 
 		moveRight: function () {
 			return this.client.sendAction('right');
 		},
-		stage: new PIXI.Stage(0x000000),
 		entities: [],
 		keyboard: {},
 		keybindings: {},
