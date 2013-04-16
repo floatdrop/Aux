@@ -1,7 +1,7 @@
 /* global _ */
 
-define(['entities/player', 'entities/commonEntity', 'entities/circleEntity', 'entities/polygonEntity', 'sprites'], 
-	function (Player, CommonEntity, CircleEntity, PolygonEntity, Sprites) {
+define(['entities/player', 'entities/commonEntity', 'entities/circleEntity', 'entities/polygonEntity'], 
+	function (Player, CommonEntity, CircleEntity, PolygonEntity) {
 	var EntityFactory = {};
 
 	EntityFactory.createEntity = function (entity_info, name) {
