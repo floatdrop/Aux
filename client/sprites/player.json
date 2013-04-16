@@ -7,18 +7,23 @@
 			"length": 5,
 			"row": 0,
 			"flipSpriteX": true,
+			"offset": true,
 			"speed": 200
 		},
 		"walk_left": {
 			"length": 4,
 			"row": 1,
 			"flipSpriteX": true,
+			"offset": true,
+			"offset_x": 15,
 			"speed": 200
 		},
 		"idle_left": {
 			"length": 2,
 			"row": 2,
 			"flipSpriteX": true,
+			"offset": true,
+			"offset_x": 15,
 			"speed": 2000
 		},
 		"atk_right": {
@@ -67,6 +72,6 @@
 			"speed": 2000
 		}
 	},
-	"offset_x": -8,
-	"offset_y": -12
+	"offset_x": 0,
+	"offset_y": -6
 }

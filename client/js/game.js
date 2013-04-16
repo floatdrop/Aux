@@ -10,7 +10,8 @@ function (Renderer, Player, GameClient, EntityFactory, Map) {
 				y: 0
 			};
 			this.renderer = null;
-			this.entities = [];
+			this.player = null;
+			this.entities = {};
 			this.keyboard = {};
 			this.keybindings = {
 				'w': this.moveUp.bind(this),
@@ -20,6 +21,7 @@ function (Renderer, Player, GameClient, EntityFactory, Map) {
 			};
 			this.host = window.location.host;
 			this.playerId = null;
+			this.map = new Map(this);
 		},
 		run: function () {
 			this.camera = this.renderer.camera;
@@ -53,12 +55,14 @@ function (Renderer, Player, GameClient, EntityFactory, Map) {
 		connect: function () {
 			var self = this;
 			this.client = new GameClient(this.host, this.port);
-			this.map = new Map(this);
-			this.client.onWelcome(function (data) {
-				self.playerId = data.playerId;
+			this.client.onWelcome(function (entity_info) {
+				self.playerId = entity_info.id;
+				self.player = EntityFactory.createEntity(entity_info, "PlayerName");
+				self.entities[entity_info.id] = self.player;
+				self.camera.linkToEntity(self.player);
 			});
 			this.client.onMap(function (data) {
-				self.map.onMapLoaded(data);
+				self.map.onMapRecived(data);
 			});
 			this.client.onEntityList(function (data) {
 				var entities = {};

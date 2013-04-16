@@ -7,11 +7,22 @@ define([], function () {
 			this.tilesets = [];
 			this.layers = [];
 			this.game = game;
+			this.width = 0;
+			this.height = 0;
+			this.countTileInRow = 0;
+			this.countTileInCol = 0;
+			this.tileWidth = 0;
+			this.tileHeight = 0;
 		},
 
-		onMapLoaded: function (data) {
+		onMapRecived: function (data) {
 			this.layers = data.layers;
-			this.width = data.width;
+			this.countTileInRow = data.width;
+			this.countTileInCol = data.height;
+			this.tileWidth = data.tilewidth;
+			this.tileHeight = data.tileheight;
+			this.width = data.width * data.tilewidth;
+			this.height = data.height * data.tileheight;
 			this.loadtilesets(data.tilesets);
 		},
 

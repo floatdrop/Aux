@@ -1,0 +1,14 @@
+{
+	"id": "well",
+	"width": 121,
+	"height": 107,
+	"animations": {
+		"basic": {
+				"length": 1,
+				"row": 0,
+				"flipSpriteX": false,
+				"speed": 200
+			}},
+	"offset_x": 0,
+	"offset_y": 0
+}
