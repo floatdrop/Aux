@@ -1,7 +1,7 @@
 /* global _ */
 
 define(function () {
-	var GameClient = Class.extend({
+	var Client = Class.extend({
 		useBison: true,
 		callbacks: {},
 		init: function (host, port) {
@@ -72,5 +72,5 @@ define(function () {
 			});
 		}
 	});
-	return GameClient;
+	return Client;
 });

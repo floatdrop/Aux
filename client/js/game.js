@@ -1,6 +1,6 @@
 /* global _ */
 
-define(['entities/player', 'gameclient', 'entityfactory', 'map'], function (Player, GameClient, EntityFactory, Map) {
+define(['entities/player', 'client', 'entityfactory', 'map'], function (Player, Client, EntityFactory, Map) {
 	var Game = Class.extend({
 		map: new Map(),
 
@@ -36,7 +36,7 @@ define(['entities/player', 'gameclient', 'entityfactory', 'map'], function (Play
 				});
 			});
 
-			this.client = new GameClient(this.host, this.port);
+			this.client = new Client(this.host, this.port);
 
 			this.client.onWelcome(function (data) {
 				self.playerId = data.playerId;
