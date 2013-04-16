@@ -22,43 +22,29 @@ define(['camera'], function (Camera) {
 					return e.y;
 				});
 			_.each(entities, function (entity) {
-				if (entity.isDebug() || self.camera.isVisible(entity)) {
-					entity.draw(self.context);
-				}
+				entity.draw(self.context);
 			});
 		},
 		clearScreen: function (ctx) {
 			ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 		},
 		drawMap: function (map) {
-			var self = this,
-				visibleArea = this.camera.getVisibleArea();
+			var self = this;
 
 			_.each(map.layers, function (layer) {
-				if (layer.visible) self.drawLayer(map, layer, visibleArea);
+				if (layer.visible) self.drawLayer(map, layer);
 			});
 		},
-		drawLayer: function (map, layer, visibleArea) {
+		drawLayer: function (map, layer) {
 			var self = this,
-				indexY = visibleArea.startY,
-				tile = null,
-				i = 0,
-				tileIndex = 0;
+				i = 0;
 
-			while (indexY < visibleArea.endY) {
-				i = visibleArea.startX;
-				while (i < visibleArea.endX) {
-					tileIndex = indexY * map.countTileInRow + i;
-					tile = layer.data[tileIndex];
-					if (tile !== 0) {
-						self.drawTile(map, tileIndex, tile);
-					}
-					i++;
-				}
-				indexY++;
-			}
+			_.each(layer.data, function (tile) {
+				if (tile !== 0) self.drawTile(map, i, tile);
+				i++;
+			});
+
 		},
-
 		drawTile: function (map, index, value) {
 			var tileSet = map.getTileSet(value),
 				tileW = tileSet.tileWidth,
