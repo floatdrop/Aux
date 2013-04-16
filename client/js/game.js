@@ -47,18 +47,19 @@ define(['entities/player', 'client', 'entityfactory', 'map'], function (Player, 
 			});
 
 			this.client.onEntityList(function (entitieslist) {
-				self.entitylist(entitieslist);
+				self.entityList(entitieslist);
 			});
 
 			this.client.connect();
 		},
 		entityList: function (list) {
 			var entities = {};
+			var self = this;
 			_.each(list, function (entity_info) {
 				var id = entity_info.id;
-				var entity = id in this.entities ? this.entities[id] : entity = EntityFactory.createEntity(entity_info, id);
+				var entity = id in self.entities ? self.entities[id] : entity = EntityFactory.createEntity(entity_info, id);
 				entity.update(entity_info);
-				if (entity.isAnimated()) this.stage.addChild(entity.getDisplayObject());
+				if (entity.isAnimated()) self.stage.addChild(entity.getDisplayObject());
 				entities[id] = entity;
 			});
 			this.entities = entities;
