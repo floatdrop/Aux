@@ -1,8 +1,8 @@
-define(['entity'], function (Entity) {
+define(['entities/entity'], function (Entity) {
 
 	var CommonEntity = Entity.extend({
-		init: function (id) {
-			this._super(id, Constants.Types.Entities.CommonEntity);
+		init: function (id, name) {
+			this._super(id, name);
 		},
 		update: function (entity_info) {
 			this._super(entity_info);

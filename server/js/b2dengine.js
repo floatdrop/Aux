@@ -1,10 +1,12 @@
 var Box2D = require('./lib/box2d'),
 	_ = require('underscore'),
 	cls = require('./lib/class'),
-	EntityFactory = require('./entities/entityFactory');
+	EntityFactory = require('./entityFactory');
 
 var b2Vec2 = Box2D.Common.Math.b2Vec2,
 	b2World = Box2D.Dynamics.b2World;
+
+var Scale = 100;
 
 var Engine = module.exports = cls.Class.extend({
 	init: function (debug) {
@@ -20,13 +22,16 @@ var Engine = module.exports = cls.Class.extend({
 		entity.body.m_userData = entity;
 		entity.fixture = entity.body.CreateFixture(entity.fixtureDef);
 		entity.setPosition = function (x, y) {
-			this.body.SetPosition(new b2Vec2(x, y));
+			this.body.SetPosition(new b2Vec2(x / Scale, y / Scale));
 		};
 		var position = entity.getPosition();
 		entity.setPosition(position.x, position.y);
 		entity.getPosition = function () {
 			var b2dPosition = this.body.GetPosition();
-			return { x: b2dPosition.x, y: b2dPosition.y };
+			return {
+				x: b2dPosition.x * Scale,
+				y: b2dPosition.y * Scale
+			};
 		};
 		entity.setAngle = function (a) {
 			this.body.SetAngle(a);
@@ -35,6 +40,12 @@ var Engine = module.exports = cls.Class.extend({
 		entity.getAngle = function () {
 			return this.body.GetAngle();
 		};
+	},
+	addEntities: function (entities_list) {
+		var self = this;
+		_.each(entities_list, function (entity) {
+			self.addEntity(entity);
+		});
 	},
 	removeEntity: function (id) {
 		var entities = this.getEntities();
@@ -64,5 +75,33 @@ var Engine = module.exports = cls.Class.extend({
 		return dump;
 	}
 });
+
+Engine.getPoints = function (points) {
+	var scaledPoints = [];
+	_.each(points, function (point) {
+		scaledPoints.push({
+			x: point.x / Scale,
+			y: point.y / Scale
+		});
+	});
+	return scaledPoints;
+};
+
+Engine.getBoxPoints = function (width, height) {
+	return [{
+		x: 0,
+		y: 0
+	}, {
+		x: width / Scale,
+		y: 0
+	}, {
+		x: width / Scale,
+		y: height / Scale
+	}, {
+		x: 0,
+		y: height / Scale
+	}, ];
+};
+
 
 return Engine;

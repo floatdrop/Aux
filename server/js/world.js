@@ -8,20 +8,22 @@ module.exports = cls.Class.extend({
 		this.ups = ups;
 		this.engine = engine;
 		this.server = server;
-		this.map_filepath = map_filepath;
+		this.map = new WorldMap(map_filepath);
+		this.engine.addEntities(this.map.entities);
 		this.onPlayerConnect(this.playerConnect);
 		this.onPlayerDisconnect(this.playerDisconnect);
-		this.ready_callback = function () { log.info("World started"); };
 	},
 	playerConnect: function (connection) {
-		var self = this,
-			player = new Player(connection, connection.id);
+		var self = this;
+		var player = new Player(connection, connection.id);
+		player.setPosition(100, 100);
+		log.info("Player " + player.id + " connected");
+
 		connection.onClose(function () {
 			self.disconnect_callback(player.id);
 		});
-		player.setPosition(1, 1);
-		log.info("Player " + player.id + " connected");
-		self.map.sendMap(player);
+
+		player.sendMap(this.map);
 		this.engine.addEntity(player);
 		player.send(Constants.Types.Messages.Welcome, player.getBaseState());
 		log.info("Send Welcome to player " + player.id);
@@ -31,10 +33,12 @@ module.exports = cls.Class.extend({
 	},
 	run: function () {
 		var self = this;
-		this.map = new WorldMap(this.map_filepath, this.engine);
 		setInterval(function () {
 			self.engine.tick(1000.0 / self.ups);
-			self.server.broadcast({t: Constants.Types.Messages.EntityList, d: self.engine.dumpEntities()});
+			self.server.broadcast({
+				t: Constants.Types.Messages.EntityList,
+				d: self.engine.dumpEntities()
+			});
 		}, 1000 / this.ups);
 		setTimeout(function () {
 			self.ready_callback();
@@ -48,5 +52,8 @@ module.exports = cls.Class.extend({
 	},
 	onReady: function (callback) {
 		this.ready_callback = callback;
+	},
+	ready_callback: function () {
+		log.info("World started");
 	}
 });

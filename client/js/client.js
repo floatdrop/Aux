@@ -1,13 +1,22 @@
+/* global _ */
+
 define(function () {
-	var GameClient = Class.extend({
+	var Client = Class.extend({
+		useBison: true,
+		callbacks: {},
 		init: function (host, port) {
-			this.socket = null;
 			this.host = host;
 			this.port = port;
-			this.useBison = true;
 		},
 		connect: function () {
 			var self = this;
+
+			_.each(Constants.Types.Messages, function (code, name) {
+				var callback = name.toLowerCase() + "_callback";
+				if (self[callback] !== undefined)
+					self.callbacks[code] = self[callback].bind(self);
+			});
+
 			this.socket = new WebSocket("ws://" + this.host);
 			this.socket.onmessage = function (event) {
 				self.decodeMessage(event, function (message) {
@@ -20,10 +29,6 @@ define(function () {
 			this.socket.onclose = function (error) {
 				console.log("Connection closed: " + error);
 			};
-			this.callbacks = {};
-			this.callbacks[Constants.Types.Messages.Welcome] = this.welcome_callback;
-			this.callbacks[Constants.Types.Messages.Map] = this.map_callback;
-			this.callbacks[Constants.Types.Messages.EntityList] = this.entity_list_callback;
 		},
 		decodeMessage: function (event, callback) {
 			if (typeof event.data === "string") {
@@ -37,9 +42,6 @@ define(function () {
 				};
 			}
 		},
-		byteValue: function (x) {
-			return x.charCodeAt(0) & 0xff;
-		},
 		send: function (message) {
 			if (this.useBison) {
 				var encoded = msgpack.encode(message);
@@ -49,7 +51,7 @@ define(function () {
 			}
 		},
 		onEntityList: function (callback) {
-			this.entity_list_callback = callback;
+			this.entitylist_callback = callback;
 		},
 		onWelcome: function (callback) {
 			this.welcome_callback = callback;
@@ -57,18 +59,18 @@ define(function () {
 		onMap: function (callback) {
 			this.map_callback = callback;
 		},
-		action: function (action) {
+		sendAction: function (action) {
 			this.send({
 				t: Constants.Types.Messages.Action,
 				d: action
 			});
 		},
-		angle: function (angle) {
+		sendAngle: function (angle) {
 			this.send({
 				t: Constants.Types.Messages.Angle,
 				d: angle
 			});
 		}
 	});
-	return GameClient;
+	return Client;
 });

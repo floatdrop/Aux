@@ -1,4 +1,4 @@
-var cls = require("../lib/class");
+var cls = require("./lib/class");
 
 var actions = {};
 
@@ -33,12 +33,6 @@ var Entity = module.exports = cls.Class.extend({
 	},
 	getAngle: function () {
 		return this.angle;
-	},
-	construct: function () {
-
-	},
-	destruct: function () {
-
 	},
 	scheduleAction: function (action, timeout, id) {
 		if (timeout <= 0)

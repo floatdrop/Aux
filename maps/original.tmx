@@ -3,7 +3,7 @@
  <tileset firstgid="1" name="mainSprites" tilewidth="32" tileheight="32">
   <image source="../client/img/sprites/ground_64x64.png" width="2048" height="2048"/>
   <terraintypes>
-   <terrain name="Новый участок" tile="-1"/>
+   <terrain name="Simple map" tile="-1"/>
   </terraintypes>
  </tileset>
  <layer name="ground" width="64" height="35">
