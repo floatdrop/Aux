@@ -90,12 +90,6 @@ var Player = module.exports = Entity.extend({
 			self.animation = "idle_right";
 		}, 250, this.id);
 	},
-	turn_cw: function () {
-
-	},
-	turn_ccw: function () {
-
-	},
 	onAction: function (data) {
 		if (this.body === undefined) return false;
 		if (data === "up") this.move_up();
@@ -104,10 +98,10 @@ var Player = module.exports = Entity.extend({
 		if (data === "right") this.move_right();
 	},
 	onAngle: function (data) {
-		var self = this;
-		if (this.body === undefined) return false;
-		if (this.getAngle() > parseFloat(data)) this.scheduleAction(self.turn_cw, 0);
-		else this.scheduleAction(self.turn_ccw, 0);
+		if (data === "up") this.animation = "idle_up";
+		if (data === "down") this.animation = "idle_down";
+		if (data === "left") this.animation = "idle_left";
+		if (data === "right") this.animation = "idle_right";
 	}
 });
 

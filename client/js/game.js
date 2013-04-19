@@ -8,6 +8,7 @@ define(['entities/player', 'client', 'entityfactory', 'map', 'view'],
 		init: function (renderer) {
 			this.renderer = renderer;
 
+			this.renderer.view.onmousemove = this.moveCursor.bind(this);
 			this.keybindings['w'] = this.moveUp.bind(this);
 			this.keybindings['s'] = this.moveDown.bind(this);
 			this.keybindings['a'] = this.moveLeft.bind(this);
@@ -76,9 +77,33 @@ define(['entities/player', 'client', 'entityfactory', 'map', 'view'],
 			});
 			this.entities = entities;
 		},
-		moveCursor: function () {
-			//var angle = 0;
-			//return this.client.sendAngle(angle);
+		moveCursor: function (event) {
+			if (this.player) {
+				var angle = this.getAngle({x: event.x, y: event.y}, this.player.getPosition());
+				var animation = this.getAnimation(angle);
+
+				//this.player.animation.endsWith(animation)
+				if (this.player.animation.substr(-animation.length) !== animation) {
+					this.client.sendAngle(animation);
+					console.log("send");
+				}
+			}
+		},
+		getAngle: function (center, point) {
+			var x = point.x - center.x,
+				y = point.y - center.y; 
+			if (y === 0) {
+				return (x > 0) ? 180 : 0;
+			}
+			var angle = Math.atan(x / y) * 180 / Math.PI; 
+			return (y > 0) ? angle + 90 : angle + 270; 
+		},
+		getAnimation: function (angle) {
+			if (angle > 315) return 'right';
+			if (angle > 225) return 'down';
+			if (angle > 135) return 'left';
+			if (angle > 45) return 'up';
+			return 'right';
 		},
 		moveUp: function () {
 			return this.client.sendAction('up');
