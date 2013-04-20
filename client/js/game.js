@@ -45,7 +45,7 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 				}
 			});
 			this.debugSprite.setTexture(PIXI.Texture.fromCanvas(this.canvas));
-			this.view.addChild(this.debugSprite);
+			this.stage.addChild(this.debugSprite);
 		},
 		_handleKeyboard: function () {
 			var self = this;
