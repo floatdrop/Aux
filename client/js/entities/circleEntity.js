@@ -1,6 +1,6 @@
-define(['entities/entity'], function (Entity) {
+define(['entities/debugEntity'], function (DebugEntity) {
 
-    var CircleEntity = Entity.extend({
+    var CircleEntity = DebugEntity.extend({
         radius: 0,
         
         init: function (id) {
@@ -9,16 +9,13 @@ define(['entities/entity'], function (Entity) {
 
         update: function (entity_info) {
             this.setPosition(entity_info.position.x, entity_info.position.y);
-            this.radius = entity_info.radius;
+            this.radius = entity_info.radius * 100;
         },
 
         draw: function (context) {
-            var x = this.position.x * this.scale,
-                y = this.position.y * this.scale,
-                radius = this.radius * this.scale;
-
+            var position = this.getPosition();
             context.beginPath();
-            context.arc(x, y, radius, 0, Math.PI * 2, true);
+            context.arc(position.x, position.y, this.radius, 0, Math.PI * 2, true);
             context.closePath();
             context.fill();
         }
