@@ -16,7 +16,6 @@ var Player = module.exports = Entity.extend({
 		this.connection = connection;
 		this._super(id, "player", Constants.Types.Entities.PLAYER);
 		this.deltaAngle = 90;
-		this.currentAngle = 0;
 		this.animationType = "idle";
 		this.setAnimation();
 
