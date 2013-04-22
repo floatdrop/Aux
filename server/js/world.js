@@ -44,6 +44,7 @@ module.exports = cls.Class.extend({
 		var self = this;
 		setInterval(function () {
 			self.engine.tick(1000.0 / self.ups);
+			self.engine.updateWorld();
 			var dynamicObjects = {
 				t: Constants.Types.Messages.EntityList,
 				d: self.engine.dumpEntities(function (entity) {

@@ -21,6 +21,8 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 			this.canvas = document.createElement('canvas');
 			this.canvas.width  = 800;
 			this.canvas.height = 600;
+			this.halfWidth = this.canvas.width / 2;
+			this.halfHeight = this.canvas.height / 2;
 			this.context = this.canvas.getContext('2d');
 			this.debugSprite = new PIXI.Sprite(PIXI.Texture.fromCanvas(this.canvas));
 
@@ -101,30 +103,24 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 		moveCursor: function (event) {
 			if (this.player) {
 				var angle = this.getAngle({x: event.x, y: event.y}, this.player.getPosition());
-				var animation = this.getAnimation(angle);
-
-				//this.player.animation.endsWith(animation)
-				if (this.player.animation.substr(-animation.length) !== animation) {
-					this.client.sendAngle(animation);
-					console.log("send");
-				}
+				this.client.sendAngle(angle);
 			}
 		},
-		getAngle: function (center, point) {
-			var x = point.x - center.x,
-				y = point.y - center.y; 
+		getAngle: function (cursor, point) {
+			var playerPos = {x: point.x, y: point.y};
+			if (playerPos.x > this.halfWidth) {
+				playerPos.x = this.halfWidth;
+			}
+			if (playerPos.y > this.halfHeight) {
+				playerPos.y = this.halfHeight;
+			}
+			var x = playerPos.x - cursor.x,
+				y = playerPos.y - cursor.y; 
 			if (y === 0) {
 				return (x > 0) ? 180 : 0;
 			}
 			var angle = Math.atan(x / y) * 180 / Math.PI; 
 			return (y > 0) ? angle + 90 : angle + 270; 
-		},
-		getAnimation: function (angle) {
-			if (angle > 315) return 'right';
-			if (angle > 225) return 'down';
-			if (angle > 135) return 'left';
-			if (angle > 45) return 'up';
-			return 'right';
 		},
 		moveUp: function () {
 			return this.client.sendAction('up');

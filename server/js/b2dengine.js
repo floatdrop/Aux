@@ -1,7 +1,8 @@
 var Box2D = require('./lib/box2d'),
 	_ = require('underscore'),
 	cls = require('./lib/class'),
-	EntityFactory = require('./entityFactory');
+	EntityFactory = require('./entityFactory'),
+	Player = require('./entities/player');
 
 var b2Vec2 = Box2D.Common.Math.b2Vec2,
 	b2World = Box2D.Dynamics.b2World,
@@ -19,6 +20,12 @@ var Engine = module.exports = cls.Class.extend({
 	tick: function (fps) {
 		this.b2w.Step(1 / fps, 10, 10);
 		this.b2w.ClearForces();
+	},
+	updateWorld: function () {
+		var filter_function = function (e) {return e instanceof Player; };
+		_.each(this.getEntities(filter_function), function (entity) {
+			entity.update();
+		});
 	},
 	addEntity: function (entity) {
 		entity.body = this.b2w.CreateBody(entity.bodyDef);
@@ -57,12 +64,15 @@ var Engine = module.exports = cls.Class.extend({
 		});
 		this.b2w.DestroyBody(entity.body);
 	},
-	getEntities: function () {
+	getEntities: function (filter_function) {
 		var entities = [];
+		if (!filter_function) filter_function = function (e) { return e; };
 		for (var b = this.b2w.m_bodyList; b; b = b.m_next) {
 			if (b.m_userData !== null) {
 				b.m_userData.isStatic = b.m_type === b2Body.b2_staticBody;
-				entities.push(b.m_userData);
+				if (filter_function(b.m_userData)) {
+					entities.push(b.m_userData);
+				}
 			}
 		}
 		return entities;
@@ -70,8 +80,7 @@ var Engine = module.exports = cls.Class.extend({
 	dumpEntities: function (filter_function) {
 		var self = this,
 			dump = [];
-		if (!filter_function) filter_function = function (e) { return e; };
-		_.chain(this.getEntities()).filter(filter_function).each(function (entity) {
+		_.each(this.getEntities(filter_function), function (entity) {
 			dump.push(entity.getBaseState());
 			if (self.debug) {
 				dump.push(EntityFactory.getShapeByEntity(entity).getBaseState());

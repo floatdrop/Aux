@@ -15,7 +15,10 @@ var Player = module.exports = Entity.extend({
 		var self = this;
 		this.connection = connection;
 		this._super(id, "player", Constants.Types.Entities.PLAYER);
-		this.animation = "idle_right";
+		this.deltaAngle = 90;
+		this.currentAngle = 0;
+		this.animationType = "idle";
+		this.setAnimation();
 
 		this.connection.listen(function (message) {
 			self.callbacks[message.t](message.d);
@@ -58,50 +61,53 @@ var Player = module.exports = Entity.extend({
 			tileheight: map.json.tileheight
 		});
 	},
-	move_up: function () {
-		var self = this;
-		this.animation = "walk_up";
-		this.body.ApplyImpulse(new b2Vec2(0, -0.01), new b2Vec2(0, 0));
-		this.scheduleAction(function () {
-			self.animation = "idle_up";
-		}, 250, this.id);
+	update: function () {
+		var currentAngle = this.getAngle();
+		if (currentAngle > this.angle) {
+			currentAngle -= this.deltaAngle;
+			if (currentAngle < this.angle) {
+				currentAngle = this.angle;
+			}
+		} else if (currentAngle < this.angle) {
+			currentAngle += this.deltaAngle;
+			if (currentAngle > this.angle) {
+				currentAngle = this.angle;
+			}
+		}
+		this.setAngle(currentAngle);
+		this.setAnimation();
 	},
-	move_down: function () {
-		var self = this;
-		this.animation = "walk_down";
-		this.body.ApplyImpulse(new b2Vec2(0, 0.01), new b2Vec2(0, 0));
-		this.scheduleAction(function () {
-			self.animation = "idle_down";
-		}, 250, this.id);
+	setAnimation: function () {
+		this.animation = this.animationType + "_" + this.getDirectionByAngle(this.getAngle());
 	},
-	move_left: function () {
+	move: function (impulse) {
 		var self = this;
-		this.animation = "walk_left";
-		this.body.ApplyImpulse(new b2Vec2(-0.01, 0), new b2Vec2(0, 0));
+		this.body.ApplyImpulse(impulse, new b2Vec2(0, 0));
+		this.animationType = "walk";
 		this.scheduleAction(function () {
-			self.animation = "idle_left";
-		}, 250, this.id);
-	},
-	move_right: function () {
-		var self = this;
-		this.animation = "walk_right";
-		this.body.ApplyImpulse(new b2Vec2(0.01, 0), new b2Vec2(0, 0));
-		this.scheduleAction(function () {
-			self.animation = "idle_right";
+			self.animationType = "idle";
 		}, 250, this.id);
 	},
 	onAction: function (data) {
 		if (this.body === undefined) return false;
-		if (data === "up") this.move_up();
-		if (data === "down") this.move_down();
-		if (data === "left") this.move_left();
-		if (data === "right") this.move_right();
+		if (data === "up") this.move(new b2Vec2(0, -0.01));
+		if (data === "down") this.move(new b2Vec2(0, 0.01));
+		if (data === "left") this.move(new b2Vec2(-0.01, 0));
+		if (data === "right") this.move(new b2Vec2(0.01, 0));
 	},
 	onAngle: function (data) {
-		if (data === "up") this.animation = "idle_up";
-		if (data === "down") this.animation = "idle_down";
-		if (data === "left") this.animation = "idle_left";
-		if (data === "right") this.animation = "idle_right";
+		var angle = parseInt(data, 10);
+		if (isNaN(angle) || angle < 0 || angle > 360) {
+			angle = 0;
+		}
+		this.angle = angle;
+	},
+	getDirectionByAngle: function (angle) {
+		if (angle > 315) return 'right';
+		if (angle > 225) return 'down';
+		if (angle > 135) return 'left';
+		if (angle > 45) return 'up';
+		return 'right';
 	}
 });
 
