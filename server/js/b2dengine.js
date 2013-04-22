@@ -4,11 +4,14 @@ var Box2D = require('./lib/box2d'),
 	EntityFactory = require('./entityFactory');
 
 var b2Vec2 = Box2D.Common.Math.b2Vec2,
-	b2World = Box2D.Dynamics.b2World;
+	b2World = Box2D.Dynamics.b2World,
+	b2Body = Box2D.Dynamics.b2Body;
 
 var Scale = 100;
 
 var Engine = module.exports = cls.Class.extend({
+	Scale: Scale,
+	
 	init: function (debug) {
 		this.b2w = new b2World(new b2Vec2(0, 0), false);
 		this.debug = debug;
@@ -58,15 +61,17 @@ var Engine = module.exports = cls.Class.extend({
 		var entities = [];
 		for (var b = this.b2w.m_bodyList; b; b = b.m_next) {
 			if (b.m_userData !== null) {
+				b.m_userData.isStatic = b.m_type === b2Body.b2_staticBody;
 				entities.push(b.m_userData);
 			}
 		}
 		return entities;
 	},
-	dumpEntities: function () {
+	dumpEntities: function (filter_function) {
 		var self = this,
 			dump = [];
-		_.each(this.getEntities(), function (entity) {
+		if (!filter_function) filter_function = function (e) { return e; };
+		_.chain(this.getEntities()).filter(filter_function).each(function (entity) {
 			dump.push(entity.getBaseState());
 			if (self.debug) {
 				dump.push(EntityFactory.getShapeByEntity(entity).getBaseState());

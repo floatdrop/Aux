@@ -45,6 +45,9 @@ define(['sprites'], function (Sprites) {
 			this.animation = animation;
 
 		},
+		isDisplayed: function () {
+			return this.movieclip instanceof PIXI.DisplayObject;
+		},
 		isAnimated: function () {
 			return this.movieclip instanceof PIXI.MovieClip;
 		},

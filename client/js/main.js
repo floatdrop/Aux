@@ -1,19 +1,11 @@
 define(['jquery', 'game'], function ($, Game) {
 
+	var debug = false;
+
 	var renderer = PIXI.autoDetectRenderer(800, 600);
 	document.body.appendChild(renderer.view);
-
-	var game = new Game(renderer);
 	
-	/*$(document).mousemove(function (event) {
-		var gamePos = $('#gamecanvas').offset(),
-			mouse = game.mouse;
-
-		mouse.x = event.pageX - gamePos.left;
-		mouse.y = event.pageY - gamePos.top;
-
-		game.moveCursor();
-	});*/
+	var game = new Game(renderer, debug);
 
 	$(document).bind("keydown", function (e) {
 		var key = e.which;
@@ -31,7 +23,9 @@ define(['jquery', 'game'], function ($, Game) {
 		if (key === 68) game.keyboard['d'] = false;
 	});
 
-	game.connect();
-	game.run();
+	$(function () {
+		game.connect();
+		game.run();
+	});
 
 });

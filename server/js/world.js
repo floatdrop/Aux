@@ -23,10 +23,19 @@ module.exports = cls.Class.extend({
 			self.disconnect_callback(player.id);
 		});
 
+		log.info("Send Map to player " + player.id);
 		player.sendMap(this.map);
-		this.engine.addEntity(player);
-		player.send(Constants.Types.Messages.Welcome, player.getBaseState());
+
 		log.info("Send Welcome to player " + player.id);
+		player.send(Constants.Types.Messages.Welcome, player.getBaseState());
+
+		log.info("Send Static objects to player " + player.id);
+		player.send(Constants.Types.Messages.EntityList,
+		self.engine.dumpEntities(function (entity) {
+			return entity.isStatic;
+		}));
+
+		this.engine.addEntity(player);
 	},
 	playerDisconnect: function (id) {
 		this.engine.removeEntity(id);
@@ -35,10 +44,13 @@ module.exports = cls.Class.extend({
 		var self = this;
 		setInterval(function () {
 			self.engine.tick(1000.0 / self.ups);
-			self.server.broadcast({
+			var dynamicObjects = {
 				t: Constants.Types.Messages.EntityList,
-				d: self.engine.dumpEntities()
-			});
+				d: self.engine.dumpEntities(function (entity) {
+					return !entity.isStatic;
+				})
+			};
+			self.server.broadcast(dynamicObjects);
 		}, 1000 / this.ups);
 		setTimeout(function () {
 			self.ready_callback();
