@@ -26,8 +26,10 @@ EntityFactory.getShapeByEntity = function (entity) {
 	var id = "debug-" + entity.id,
 		shape = entity.fixture.m_shape;
 
-	if (shape instanceof b2PolygonShape) return EntityFactory.createPolygonEntity(id, entity, shape);
-	if (shape instanceof b2CircleShape) return EntityFactory.createCircleEntity(id, entity, shape);
+	if (shape instanceof b2PolygonShape) 
+		return EntityFactory.createPolygonEntity(id, entity, shape);
+	if (shape instanceof b2CircleShape) 
+		return EntityFactory.createCircleEntity(id, entity, shape);
 	log.error('Unknown shape is ' + shape + "\r\nEntity is " + entity);
 	return EntityFactory.createEmptyCircleEntity(id);
 };
@@ -44,7 +46,8 @@ EntityFactory.ConvertB2VecToJson = function (b2vecpoints) {
 };
 
 EntityFactory.createPolygonEntity = function (id, entity) {
-	var polygonEntity = new PolygonEntity(id, EntityFactory.ConvertB2VecToJson(entity.fixtureDef.shape.m_vertices));
+	var polygonEntity = new PolygonEntity(id, 
+		EntityFactory.ConvertB2VecToJson(entity.fixtureDef.shape.m_vertices));
 	polygonEntity.entity = entity;
 	polygonEntity.shape = entity.fixture.m_shape;
 	var position = entity.getPosition();

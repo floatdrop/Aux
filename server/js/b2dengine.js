@@ -10,6 +10,8 @@ var b2Vec2 = Box2D.Common.Math.b2Vec2,
 var Scale = 100;
 
 var Engine = module.exports = cls.Class.extend({
+	Scale: Scale,
+	
 	init: function (debug) {
 		this.b2w = new b2World(new b2Vec2(0, 0), false);
 		this.debug = debug;

@@ -34,7 +34,7 @@ var PolygonEntity = module.exports = Entity.extend({
 	getBaseState: function () {
 		return {
 			position: this.getPosition(),
-			vertices: this.points,
+			points: this.points,
 			kind: this.kind,
 			id: this.id
 		};
