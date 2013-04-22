@@ -63,14 +63,16 @@ var Engine = module.exports = cls.Class.extend({
 
 		bullet.onRemove = function (bullet) {
 			self.b2w.DestroyBody(bullet.body);
-			//TODO remvoe contact listener
+			//TODO remove contact listener
 		};
 	},
 	beginContact: function (contact) {
 		var result = this.parseCollisionEntities(contact, "Bullet");
-		if (result === null || !result.entity instanceof Player) return;
-		console.log("kill " + result.entity.type);
-		//console.log(!result.entity instanceof Player);
+		if (result === null || !(result.entity instanceof Player)) return;
+		if (result.entity.id !== result.Bullet.player.id) {
+			console.log("kill " + result.entity.id);
+			result.Bullet.ttl = 0;
+		}
 	},
 	parseCollisionEntities: function (contact, type) {
 		var obj1 = contact.GetFixtureA().GetBody().GetUserData(),
