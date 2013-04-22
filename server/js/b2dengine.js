@@ -6,7 +6,8 @@ var Box2D = require('./lib/box2d'),
 
 var b2Vec2 = Box2D.Common.Math.b2Vec2,
 	b2World = Box2D.Dynamics.b2World,
-	b2Body = Box2D.Dynamics.b2Body;
+	b2Body = Box2D.Dynamics.b2Body,
+	b2listener = Box2D.Dynamics.b2ContactListener;
 
 var Scale = 100;
 
@@ -22,8 +23,7 @@ var Engine = module.exports = cls.Class.extend({
 		this.b2w.ClearForces();
 	},
 	updateWorld: function () {
-		var filter_function = function (e) {return e instanceof Player; };
-		_.each(this.getEntities(filter_function), function (entity) {
+		_.each(this.getEntities(), function (entity) {
 			entity.update();
 		});
 	},
@@ -50,6 +50,43 @@ var Engine = module.exports = cls.Class.extend({
 		entity.getAngle = function () {
 			return this.body.GetAngle();
 		};
+	},
+	addBullet: function (bullet) {
+		var self = this;
+		this.addEntity(bullet);
+
+		// bullet.fixtureDef.filter.groupIndex = -2;
+		// bullet.player.fixtureDef.filter.groupIndex = -2;
+		var listener = new b2listener();
+		listener.BeginContact = this.beginContact.bind(this);
+		this.b2w.SetContactListener(listener);
+
+		bullet.onRemove = function (bullet) {
+			self.b2w.DestroyBody(bullet.body);
+			//TODO remvoe contact listener
+		};
+	},
+	beginContact: function (contact) {
+		var result = this.parseCollisionEntities(contact, "Bullet");
+		if (result === null || !result.entity instanceof Player) return;
+		console.log("kill " + result.entity.type);
+		//console.log(!result.entity instanceof Player);
+	},
+	parseCollisionEntities: function (contact, type) {
+		var obj1 = contact.GetFixtureA().GetBody().GetUserData(),
+			obj2 = contact.GetFixtureB().GetBody().GetUserData(),
+			result = {};
+		if (obj1.kind === Constants.Types.Entities[type]) {
+			result[type] = obj1;
+			result.entity = obj2;
+			return result;
+		}
+		if (obj2.kind === Constants.Types.Entities[type]) {
+			result[type] = obj2;
+			result.entity = obj1;
+			return result;
+		}
+		return null;
 	},
 	addEntities: function (entities_list) {
 		var self = this;

@@ -1,6 +1,7 @@
 var PolygonEntity = require('./entities/polygonEntity'),
 	CircleEntity = require('./entities/circleEntity'),
 	CommonEntity = require('./entities/commonEntity'),
+	Bullet = require('./entities/bullet'),
 	_ = require('underscore'),
 	log = require('./log'),
 	cls = require('./lib/class'),
@@ -20,6 +21,13 @@ EntityFactory.createEntity = function (entity_info) {
 	}
 	entity.setPosition(entity_info.x, entity_info.y);
 	return entity;
+};
+
+EntityFactory.createBullet = function (player) {
+	var bullet = new Bullet(null, player),
+		position = player.getPosition();
+	bullet.setPosition(position.x, position.y);
+	return bullet;
 };
 
 EntityFactory.getShapeByEntity = function (entity) {

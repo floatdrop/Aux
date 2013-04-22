@@ -1,7 +1,11 @@
 var cls = require("./lib/class"),
 	Player = require("./entities/player"),
 	log = require('./log'),
-	WorldMap = require("./worldmap");
+	WorldMap = require("./worldmap"),
+	Box2D = require('./lib/box2d'),
+	EntityFactory = require('./entityFactory');
+
+var b2Vec2 = Box2D.Common.Math.b2Vec2;
 
 module.exports = cls.Class.extend({
 	init: function (ups, map_filepath, engine, server) {
@@ -34,6 +38,16 @@ module.exports = cls.Class.extend({
 		self.engine.dumpEntities(function (entity) {
 			return entity.isStatic;
 		}));
+
+		player.onShoot = function (player) {
+			var bullet = EntityFactory.createBullet(player);
+			self.engine.addBullet(bullet);
+			var angle = player.getAngle() * Math.PI / 180,
+				x = Math.cos(angle),
+				y = -Math.sin(angle);
+
+			bullet.body.ApplyImpulse(new b2Vec2(x, y), new b2Vec2(0, 0));
+		};
 
 		this.engine.addEntity(player);
 	},
