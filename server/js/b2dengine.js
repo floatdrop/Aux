@@ -1,11 +1,13 @@
 var Box2D = require('./lib/box2d'),
 	_ = require('underscore'),
 	cls = require('./lib/class'),
-	EntityFactory = require('./entityFactory');
+	EntityFactory = require('./entityFactory'),
+	Player = require('./entities/player');
 
 var b2Vec2 = Box2D.Common.Math.b2Vec2,
 	b2World = Box2D.Dynamics.b2World,
-	b2Body = Box2D.Dynamics.b2Body;
+	b2Body = Box2D.Dynamics.b2Body,
+	b2listener = Box2D.Dynamics.b2ContactListener;
 
 var Scale = 100;
 
@@ -19,6 +21,11 @@ var Engine = module.exports = cls.Class.extend({
 	tick: function (fps) {
 		this.b2w.Step(1 / fps, 10, 10);
 		this.b2w.ClearForces();
+	},
+	updateWorld: function () {
+		_.each(this.getEntities(), function (entity) {
+			entity.update();
+		});
 	},
 	addEntity: function (entity) {
 		entity.body = this.b2w.CreateBody(entity.bodyDef);
@@ -44,6 +51,45 @@ var Engine = module.exports = cls.Class.extend({
 			return this.body.GetAngle();
 		};
 	},
+	addBullet: function (bullet) {
+		var self = this;
+		this.addEntity(bullet);
+
+		// bullet.fixtureDef.filter.groupIndex = -2;
+		// bullet.player.fixtureDef.filter.groupIndex = -2;
+		var listener = new b2listener();
+		listener.BeginContact = this.beginContact.bind(this);
+		this.b2w.SetContactListener(listener);
+
+		bullet.onRemove = function (bullet) {
+			self.b2w.DestroyBody(bullet.body);
+			//TODO remove contact listener
+		};
+	},
+	beginContact: function (contact) {
+		var result = this.parseCollisionEntities(contact, "Bullet");
+		if (result === null || !(result.entity instanceof Player)) return;
+		if (result.entity.id !== result.Bullet.player.id) {
+			console.log("kill " + result.entity.id);
+			result.Bullet.ttl = 0;
+		}
+	},
+	parseCollisionEntities: function (contact, type) {
+		var obj1 = contact.GetFixtureA().GetBody().GetUserData(),
+			obj2 = contact.GetFixtureB().GetBody().GetUserData(),
+			result = {};
+		if (obj1.kind === Constants.Types.Entities[type]) {
+			result[type] = obj1;
+			result.entity = obj2;
+			return result;
+		}
+		if (obj2.kind === Constants.Types.Entities[type]) {
+			result[type] = obj2;
+			result.entity = obj1;
+			return result;
+		}
+		return null;
+	},
 	addEntities: function (entities_list) {
 		var self = this;
 		_.each(entities_list, function (entity) {
@@ -57,12 +103,15 @@ var Engine = module.exports = cls.Class.extend({
 		});
 		this.b2w.DestroyBody(entity.body);
 	},
-	getEntities: function () {
+	getEntities: function (filter_function) {
 		var entities = [];
+		if (!filter_function) filter_function = function (e) { return e; };
 		for (var b = this.b2w.m_bodyList; b; b = b.m_next) {
 			if (b.m_userData !== null) {
 				b.m_userData.isStatic = b.m_type === b2Body.b2_staticBody;
-				entities.push(b.m_userData);
+				if (filter_function(b.m_userData)) {
+					entities.push(b.m_userData);
+				}
 			}
 		}
 		return entities;
@@ -70,8 +119,7 @@ var Engine = module.exports = cls.Class.extend({
 	dumpEntities: function (filter_function) {
 		var self = this,
 			dump = [];
-		if (!filter_function) filter_function = function (e) { return e; };
-		_.chain(this.getEntities()).filter(filter_function).each(function (entity) {
+		_.each(this.getEntities(filter_function), function (entity) {
 			dump.push(entity.getBaseState());
 			if (self.debug) {
 				dump.push(EntityFactory.getShapeByEntity(entity).getBaseState());

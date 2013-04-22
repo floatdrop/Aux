@@ -1,0 +1,9 @@
+{
+	"id": "bullet",
+	"width": 22,
+	"height": 20,
+	"image": "img/1/bullet.png",
+	"animations": { "default": {} },
+	"offset_x": 0,
+	"offset_y": 0
+}

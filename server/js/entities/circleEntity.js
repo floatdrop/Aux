@@ -24,7 +24,6 @@ var CircleEntity = module.exports = Entity.extend({
 		fixDef.shape.m_radius = radius;
 
 		this.fixtureDef = fixDef;
-
 	},
 
 	getBaseState: function () {

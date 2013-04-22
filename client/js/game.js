@@ -9,6 +9,8 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 		init: function (renderer) {
 			this.renderer = renderer;
 
+			this.renderer.view.onmousedown = this.shoot.bind(this);
+			this.renderer.view.onmousemove = this.moveCursor.bind(this);
 			this.keybindings['w'] = this.moveUp.bind(this);
 			this.keybindings['s'] = this.moveDown.bind(this);
 			this.keybindings['a'] = this.moveLeft.bind(this);
@@ -20,6 +22,8 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 			this.canvas = document.createElement('canvas');
 			this.canvas.width  = 800;
 			this.canvas.height = 600;
+			this.halfWidth = this.canvas.width / 2;
+			this.halfHeight = this.canvas.height / 2;
 			this.context = this.canvas.getContext('2d');
 			this.debugSprite = new PIXI.Sprite(PIXI.Texture.fromCanvas(this.canvas));
 
@@ -64,7 +68,7 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 			this.map.onMapLoaded(function () {
 				self.view.setLimits(self.map.pixelwidth, self.map.pixelheight);
 				_.each(self.map.getDisplayObjects(), function (displayObject) {
-					self.view.addChild(displayObject);
+					//self.view.addChild(displayObject);
 				});
 			});
 
@@ -97,9 +101,30 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 				self.entities[id] = entity;
 			});
 		},
-		moveCursor: function () {
-			//var angle = 0;
-			//return this.client.sendAngle(angle);
+		moveCursor: function (event) {
+			if (this.player) {
+				var angle = this.getAngle({x: event.x, y: event.y}, this.player.getPosition());
+				this.client.sendAngle(angle);
+			}
+		},
+		getAngle: function (cursor, point) {
+			var playerPos = {x: point.x, y: point.y};
+			if (playerPos.x > this.halfWidth) {
+				playerPos.x = this.halfWidth;
+			}
+			if (playerPos.y > this.halfHeight) {
+				playerPos.y = this.halfHeight;
+			}
+			var x = playerPos.x - cursor.x,
+				y = playerPos.y - cursor.y; 
+			if (y === 0) {
+				return (x > 0) ? 180 : 0;
+			}
+			var angle = Math.atan(x / y) * 180 / Math.PI; 
+			return (y > 0) ? angle + 90 : angle + 270; 
+		},
+		shoot: function () {
+			this.client.sendShoot();
 		},
 		moveUp: function () {
 			return this.client.sendAction('up');
