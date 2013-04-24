@@ -35,6 +35,9 @@ var Player = module.exports = Entity.extend({
 		this.callbacks[Constants.Types.Messages.Angle] = function (data) {
 			self.onAngle(data);
 		};
+		this.callbacks[Constants.Types.Messages.Shoot] = function (data) {
+			self.onShoot(self, data);
+		};
 
 		this.bodyDef = new b2BodyDef();
 		this.bodyDef.type = b2Body.b2_dynamicBody;
@@ -143,7 +146,8 @@ var Player = module.exports = Entity.extend({
 		if (angle > 135) return 'left';
 		if (angle > 45) return 'up';
 		return 'right';
-	}
+	},
+	onShoot: function () {}
 });
 
 return Player;

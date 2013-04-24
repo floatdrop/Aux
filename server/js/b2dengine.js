@@ -1,6 +1,8 @@
 var Box2D = require('./lib/box2d'),
 	_ = require('underscore'),
-	cls = require('./lib/class');
+	cls = require('./lib/class'),
+	EntityFactory = require('./entityFactory'),
+	Player = require('./entities/player');
 
 var b2Vec2 = Box2D.Common.Math.b2Vec2,
 	b2World = Box2D.Dynamics.b2World,
@@ -10,7 +12,8 @@ var b2Vec2 = Box2D.Common.Math.b2Vec2,
 	b2Transform_identity = Box2D.Common.Math.b2Math.b2Transform_identity,
 	b2DistanceInput = Box2D.Collision.b2DistanceInput,
 	b2DistanceOutput = Box2D.Collision.b2DistanceOutput,
-	b2DistanceProxy = Box2D.Collision.b2DistanceProxy;
+	b2DistanceProxy = Box2D.Collision.b2DistanceProxy,
+	b2listener = Box2D.Dynamics.b2ContactListener;
 
 var Scale = 100;
 
@@ -41,6 +44,42 @@ var Engine = module.exports = cls.Class.extend({
 		b2Distance.Distance(output, simplexCache, input);
 		if (Math.abs(output.pointB.x - output.pointA.x) < this.viewarea.width && Math.abs(output.pointB.y - output.pointA.y) < this.viewarea.height) return true;
 		return false;
+	},
+	addBullet: function (bullet) {
+		var self = this;
+		this.addEntity(bullet);
+
+		// bullet.fixtureDef.filter.groupIndex = -2;
+		// bullet.player.fixtureDef.filter.groupIndex = -2;
+		var listener = new b2listener();
+		listener.BeginContact = this.beginContact.bind(this);
+		this.b2w.SetContactListener(listener);
+
+		bullet.onRemove = function (bullet) {
+			self.b2w.DestroyBody(bullet.body);
+			//TODO remvoe contact listener
+		};
+	},
+	beginContact: function (contact) {
+		var result = this.parseCollisionEntities(contact, "Bullet");
+		if (result === null || !(result.entity instanceof Player)) return;
+		console.log("kill " + result.entity.type);
+	},
+	parseCollisionEntities: function (contact, type) {
+		var obj1 = contact.GetFixtureA().GetBody().GetUserData(),
+			obj2 = contact.GetFixtureB().GetBody().GetUserData(),
+			result = {};
+		if (obj1.kind === Constants.Types.Entities[type]) {
+			result[type] = obj1;
+			result.entity = obj2;
+			return result;
+		}
+		if (obj2.kind === Constants.Types.Entities[type]) {
+			result[type] = obj2;
+			result.entity = obj1;
+			return result;
+		}
+		return null;
 	},
 	addEntity: function (entity) {
 		entity.body = this.b2w.CreateBody(entity.bodyDef);

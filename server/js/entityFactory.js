@@ -1,6 +1,7 @@
 var PolygonEntity = require('./entities/polygonEntity'),
 	CircleEntity = require('./entities/circleEntity'),
 	CommonEntity = require('./entities/commonEntity'),
+	Bullet = require('./entities/bullet'),
 	_ = require('underscore'),
 	log = require('./log'),
 	cls = require('./lib/class'),
@@ -64,6 +65,13 @@ EntityFactory.createCircleEntity = function (id, entity) {
 	circleEntity.setPosition(position.x, position.y);
 	circleEntity.setAngle(circleEntity.getAngle());
 	return circleEntity;
+};
+
+EntityFactory.createBullet = function (player) {
+	var bullet = new Bullet(null, player),
+		position = player.getPosition();
+	bullet.setPosition(position.x, position.y);
+	return bullet;
 };
 
 EntityFactory.createEmptyCircleEntity = function (id) {
