@@ -10,7 +10,6 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 			this.renderer = renderer;
 
 			this.renderer.view.onmousedown = this.shoot.bind(this);
-			this.renderer.view.onmousemove = this.moveCursor.bind(this);
 			this.keybindings['w'] = this.moveUp.bind(this);
 			this.keybindings['s'] = this.moveDown.bind(this);
 			this.keybindings['a'] = this.moveLeft.bind(this);
@@ -123,7 +122,7 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 					x: event.x,
 					y: event.y
 				}, this.player.getPosition());
-				this.client.sendAngle(angle);
+				this.client.sendAngle(parseInt(angle, 10));
 			}
 		},
 		getAngle: function (cursor, point) {
@@ -143,13 +142,6 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 		},
 		shoot: function () {
 			this.client.sendShoot();
-		},
-		getAnimation: function (angle) {
-			if (angle > 315) return 'right';
-			if (angle > 225) return 'down';
-			if (angle > 135) return 'left';
-			if (angle > 45) return 'up';
-			return 'right';
 		},
 		moveUp: function () {
 			return this.client.sendAction('up');
