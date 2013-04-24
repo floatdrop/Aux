@@ -16,6 +16,7 @@ var Bullet = module.exports = Entity.extend({
 
 		this.bodyDef = new b2BodyDef();
 		this.bodyDef.type = b2Body.b2_dynamicBody;
+		this.bodyDef.linearDamping = 0.5;
 
 		this.fixtureDef = new b2FixtureDef();
 
@@ -25,7 +26,7 @@ var Bullet = module.exports = Entity.extend({
 	},
 	update: function () {
 		if (this.ttl-- <= 0) {
-			this.onRemove(this);
+			this.remove_callback(this.id);
 		}
 	},
 	getBaseState: function () {
@@ -35,17 +36,22 @@ var Bullet = module.exports = Entity.extend({
 			position: this.getPosition(),
 		};
 	},
-	onRemove: function () {},
-
-	onCollision: function (contactBody, contact) {
+	onRemove: function (callback) {
+		this.remove_callback = callback;
+	},
+	onCollision: function (contactBody) {
 		if (!(contactBody instanceof Player)) return true;
-		if (this.ttl > Bullet.TimeBeforeAutoKilling) return false;
+		if (Bullet.TimeToLife - this.ttl < Bullet.DontHurtShootingPlayerTime &&
+			this.player.id === contactBody.id) {
+			return false;
+		}
 		console.log("kill " + contactBody.type);
 		return true;
 	}
 });
 
 Bullet.TimeToLife = 150;
-Bullet.TimeBeforeAutoKilling = 140;
+Bullet.DontHurtShootingPlayerTime = 10;
+Bullet.SpeedRatio = 3;
 
 return Bullet;

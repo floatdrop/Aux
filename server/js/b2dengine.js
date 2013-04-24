@@ -22,13 +22,13 @@ var Engine = module.exports = cls.Class.extend({
 	init: function (viewarea) {
 		this.b2w = new b2World(new b2Vec2(0, 0), false);
 		this.viewarea = viewarea;
+		var listener = new b2listener();
+		listener.PreSolve = this.preSolve;
+		this.b2w.SetContactListener(listener);
 	},
 	tick: function (fps) {
 		this.b2w.Step(1 / fps, 10, 10);
 		this.b2w.ClearForces();
-		var listener = new b2listener();
-		listener.PreSolve = this.preSolve;
-		this.b2w.SetContactListener(listener);
 	},
 	isVisible: function (a, b) {
 		var a_proxy = new b2DistanceProxy();
@@ -46,14 +46,6 @@ var Engine = module.exports = cls.Class.extend({
 		b2Distance.Distance(output, simplexCache, input);
 		if (Math.abs(output.pointB.x - output.pointA.x) < this.viewarea.width && Math.abs(output.pointB.y - output.pointA.y) < this.viewarea.height) return true;
 		return false;
-	},
-	addBullet: function (bullet) {
-		var self = this;
-		this.addEntity(bullet);
-
-		bullet.onRemove = function (bullet) {
-			self.b2w.DestroyBody(bullet.body);
-		};
 	},
 	preSolve: function (contact) {
 		var obj1 = contact.GetFixtureA().GetBody().GetUserData(),

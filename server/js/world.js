@@ -1,5 +1,6 @@
 var cls = require("./lib/class"),
 	Player = require("./entities/player"),
+	Bullet = require("./entities/bullet"),
 	log = require('./log'),
 	WorldMap = require("./worldmap"),
 	_ = require("underscore"),
@@ -35,15 +36,16 @@ module.exports = cls.Class.extend({
 		log.info("Send Welcome to player " + player.id);
 		player.send(Constants.Types.Messages.Welcome, player.getBaseState());
 
-		player.onShoot = function (player) {
+		player.onShoot(function (player) {
 			var bullet = EntityFactory.createBullet(player);
-			self.engine.addBullet(bullet);
+			self.engine.addEntity(bullet);
+			bullet.onRemove(self.engine.removeEntity);
 			var angle = player.getAngle() * Math.PI / 180,
-				x = Math.cos(angle),
-				y = -Math.sin(angle);
+				x = Math.cos(angle) * Bullet.SpeedRatio,
+				y = -Math.sin(angle) * Bullet.SpeedRatio;
 
 			bullet.body.ApplyImpulse(new b2Vec2(x, y), new b2Vec2(0, 0));
-		};
+		});
 
 		this.engine.addEntity(player);
 	},

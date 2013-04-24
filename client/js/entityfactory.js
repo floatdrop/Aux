@@ -47,7 +47,7 @@ function (Player, CommonEntity, CircleEntity, PolygonEntity) {
 
 	EntityFactory.builders[Constants.Types.Entities.Bullet] = function (entity_info) {
 		var entity = new Bullet(entity_info.id);
-		entity.setAnimation("bullet", "default");
+		//entity.setAnimation("bullet", "default");
 		return entity;
 	};
 
