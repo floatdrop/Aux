@@ -7,8 +7,8 @@ define([], function () {
 		this.width = width;
 		this.height = height;
 		this.max = {
-			x: max_x,
-			y: max_y
+			x: max_x || width,
+			y: max_y || height
 		};
 		this.linkedEntity = null;
 		this.center = {

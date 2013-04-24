@@ -16,11 +16,11 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 			this.keybindings['d'] = this.moveRight.bind(this);
 
 			this.stage = new PIXI.Stage(0x000000);
-			this.view = new View(this.renderer.width, this.renderer.height, 2048, 2048);
+			this.view = new View(this.renderer.width, this.renderer.height);
 
 			this.canvas = document.createElement('canvas');
-			this.canvas.width  = 800;
-			this.canvas.height = 600;
+			this.canvas.width  = this.renderer.width;
+			this.canvas.height = this.renderer.height;
 			this.context = this.canvas.getContext('2d');
 			this.debugSprite = new PIXI.Sprite(PIXI.Texture.fromCanvas(this.canvas));
 
