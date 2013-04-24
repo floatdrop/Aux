@@ -15,7 +15,8 @@ var Player = module.exports = Entity.extend({
 		var self = this;
 		this.connection = connection;
 		this._super(id, "player", Constants.Types.Entities.PLAYER);
-		this.deltaAngle = 10;
+		this.heading = 0;
+		this.angleEps = 90;
 		this.animationType = "idle";
 		this.setAnimation();
 
@@ -61,24 +62,16 @@ var Player = module.exports = Entity.extend({
 		});
 	},
 	update: function () {
-		var delta = this.getAngle() - this.heading,
+		var curAngle = this.getAngle(), 
+			delta = curAngle - this.heading,
 			sign = delta > 0 ? 1 : delta < 0 ? -1 : 0;
-		//if (delta > 180) delta -= 360; // NOT WORK! 
-		currentAngle += Math.abs(delta) > eps ? sign * eps : delta;
-		console.log(currentAngle + " " + this.heading);
-		// var currentAngle = this.getAngle();
-		// if (currentAngle > this.angle) {
-		// 	currentAngle -= this.deltaAngle;
-		// 	if (currentAngle < this.angle) {
-		// 		currentAngle = this.angle;
-		// 	}
-		// } else if (currentAngle < this.angle) {
-		// 	currentAngle += this.deltaAngle;
-		// 	if (currentAngle > this.angle) {
-		// 		currentAngle = this.angle;
-		// 	}
-		// }
-		this.setAngle(currentAngle);
+		
+		if (Math.abs(delta) > 180) {
+			curAngle -= sign * 360;
+			sign *= -1;
+		}
+		curAngle -= Math.abs(delta) > this.angleEps ? sign * this.angleEps : delta;
+		this.setAngle(curAngle);
 		this.setAnimation();
 	},
 	setAnimation: function () {
