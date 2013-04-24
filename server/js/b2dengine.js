@@ -27,7 +27,7 @@ var Engine = module.exports = cls.Class.extend({
 		this.b2w.Step(1 / fps, 10, 10);
 		this.b2w.ClearForces();
 		var listener = new b2listener();
-		listener.BeginContact = this.beginContact;
+		listener.PreSolve = this.preSolve;
 		this.b2w.SetContactListener(listener);
 	},
 	isVisible: function (a, b) {
@@ -55,15 +55,13 @@ var Engine = module.exports = cls.Class.extend({
 			self.b2w.DestroyBody(bullet.body);
 		};
 	},
-	beginContact: function (contact) {
+	preSolve: function (contact) {
 		var obj1 = contact.GetFixtureA().GetBody().GetUserData(),
 			obj2 = contact.GetFixtureB().GetBody().GetUserData(),
 			enabled1 = obj1.onCollision(obj2, contact),
 			enabled2 = obj2.onCollision(obj1, contact);
 		
-		if (!enabled1 || !enabled2) {
-			contact.SetEnabled(false);
-		}
+		contact.SetEnabled(enabled1 && enabled2);
 	},
 	addEntity: function (entity) {
 		entity.body = this.b2w.CreateBody(entity.bodyDef);

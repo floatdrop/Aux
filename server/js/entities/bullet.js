@@ -38,7 +38,7 @@ var Bullet = module.exports = Entity.extend({
 	onRemove: function () {},
 
 	onCollision: function (contactBody, contact) {
-		if (!(contactBody instanceof Player)) return false;
+		if (!(contactBody instanceof Player)) return true;
 		if (this.ttl > Bullet.TimeBeforeAutoKilling) return false;
 		console.log("kill " + contactBody.type);
 		return true;
