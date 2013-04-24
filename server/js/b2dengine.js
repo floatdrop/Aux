@@ -1,8 +1,7 @@
 var Box2D = require('./lib/box2d'),
 	_ = require('underscore'),
 	cls = require('./lib/class'),
-	EntityFactory = require('./entityFactory'),
-	Player = require('./entities/player');
+	EntityFactory = require('./entityFactory');
 
 var b2Vec2 = Box2D.Common.Math.b2Vec2,
 	b2World = Box2D.Dynamics.b2World,
@@ -27,6 +26,9 @@ var Engine = module.exports = cls.Class.extend({
 	tick: function (fps) {
 		this.b2w.Step(1 / fps, 10, 10);
 		this.b2w.ClearForces();
+		var listener = new b2listener();
+		listener.BeginContact = this.beginContact;
+		this.b2w.SetContactListener(listener);
 	},
 	isVisible: function (a, b) {
 		var a_proxy = new b2DistanceProxy();
@@ -49,37 +51,19 @@ var Engine = module.exports = cls.Class.extend({
 		var self = this;
 		this.addEntity(bullet);
 
-		// bullet.fixtureDef.filter.groupIndex = -2;
-		// bullet.player.fixtureDef.filter.groupIndex = -2;
-		var listener = new b2listener();
-		listener.BeginContact = this.beginContact.bind(this);
-		this.b2w.SetContactListener(listener);
-
 		bullet.onRemove = function (bullet) {
 			self.b2w.DestroyBody(bullet.body);
-			//TODO remvoe contact listener
 		};
 	},
 	beginContact: function (contact) {
-		var result = this.parseCollisionEntities(contact, "Bullet");
-		if (result === null || !(result.entity instanceof Player)) return;
-		console.log("kill " + result.entity.type);
-	},
-	parseCollisionEntities: function (contact, type) {
 		var obj1 = contact.GetFixtureA().GetBody().GetUserData(),
 			obj2 = contact.GetFixtureB().GetBody().GetUserData(),
-			result = {};
-		if (obj1.kind === Constants.Types.Entities[type]) {
-			result[type] = obj1;
-			result.entity = obj2;
-			return result;
+			enabled1 = obj1.onCollision(obj2, contact),
+			enabled2 = obj2.onCollision(obj1, contact);
+		
+		if (!enabled1 || !enabled2) {
+			contact.SetEnabled(false);
 		}
-		if (obj2.kind === Constants.Types.Entities[type]) {
-			result[type] = obj2;
-			result.entity = obj1;
-			return result;
-		}
-		return null;
 	},
 	addEntity: function (entity) {
 		entity.body = this.b2w.CreateBody(entity.bodyDef);

@@ -1,4 +1,5 @@
 var Entity = require('../entity'),
+	Player = require('./player'),
 	Box2D = require('../lib/box2d'),
 	b2FixtureDef = Box2D.Dynamics.b2FixtureDef,
 	b2BodyDef = Box2D.Dynamics.b2BodyDef,
@@ -11,7 +12,7 @@ var Bullet = module.exports = Entity.extend({
 	init: function (id, player) {
 		this._super(id, "bullet " + player.id, Constants.Types.Entities.Bullet);
 		this.player = player;
-		this.ttl = 150;		
+		this.ttl = Bullet.TimeToLife;		
 
 		this.bodyDef = new b2BodyDef();
 		this.bodyDef.type = b2Body.b2_dynamicBody;
@@ -34,7 +35,17 @@ var Bullet = module.exports = Entity.extend({
 			position: this.getPosition(),
 		};
 	},
-	onRemove: function () {}
+	onRemove: function () {},
+
+	onCollision: function (contactBody, contact) {
+		if (!(contactBody instanceof Player)) return false;
+		if (this.ttl > Bullet.TimeBeforeAutoKilling) return false;
+		console.log("kill " + contactBody.type);
+		return true;
+	}
 });
+
+Bullet.TimeToLife = 150;
+Bullet.TimeBeforeAutoKilling = 140;
 
 return Bullet;
