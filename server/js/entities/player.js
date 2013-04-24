@@ -15,7 +15,7 @@ var Player = module.exports = Entity.extend({
 		var self = this;
 		this.connection = connection;
 		this._super(id, "player", Constants.Types.Entities.PLAYER);
-		this.deltaAngle = 90;
+		this.deltaAngle = 10;
 		this.animationType = "idle";
 		this.setAnimation();
 
@@ -61,18 +61,23 @@ var Player = module.exports = Entity.extend({
 		});
 	},
 	update: function () {
-		var currentAngle = this.getAngle();
-		if (currentAngle > this.angle) {
-			currentAngle -= this.deltaAngle;
-			if (currentAngle < this.angle) {
-				currentAngle = this.angle;
-			}
-		} else if (currentAngle < this.angle) {
-			currentAngle += this.deltaAngle;
-			if (currentAngle > this.angle) {
-				currentAngle = this.angle;
-			}
-		}
+		var delta = this.getAngle() - this.heading,
+			sign = delta > 0 ? 1 : delta < 0 ? -1 : 0;
+		//if (delta > 180) delta -= 360; // NOT WORK! 
+		currentAngle += Math.abs(delta) > eps ? sign * eps : delta;
+		console.log(currentAngle + " " + this.heading);
+		// var currentAngle = this.getAngle();
+		// if (currentAngle > this.angle) {
+		// 	currentAngle -= this.deltaAngle;
+		// 	if (currentAngle < this.angle) {
+		// 		currentAngle = this.angle;
+		// 	}
+		// } else if (currentAngle < this.angle) {
+		// 	currentAngle += this.deltaAngle;
+		// 	if (currentAngle > this.angle) {
+		// 		currentAngle = this.angle;
+		// 	}
+		// }
 		this.setAngle(currentAngle);
 		this.setAnimation();
 	},
@@ -99,7 +104,7 @@ var Player = module.exports = Entity.extend({
 		if (isNaN(angle) || angle < 0 || angle > 360) {
 			angle = 0;
 		}
-		this.angle = angle;
+		this.heading = angle;
 	},
 	getDirectionByAngle: function (angle) {
 		if (angle > 315) return 'right';
