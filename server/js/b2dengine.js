@@ -20,6 +20,11 @@ var Engine = module.exports = cls.Class.extend({
 		this.b2w.Step(1 / fps, 10, 10);
 		this.b2w.ClearForces();
 	},
+	updateWorld: function () {
+		_.each(this.getEntities(), function (entity) {
+			entity.update();
+		});
+	},
 	addEntity: function (entity) {
 		entity.body = this.b2w.CreateBody(entity.bodyDef);
 		entity.body.m_userData = entity;
@@ -57,12 +62,15 @@ var Engine = module.exports = cls.Class.extend({
 		});
 		this.b2w.DestroyBody(entity.body);
 	},
-	getEntities: function () {
+	getEntities: function (filter_function) {
 		var entities = [];
+		if (!filter_function) filter_function = function (e) { return e; };
 		for (var b = this.b2w.m_bodyList; b; b = b.m_next) {
 			if (b.m_userData !== null) {
 				b.m_userData.isStatic = b.m_type === b2Body.b2_staticBody;
-				entities.push(b.m_userData);
+				if (filter_function(b.m_userData)) {
+					entities.push(b.m_userData);
+				}
 			}
 		}
 		return entities;
@@ -70,8 +78,7 @@ var Engine = module.exports = cls.Class.extend({
 	dumpEntities: function (filter_function) {
 		var self = this,
 			dump = [];
-		if (!filter_function) filter_function = function (e) { return e; };
-		_.chain(this.getEntities()).filter(filter_function).each(function (entity) {
+		_.each(this.getEntities(filter_function), function (entity) {
 			dump.push(entity.getBaseState());
 			if (self.debug) {
 				dump.push(EntityFactory.getShapeByEntity(entity).getBaseState());
