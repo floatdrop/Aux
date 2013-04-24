@@ -73,6 +73,12 @@ define(function () {
 				t: Constants.Types.Messages.Angle,
 				d: angle
 			});
+		},
+		sendShoot: function () {
+			this.send({
+				t: Constants.Types.Messages.Shoot,
+				d: null
+			});
 		}
 	});
 	return Client;

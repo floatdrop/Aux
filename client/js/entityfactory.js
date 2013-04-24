@@ -1,6 +1,7 @@
 /* global _ */
 
-define(['entities/player', 'entities/commonEntity', 'entities/circleEntity', 'entities/polygonEntity'],
+define(['entities/player', 'entities/commonEntity', 'entities/circleEntity', 'entities/polygonEntity', 'entities/bullet'], 
+	function (Player, CommonEntity, CircleEntity, PolygonEntity, Bullet) {
 
 function (Player, CommonEntity, CircleEntity, PolygonEntity) {
 	var EntityFactory = {
@@ -41,6 +42,12 @@ function (Player, CommonEntity, CircleEntity, PolygonEntity) {
 	EntityFactory.builders[Constants.Types.Entities.PLAYER] = function (entity_info) {
 		var entity = new Player(entity_info.id);
 		entity.setAnimation("player", "idle_right");
+		return entity;
+	};
+
+	EntityFactory.builders[Constants.Types.Entities.Bullet] = function (entity_info) {
+		var entity = new Bullet(entity_info.id);
+		entity.setAnimation("bullet", "default");
 		return entity;
 	};
 

@@ -13,7 +13,8 @@ define(['./lib/text!../sprites/player.json',
 	'./lib/text!../sprites/signpost.json',
 	'./lib/text!../sprites/stone5.json',
 	'./lib/text!../sprites/stone6.json',
-	'./lib/text!../sprites/well.json'], function () {
+	'./lib/text!../sprites/well.json',
+	'./lib/text!../sprites/bullet.json'], function () {
 
 	var Sprites = { definitions: {} };
 
