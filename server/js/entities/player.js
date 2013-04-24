@@ -1,5 +1,6 @@
 var Box2D = require('../lib/box2d'),
 	Entity = require('../entity'),
+	log = require('../log'),
 	_ = require('underscore');
 
 require('../../../client/js/constants');
@@ -95,6 +96,7 @@ var Player = module.exports = Entity.extend({
 	onAngle: function (data) {
 		var angle = parseInt(data, 10);
 		if (isNaN(angle) || angle < 0 || angle > 360) {
+			log.warn("For player " + this.id + " angle is " + angle);
 			angle = 0;
 		}
 		this.heading = angle;
