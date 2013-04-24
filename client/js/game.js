@@ -107,15 +107,11 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 			}
 		},
 		getAngle: function (cursor, point) {
-			var playerPos = {x: point.x, y: point.y};
-			if (playerPos.x > this.halfWidth) {
-				playerPos.x = this.halfWidth;
-			}
-			if (playerPos.y > this.halfHeight) {
-				playerPos.y = this.halfHeight;
-			}
-			var x = playerPos.x - cursor.x,
-				y = playerPos.y - cursor.y; 
+			var offset = this.view.position, 
+				originalCursor = {x: cursor.x - offset.x, y: cursor.y - offset.y};
+			
+			var x = point.x - originalCursor.x,
+				y = point.y - originalCursor.y; 
 			if (y === 0) {
 				return (x > 0) ? 180 : 0;
 			}
