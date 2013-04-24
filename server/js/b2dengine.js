@@ -22,8 +22,7 @@ var Engine = module.exports = cls.Class.extend({
 		this.b2w.ClearForces();
 	},
 	updateWorld: function () {
-		var filter_function = function (e) {return e instanceof Player; };
-		_.each(this.getEntities(filter_function), function (entity) {
+		_.each(this.getEntities(), function (entity) {
 			entity.update();
 		});
 	},

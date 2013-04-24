@@ -21,8 +21,6 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 			this.canvas = document.createElement('canvas');
 			this.canvas.width  = 800;
 			this.canvas.height = 600;
-			this.halfWidth = this.canvas.width / 2;
-			this.halfHeight = this.canvas.height / 2;
 			this.context = this.canvas.getContext('2d');
 			this.debugSprite = new PIXI.Sprite(PIXI.Texture.fromCanvas(this.canvas));
 
