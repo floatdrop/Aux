@@ -21,7 +21,7 @@ var CircleEntity = module.exports = Entity.extend({
 		this.bodyDef.linearDamping = 4;
 
 		fixDef.shape = new b2CircleShape();
-		fixDef.shape.m_radius = radius;
+		fixDef.shape.SetRadius(radius);
 
 		this.fixtureDef = fixDef;
 
@@ -30,7 +30,7 @@ var CircleEntity = module.exports = Entity.extend({
 	getBaseState: function () {
 		return {
 			position: this.getPosition(),
-			radius: this.shape.m_radius,
+			radius: this.shape.GetRadius(),
 			kind: this.kind,
 			id: this.id
 		};
