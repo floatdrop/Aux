@@ -20,6 +20,7 @@ var Player = module.exports = Entity.extend({
 		this.angleEps = 90;
 		this.animationType = "idle";
 		this.setAnimation();
+		this.entities = {};
 
 		this.connection.listen(function (message) {
 			self.callbacks[message.t](message.d);
@@ -51,6 +52,19 @@ var Player = module.exports = Entity.extend({
 			t: event,
 			d: message
 		});
+	},
+	sendRemoveList: function (entities) {
+		var self = this;
+		var ids = _.pluck(entities, 'id');
+		ids = _.intersect(this.entities, ids);
+		_.each(ids, function (id) { delete self.entities[id]; });
+		this.send(Constants.Types.Messages.RemoveList, ids);
+	},
+	sendEntities: function (entities) {
+		var self = this;
+		var ids = _.pluck(entities, 'id');
+		_.each(ids, function (id) { self.entities[id] = true; });
+		this.send(Constants.Types.Messages.EntityList, entities);
 	},
 	sendMap: function (map) {
 		this.send(Constants.Types.Messages.Map, {

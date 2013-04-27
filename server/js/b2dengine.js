@@ -12,18 +12,22 @@ var Scale = 100;
 var Engine = module.exports = cls.Class.extend({
 	Scale: Scale,
 	
-	init: function (debug) {
+	init: function (debug, viewarea) {
 		this.b2w = new b2World(new b2Vec2(0, 0), false);
 		this.debug = debug;
+		this.viewarea = viewarea;
+		this.cache = new b2SimplexCache();
 	},
 	tick: function (fps) {
 		this.b2w.Step(1 / fps, 10, 10);
 		this.b2w.ClearForces();
 	},
-	updateWorld: function () {
-		_.each(this.getEntities(), function (entity) {
-			entity.update();
-		});
+	isVisible: function (a, b) {
+		var a_proxy = new b2DistanceProxy(a);
+		var b_proxy = new b2DistanceProxy(b);
+		var distanceOutput = b2Distance.b2Distance(a_proxy, this.cache, b_proxy);
+		if (Math.abs(distanceOutput.pointB.x - distanceOutput.pointA.x) < this.viewarea.width &&
+			Math.abs(distanceOutput.pointB.y - distanceOutput.pointA.y) < this.viewarea.height)
 	},
 	addEntity: function (entity) {
 		entity.body = this.b2w.CreateBody(entity.bodyDef);

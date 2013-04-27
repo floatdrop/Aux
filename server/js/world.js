@@ -30,8 +30,7 @@ module.exports = cls.Class.extend({
 		player.send(Constants.Types.Messages.Welcome, player.getBaseState());
 
 		log.info("Send Static objects to player " + player.id);
-		player.send(Constants.Types.Messages.EntityList,
-		self.engine.dumpEntities(function (entity) {
+		player.sendEntities(self.engine.dumpEntities(function (entity) {
 			return entity.isStatic;
 		}));
 
@@ -40,18 +39,43 @@ module.exports = cls.Class.extend({
 	playerDisconnect: function (id) {
 		this.engine.removeEntity(id);
 	},
+	updateWorld: function () {
+		var self = this;
+		_.each(self.getEntities(), function (entity) {
+			entity.update();
+		});
+	},
+	processEntities: function (player, entities) {
+		var self = this;
+		var result = { new: [], old: [] }
+		_.each(entities, function (entity) {
+			result[self.engine.isVisible(player, entity) ? "new" : "old"].push(entity);
+		});
+	},
+	updatePlayers: function () {
+		var self = this;
+		var players = self.engine.dumpEntities(function (entity) {
+			return entity instanceof Player;
+		});
+		var dynamicObjects = self.engine.dumpEntities(function (entity) {
+			return !entity.isStatic;
+		});
+		_.each(players, function (players) {
+			var entities = self.processEntities(player, dynamicObjects);
+			if (entities.new) {
+				player.sendEntities(entities.new);
+			}
+			if (entities.old) {
+				player.sendRemoveList(entities.old);
+			}
+		});
+	},
 	run: function () {
 		var self = this;
 		setInterval(function () {
 			self.engine.tick(1000.0 / self.ups);
-			self.engine.updateWorld();
-			var dynamicObjects = {
-				t: Constants.Types.Messages.EntityList,
-				d: self.engine.dumpEntities(function (entity) {
-					return !entity.isStatic;
-				})
-			};
-			self.server.broadcast(dynamicObjects);
+			self.updateWorld();
+			self.updatePlayers();
 		}, 1000 / this.ups);
 		setTimeout(function () {
 			self.ready_callback();

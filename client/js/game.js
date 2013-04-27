@@ -54,6 +54,11 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 				if (pressed) self.keybindings[key]();
 			});
 		},
+		removeFromView: function (entity) {
+			if (entity.isDisplayed()) {
+				this.view.removeChild(entity.getDisplayObject());
+			}
+		},
 		addToView: function (entity) {
 			if (entity.isDisplayed()) {
 				this.view.addChild(entity.getDisplayObject());
@@ -87,6 +92,15 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 			});
 
 			this.client.connect();
+		},
+		removeList: function (list) {
+			var self = this;
+			_.each(list, function (id) {
+				if (self.entities[id]) { 
+					self.removeFromView(self.entities[id])
+					delete self.entities[id];
+				}
+			});
 		},
 		entityList: function (list) {
 			var self = this;

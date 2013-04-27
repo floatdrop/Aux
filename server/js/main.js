@@ -40,8 +40,8 @@ var Server = module.exports = cls.Class.extend({
 		this._server.onError(function () {
 			log.error(Array.prototype.join.call(arguments, ", "));
 		});
-
-		this.engine = new Box2dEngine(this.config.drawDebug);
+		var viewarea = { width: 800, height: 600 };
+		this.engine = new Box2dEngine(this.config.drawDebug, viewarea);
 		this.world = new World(this.config.ups, this.config.map_filepath, this.engine, this._server);
 		this.world.onReady(this.ready_callback);
 		this.world.run();
