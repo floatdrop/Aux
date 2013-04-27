@@ -91,6 +91,10 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 				self.entityList(entitieslist);
 			});
 
+			this.client.onRemoveList(function (idsList) {
+				self.removeList(idsList);
+			});
+
 			this.client.connect();
 		},
 		removeList: function (list) {

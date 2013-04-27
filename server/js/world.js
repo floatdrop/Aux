@@ -42,36 +42,33 @@ module.exports = cls.Class.extend({
 	},
 	updateWorld: function () {
 		var self = this;
-		_.each(self.getEntities(), function (entity) {
+		_.each(self.engine.getEntities(), function (entity) {
 			entity.update();
 		});
 	},
 	processEntities: function (player, entities) {
 		var self = this;
 		var result = {
-			new: [],
-			old: []
+			visible: [],
+			nonvisible: []
 		};
 		_.each(entities, function (entity) {
-			result[self.engine.isVisible(player, entity) ? "new" : "old"].push(entity);
+			result[self.engine.isVisible(player, entity) ? "visible" : "nonvisible"].push(entity.getBaseState());
 		});
+		return result;
 	},
 	updatePlayers: function () {
 		var self = this;
-		var players = self.engine.dumpEntities(function (entity) {
+		var players = self.engine.getEntities(function (entity) {
 			return entity instanceof Player;
 		});
-		var dynamicObjects = self.engine.dumpEntities(function (entity) {
+		var dynamicObjects = self.engine.getEntities(function (entity) {
 			return !entity.isStatic;
 		});
 		_.each(players, function (player) {
 			var entities = self.processEntities(player, dynamicObjects);
-			if (entities.new) {
-				player.sendEntities(entities.new);
-			}
-			if (entities.old) {
-				player.sendRemoveList(entities.old);
-			}
+			player.sendEntities(entities.visible);
+			player.sendRemoveList(entities.nonvisible, entities.visible);
 		});
 	},
 	run: function () {

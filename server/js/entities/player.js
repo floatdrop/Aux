@@ -20,7 +20,7 @@ var Player = module.exports = Entity.extend({
 		this.angleEps = 90;
 		this.animationType = "idle";
 		this.setAnimation();
-		this.entities = {};
+		this.entities = [];
 
 		this.connection.listen(function (message) {
 			self.callbacks[message.t](message.d);
@@ -53,23 +53,24 @@ var Player = module.exports = Entity.extend({
 			d: message
 		});
 	},
-	sendRemoveList: function (entities) {
-		var self = this;
-		var ids = _.pluck(entities, 'id');
-		ids = _.intersect(this.entities, ids);
-		_.each(ids, function (id) { delete self.entities[id]; });
-		this.send(Constants.Types.Messages.RemoveList, ids);
+	sendRemoveList: function (nonVisibleEntities, visibleEntities) {
+		var nonVisible_ids = _.pluck(nonVisibleEntities, 'id');
+		var visible_ids = _.pluck(visibleEntities, 'id');
+		var remove_ids = _.union(nonVisible_ids, _.difference(this.entities, visible_ids));
+		this.entities = _.without(this.entities, remove_ids);
+		this.send(Constants.Types.Messages.RemoveList, remove_ids);
 	},
 	sendEntities: function (entities) {
-		var self = this;
 		var ids = _.pluck(entities, 'id');
-		_.each(ids, function (id) { self.entities[id] = true; });
+		this.entities = _.union(this.entities, ids);
 		this.send(Constants.Types.Messages.EntityList, entities);
 	},
 	sendMap: function (map) {
 		this.send(Constants.Types.Messages.Map, {
 			tilesets: map.json.tilesets,
-			layers: _.where(map.json.layers, {type: "tilelayer"}),
+			layers: _.where(map.json.layers, {
+				type: "tilelayer"
+			}),
 			width: map.json.width,
 			height: map.json.height,
 			tilewidth: map.json.tilewidth,
@@ -77,10 +78,10 @@ var Player = module.exports = Entity.extend({
 		});
 	},
 	update: function () {
-		var curAngle = this.getAngle(), 
+		var curAngle = this.getAngle(),
 			delta = curAngle - this.heading,
 			sign = delta > 0 ? 1 : delta < 0 ? -1 : 0;
-		
+
 		if (Math.abs(delta) > 180) {
 			curAngle -= sign * 360;
 			sign *= -1;
