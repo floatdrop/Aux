@@ -5,13 +5,16 @@ var Box2D = require('./lib/box2d'),
 
 var b2Vec2 = Box2D.Common.Math.b2Vec2,
 	b2World = Box2D.Dynamics.b2World,
-	b2Body = Box2D.Dynamics.b2Body;
+	b2Body = Box2D.Dynamics.b2Body,
+	b2SimplexCache = Box2D.Collision.b2SimplexCache,
+	b2Distance = Box2D.Collision.b2Distance,
+	b2DistanceProxy = Box2D.Collision.b2DistanceProxy;
 
 var Scale = 100;
 
 var Engine = module.exports = cls.Class.extend({
 	Scale: Scale,
-	
+
 	init: function (debug, viewarea) {
 		this.b2w = new b2World(new b2Vec2(0, 0), false);
 		this.debug = debug;
@@ -25,9 +28,9 @@ var Engine = module.exports = cls.Class.extend({
 	isVisible: function (a, b) {
 		var a_proxy = new b2DistanceProxy(a);
 		var b_proxy = new b2DistanceProxy(b);
-		var distanceOutput = b2Distance.b2Distance(a_proxy, this.cache, b_proxy);
-		if (Math.abs(distanceOutput.pointB.x - distanceOutput.pointA.x) < this.viewarea.width &&
-			Math.abs(distanceOutput.pointB.y - distanceOutput.pointA.y) < this.viewarea.height)
+		var distanceOutput = b2Distance.Distance(a_proxy, this.cache, b_proxy);
+		if (Math.abs(distanceOutput.pointB.x - distanceOutput.pointA.x) < this.viewarea.width && Math.abs(distanceOutput.pointB.y - distanceOutput.pointA.y) < this.viewarea.height) return true;
+		return false;
 	},
 	addEntity: function (entity) {
 		entity.body = this.b2w.CreateBody(entity.bodyDef);
@@ -68,7 +71,11 @@ var Engine = module.exports = cls.Class.extend({
 	},
 	getEntities: function (filter_function) {
 		var entities = [];
-		if (!filter_function) filter_function = function (e) { return e; };
+		if (!filter_function) {
+			filter_function = function (e) {
+				return e;
+			};
+		}
 		for (var b = this.b2w.m_bodyList; b; b = b.m_next) {
 			if (b.m_userData !== null) {
 				b.m_userData.isStatic = b.m_type === b2Body.b2_staticBody;
@@ -85,7 +92,8 @@ var Engine = module.exports = cls.Class.extend({
 		_.each(this.getEntities(filter_function), function (entity) {
 			dump.push(entity.getBaseState());
 			if (self.debug) {
-				dump.push(EntityFactory.getShapeByEntity(entity).getBaseState());
+				dump.push(EntityFactory.getShapeByEntity(entity)
+					.getBaseState());
 			}
 		});
 		return dump;

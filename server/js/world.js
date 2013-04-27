@@ -1,7 +1,8 @@
 var cls = require("./lib/class"),
 	Player = require("./entities/player"),
 	log = require('./log'),
-	WorldMap = require("./worldmap");
+	WorldMap = require("./worldmap"),
+	_ = require("underscore");
 
 module.exports = cls.Class.extend({
 	init: function (ups, map_filepath, engine, server) {
@@ -47,7 +48,10 @@ module.exports = cls.Class.extend({
 	},
 	processEntities: function (player, entities) {
 		var self = this;
-		var result = { new: [], old: [] }
+		var result = {
+			new: [],
+			old: []
+		};
 		_.each(entities, function (entity) {
 			result[self.engine.isVisible(player, entity) ? "new" : "old"].push(entity);
 		});
@@ -60,7 +64,7 @@ module.exports = cls.Class.extend({
 		var dynamicObjects = self.engine.dumpEntities(function (entity) {
 			return !entity.isStatic;
 		});
-		_.each(players, function (players) {
+		_.each(players, function (player) {
 			var entities = self.processEntities(player, dynamicObjects);
 			if (entities.new) {
 				player.sendEntities(entities.new);
