@@ -60,9 +60,14 @@ var Player = module.exports = Entity.extend({
 		this.entities = _.without(this.entities, remove_ids);
 		this.send(Constants.Types.Messages.RemoveList, remove_ids);
 	},
-	sendEntities: function (entities) {
-		var ids = _.pluck(entities, 'id');
-		this.entities = _.union(this.entities, ids);
+	sendEntities: function (entities, debug) {
+		if (!debug) {
+			var ids = _.pluck(entities, 'id');
+			this.entities = _.union(this.entities, ids);
+		}
+		entities = _.map(entities, function (entity) {
+			return entity.getBaseState();
+		});
 		this.send(Constants.Types.Messages.EntityList, entities);
 	},
 	sendMap: function (map) {

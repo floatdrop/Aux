@@ -98,17 +98,10 @@ var Engine = module.exports = cls.Class.extend({
 		}
 		return entities;
 	},
-	dumpEntities: function (filter_function) {
-		var self = this,
-			dump = [];
-		_.each(this.getEntities(filter_function), function (entity) {
-			dump.push(entity.getBaseState());
-			if (self.debug) {
-				dump.push(EntityFactory.getShapeByEntity(entity)
-					.getBaseState());
-			}
+	debugEntities: function (filter_function) {
+		return _.map(this.getEntities(filter_function), function (entity) {
+			return EntityFactory.getShapeByEntity(entity);
 		});
-		return dump;
 	}
 });
 

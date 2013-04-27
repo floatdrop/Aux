@@ -31,9 +31,9 @@ module.exports = cls.Class.extend({
 		player.send(Constants.Types.Messages.Welcome, player.getBaseState());
 
 		log.info("Send Static objects to player " + player.id);
-		player.sendEntities(self.engine.dumpEntities(function (entity) {
+		player.sendEntities(self.engine.getEntities(function (entity) {
 			return entity.isStatic;
-		}));
+		}), true);
 
 		this.engine.addEntity(player);
 	},
@@ -53,7 +53,7 @@ module.exports = cls.Class.extend({
 			nonvisible: []
 		};
 		_.each(entities, function (entity) {
-			result[self.engine.isVisible(player, entity) ? "visible" : "nonvisible"].push(entity.getBaseState());
+			result[self.engine.isVisible(player, entity) ? "visible" : "nonvisible"].push(entity);
 		});
 		return result;
 	},
@@ -69,6 +69,7 @@ module.exports = cls.Class.extend({
 			var entities = self.processEntities(player, dynamicObjects);
 			player.sendEntities(entities.visible);
 			player.sendRemoveList(entities.nonvisible, entities.visible);
+			player.sendEntities(self.engine.debugEntities(), true);
 		});
 	},
 	run: function () {
