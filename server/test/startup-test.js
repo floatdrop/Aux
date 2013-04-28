@@ -1,6 +1,8 @@
 var vows = require('vows'),
 	should = require('should'),
-	zombie = require('zombie');
+	zombie = require('zombie'),
+	events = require('events'),
+	ws = require('websocket');
 
 var Server = require('../js/main');
 
@@ -32,6 +34,25 @@ vows.describe('Aux')
 					should.not.exists(e);
 					should.exists(statusCode);
 					statusCode.should.equal(200);
+				}
+			},
+			'and websocket': {
+				topic: function (server) {
+					server.should.be.an.instanceof(Server);
+					var WebSocketClient = ws.client;
+					var websocket = new WebSocketClient();
+					var promise = new(events.EventEmitter)();
+					websocket.on('connectFailed', function (e) {
+						promise.emit('error', e);
+					});
+					websocket.on('connect', function (connection) {
+						promise.emit('success', connection);
+					});
+					websocket.connect('ws://localhost:' + server.config.port + '/');
+					return promise;
+				},
+				"should connecting to server": function (connection) {
+					connection.should.be.an.instanceof(ws.connection);
 				}
 			}
 		}
