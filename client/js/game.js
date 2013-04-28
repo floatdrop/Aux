@@ -19,7 +19,7 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 			this.view = new View(this.renderer.width, this.renderer.height);
 
 			this.canvas = document.createElement('canvas');
-			this.canvas.width  = this.renderer.width;
+			this.canvas.width = this.renderer.width;
 			this.canvas.height = this.renderer.height;
 			this.context = this.canvas.getContext('2d');
 			this.debugSprite = new PIXI.Sprite(PIXI.Texture.fromCanvas(this.canvas));
@@ -54,6 +54,11 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 				if (pressed) self.keybindings[key]();
 			});
 		},
+		removeFromView: function (entity) {
+			if (entity.isDisplayed()) {
+				this.view.removeChild(entity.getDisplayObject());
+			}
+		},
 		addToView: function (entity) {
 			if (entity.isDisplayed()) {
 				this.view.addChild(entity.getDisplayObject());
@@ -86,7 +91,20 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 				self.entityList(entitieslist);
 			});
 
+			this.client.onRemoveList(function (idsList) {
+				self.removeList(idsList);
+			});
+
 			this.client.connect();
+		},
+		removeList: function (list) {
+			var self = this;
+			_.each(list, function (id) {
+				if (self.entities[id]) {
+					self.removeFromView(self.entities[id]);
+					delete self.entities[id];
+				}
+			});
 		},
 		entityList: function (list) {
 			var self = this;
@@ -100,21 +118,27 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 		},
 		moveCursor: function (event) {
 			if (this.player) {
-				var angle = this.getAngle({x: event.x, y: event.y}, this.player.getPosition());
+				var angle = this.getAngle({
+					x: event.x,
+					y: event.y
+				}, this.player.getPosition());
 				this.client.sendAngle(angle);
 			}
 		},
 		getAngle: function (cursor, point) {
-			var offset = this.view.position, 
-				originalCursor = {x: cursor.x - offset.x, y: cursor.y - offset.y};
-			
+			var offset = this.view.position,
+				originalCursor = {
+					x: cursor.x - offset.x,
+					y: cursor.y - offset.y
+				};
+
 			var x = point.x - originalCursor.x,
-				y = point.y - originalCursor.y; 
+				y = point.y - originalCursor.y;
 			if (y === 0) {
 				return (x > 0) ? 180 : 0;
 			}
-			var angle = Math.atan(x / y) * 180 / Math.PI; 
-			return (y > 0) ? angle + 90 : angle + 270; 
+			var angle = Math.atan(x / y) * 180 / Math.PI;
+			return (y > 0) ? angle + 90 : angle + 270;
 		},
 		moveUp: function () {
 			return this.client.sendAction('up');

@@ -1,13 +1,15 @@
 var cls = require("./lib/class"),
 	Player = require("./entities/player"),
 	log = require('./log'),
-	WorldMap = require("./worldmap");
+	WorldMap = require("./worldmap"),
+	_ = require("underscore");
 
 module.exports = cls.Class.extend({
-	init: function (ups, map_filepath, engine, server) {
+	init: function (ups, map_filepath, engine, server, debug) {
 		this.ups = ups;
 		this.engine = engine;
 		this.server = server;
+		this.debug = debug;
 		this.map = new WorldMap(map_filepath);
 		this.engine.addEntities(this.map.entities);
 		this.onPlayerConnect(this.playerConnect);
@@ -15,7 +17,7 @@ module.exports = cls.Class.extend({
 	},
 	playerConnect: function (connection) {
 		var self = this;
-		var player = new Player(connection, connection.id);
+		var player = new Player(connection, connection.id, this.debug);
 		player.setPosition(100, 100);
 		log.info("Player " + player.id + " connected");
 
@@ -29,29 +31,45 @@ module.exports = cls.Class.extend({
 		log.info("Send Welcome to player " + player.id);
 		player.send(Constants.Types.Messages.Welcome, player.getBaseState());
 
-		log.info("Send Static objects to player " + player.id);
-		player.send(Constants.Types.Messages.EntityList,
-		self.engine.dumpEntities(function (entity) {
-			return entity.isStatic;
-		}));
-
 		this.engine.addEntity(player);
 	},
 	playerDisconnect: function (id) {
 		this.engine.removeEntity(id);
 	},
+	updateWorld: function () {
+		var self = this;
+		_.each(self.engine.getEntities(), function (entity) {
+			entity.update();
+		});
+	},
+	processEntities: function (player, entities) {
+		var self = this;
+		var result = {
+			visible: [],
+			nonvisible: []
+		};
+		_.each(entities, function (entity) {
+			result[self.engine.isVisible(player, entity) ? "visible" : "nonvisible"].push(entity);
+		});
+		return result;
+	},
+	updatePlayers: function () {
+		var self = this;
+		var players = self.engine.getEntities(function (entity) {
+			return entity instanceof Player;
+		});
+		_.each(players, function (player) {
+			var entities = self.processEntities(player, self.engine.getEntities());
+			player.sendEntities(entities.visible);
+			player.sendRemoveList(entities.nonvisible, entities.visible);
+		});
+	},
 	run: function () {
 		var self = this;
 		setInterval(function () {
 			self.engine.tick(1000.0 / self.ups);
-			self.engine.updateWorld();
-			var dynamicObjects = {
-				t: Constants.Types.Messages.EntityList,
-				d: self.engine.dumpEntities(function (entity) {
-					return !entity.isStatic;
-				})
-			};
-			self.server.broadcast(dynamicObjects);
+			self.updateWorld();
+			self.updatePlayers();
 		}, 1000 / this.ups);
 		setTimeout(function () {
 			self.ready_callback();

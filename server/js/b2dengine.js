@@ -1,29 +1,46 @@
 var Box2D = require('./lib/box2d'),
 	_ = require('underscore'),
-	cls = require('./lib/class'),
-	EntityFactory = require('./entityFactory');
+	cls = require('./lib/class');
 
 var b2Vec2 = Box2D.Common.Math.b2Vec2,
 	b2World = Box2D.Dynamics.b2World,
-	b2Body = Box2D.Dynamics.b2Body;
+	b2Body = Box2D.Dynamics.b2Body,
+	b2SimplexCache = Box2D.Collision.b2SimplexCache,
+	b2Distance = Box2D.Collision.b2Distance,
+	b2Transform_identity = Box2D.Common.Math.b2Math.b2Transform_identity,
+	b2DistanceInput = Box2D.Collision.b2DistanceInput,
+	b2DistanceOutput = Box2D.Collision.b2DistanceOutput,
+	b2DistanceProxy = Box2D.Collision.b2DistanceProxy;
 
 var Scale = 100;
 
 var Engine = module.exports = cls.Class.extend({
 	Scale: Scale,
-	
-	init: function (debug) {
+
+	init: function (viewarea) {
 		this.b2w = new b2World(new b2Vec2(0, 0), false);
-		this.debug = debug;
+		this.viewarea = viewarea;
 	},
 	tick: function (fps) {
 		this.b2w.Step(1 / fps, 10, 10);
 		this.b2w.ClearForces();
 	},
-	updateWorld: function () {
-		_.each(this.getEntities(), function (entity) {
-			entity.update();
-		});
+	isVisible: function (a, b) {
+		var a_proxy = new b2DistanceProxy();
+		a_proxy.Set(a.fixture.GetShape());
+		var b_proxy = new b2DistanceProxy();
+		b_proxy.Set(b.fixture.GetShape());
+		var input = new b2DistanceInput();
+		input.proxyA = a_proxy;
+		input.transformA = b2Transform_identity;
+		input.proxyB = b_proxy;
+		input.transformB = b2Transform_identity;
+		var output = new b2DistanceOutput();
+		var simplexCache = new b2SimplexCache();
+		simplexCache.count = 0;
+		b2Distance.Distance(output, simplexCache, input);
+		if (Math.abs(output.pointB.x - output.pointA.x) < this.viewarea.width && Math.abs(output.pointB.y - output.pointA.y) < this.viewarea.height) return true;
+		return false;
 	},
 	addEntity: function (entity) {
 		entity.body = this.b2w.CreateBody(entity.bodyDef);
@@ -64,7 +81,11 @@ var Engine = module.exports = cls.Class.extend({
 	},
 	getEntities: function (filter_function) {
 		var entities = [];
-		if (!filter_function) filter_function = function (e) { return e; };
+		if (!filter_function) {
+			filter_function = function (e) {
+				return e;
+			};
+		}
 		for (var b = this.b2w.m_bodyList; b; b = b.m_next) {
 			if (b.m_userData !== null) {
 				b.m_userData.isStatic = b.m_type === b2Body.b2_staticBody;
@@ -74,17 +95,6 @@ var Engine = module.exports = cls.Class.extend({
 			}
 		}
 		return entities;
-	},
-	dumpEntities: function (filter_function) {
-		var self = this,
-			dump = [];
-		_.each(this.getEntities(filter_function), function (entity) {
-			dump.push(entity.getBaseState());
-			if (self.debug) {
-				dump.push(EntityFactory.getShapeByEntity(entity).getBaseState());
-			}
-		});
-		return dump;
 	}
 });
 

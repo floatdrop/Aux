@@ -11,7 +11,8 @@ Constants = {
 			Map: 1,
 			EntityList: 2,
 			Action: 3,
-			Angle: 4
+			Angle: 4,
+			RemoveList: 5
 		}
 	}
 };

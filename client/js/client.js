@@ -50,6 +50,9 @@ define(function () {
 				this.socket.send(JSON.stringify(message));
 			}
 		},
+		onRemoveList: function (callback) {
+			this.removelist_callback = callback;
+		},
 		onEntityList: function (callback) {
 			this.entitylist_callback = callback;
 		},
