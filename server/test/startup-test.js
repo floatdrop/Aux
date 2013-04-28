@@ -25,8 +25,7 @@ vows.describe('Aux')
 				topic: function (server) {
 					server.should.be.an.instanceof(Server);
 					zombie.visit("http://localhost:" + server.config.port + "/", {
-						runScripts: false,
-						debug: true
+						runScripts: false
 					}, this.callback);
 				},
 				"should return success": function (e, browser, statusCode) {
