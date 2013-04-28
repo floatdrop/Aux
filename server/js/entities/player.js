@@ -1,7 +1,8 @@
 var Box2D = require('../lib/box2d'),
 	Entity = require('../entity'),
 	log = require('../log'),
-	_ = require('underscore');
+	_ = require('underscore'),
+	EntityFactory = require('../entityFactory');
 
 require('../../../client/js/constants');
 
@@ -12,14 +13,16 @@ var b2BodyDef = Box2D.Dynamics.b2BodyDef,
 	b2CircleShape = Box2D.Collision.Shapes.b2CircleShape;
 
 var Player = module.exports = Entity.extend({
-	init: function (connection, id) {
+	init: function (connection, id, debug) {
 		var self = this;
 		this.connection = connection;
 		this._super(id, "player", Constants.Types.Entities.PLAYER);
 		this.heading = 0;
 		this.angleEps = 90;
+		this.debug = debug;
 		this.animationType = "idle";
 		this.setAnimation();
+		this.entities_ids = [];
 
 		this.connection.listen(function (message) {
 			self.callbacks[message.t](message.d);
@@ -52,10 +55,37 @@ var Player = module.exports = Entity.extend({
 			d: message
 		});
 	},
+	sendRemoveList: function (nonVisibleEntities, visibleEntities) {
+		var nonVisible_ids = _.pluck(nonVisibleEntities, 'id');
+		var visible_ids = _.pluck(visibleEntities, 'id');
+		var remove_ids = _.union(nonVisible_ids, _.difference(this.entities_ids, visible_ids));
+		if (_.isEmpty(remove_ids)) return;
+		this.entities_ids = _.without(this.entities_ids, remove_ids);
+		if (this.debug) {
+			remove_ids = _.union(remove_ids, _.map(remove_ids, function (id) {
+				return "debug-" + id;
+			}));
+		}
+		this.send(Constants.Types.Messages.RemoveList, remove_ids);
+	},
+	sendEntities: function (entities) {
+		var ids = _.pluck(entities, 'id');
+		this.entities_ids = _.union(this.entities_ids, ids);
+		if (this.debug) {
+			entities = _.union(entities, _.map(entities, function (entity) {
+				return EntityFactory.getShapeByEntity(entity);
+			}));
+		}
+		this.send(Constants.Types.Messages.EntityList, _.map(entities, function (entity) {
+			return entity.getBaseState();
+		}));
+	},
 	sendMap: function (map) {
 		this.send(Constants.Types.Messages.Map, {
 			tilesets: map.json.tilesets,
-			layers: _.where(map.json.layers, {type: "tilelayer"}),
+			layers: _.where(map.json.layers, {
+				type: "tilelayer"
+			}),
 			width: map.json.width,
 			height: map.json.height,
 			tilewidth: map.json.tilewidth,
@@ -63,10 +93,10 @@ var Player = module.exports = Entity.extend({
 		});
 	},
 	update: function () {
-		var curAngle = this.getAngle(), 
+		var curAngle = this.getAngle(),
 			delta = curAngle - this.heading,
 			sign = delta > 0 ? 1 : delta < 0 ? -1 : 0;
-		
+
 		if (Math.abs(delta) > 180) {
 			curAngle -= sign * 360;
 			sign *= -1;

@@ -4,7 +4,8 @@ var vows = require('vows'),
 
 var Server = require('../js/main');
 
-vows.describe('Aux').addBatch({
+vows.describe('Aux')
+	.addBatch({
 	'A server': {
 		topic: function () {
 			return new Server({
@@ -35,4 +36,5 @@ vows.describe('Aux').addBatch({
 			}
 		}
 	}
-}).export(module);
+})
+	.export(module);
