@@ -4,7 +4,8 @@ var vows = require('vows'),
 
 var Server = require('../js/main');
 
-vows.describe('Aux').addBatch({
+vows.describe('Aux')
+	.addBatch({
 	'A server': {
 		topic: function () {
 			return new Server({
@@ -24,7 +25,8 @@ vows.describe('Aux').addBatch({
 				topic: function (server) {
 					server.should.be.an.instanceof(Server);
 					zombie.visit("http://localhost:" + server.config.port + "/", {
-						runScripts: false
+						runScripts: false,
+						debug: true
 					}, this.callback);
 				},
 				"should return success": function (e, browser, statusCode) {
@@ -35,4 +37,5 @@ vows.describe('Aux').addBatch({
 			}
 		}
 	}
-}).export(module);
+})
+	.export(module);
