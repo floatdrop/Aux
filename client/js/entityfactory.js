@@ -1,10 +1,14 @@
 /* global _ */
 
-define(['entities/player', 'entities/commonEntity', 'entities/circleEntity', 'entities/polygonEntity'], 
-	function (Player, CommonEntity, CircleEntity, PolygonEntity) {
-	var EntityFactory = {};
+define(['entities/player', 'entities/commonEntity', 'entities/circleEntity', 'entities/polygonEntity'],
+
+function (Player, CommonEntity, CircleEntity, PolygonEntity) {
+	var EntityFactory = {
+		entities: {}
+	};
 
 	EntityFactory.createEntity = function (entity_info, name) {
+
 		var kind = entity_info.kind;
 		if (!kind) {
 			console.log("kind is undefined", entity_info);

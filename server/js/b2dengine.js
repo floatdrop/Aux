@@ -1,7 +1,6 @@
 var Box2D = require('./lib/box2d'),
 	_ = require('underscore'),
-	cls = require('./lib/class'),
-	EntityFactory = require('./entityFactory');
+	cls = require('./lib/class');
 
 var b2Vec2 = Box2D.Common.Math.b2Vec2,
 	b2World = Box2D.Dynamics.b2World,
@@ -18,9 +17,8 @@ var Scale = 100;
 var Engine = module.exports = cls.Class.extend({
 	Scale: Scale,
 
-	init: function (debug, viewarea) {
+	init: function (viewarea) {
 		this.b2w = new b2World(new b2Vec2(0, 0), false);
-		this.debug = debug;
 		this.viewarea = viewarea;
 	},
 	tick: function (fps) {
@@ -97,11 +95,6 @@ var Engine = module.exports = cls.Class.extend({
 			}
 		}
 		return entities;
-	},
-	debugEntities: function (filter_function) {
-		return _.map(this.getEntities(filter_function), function (entity) {
-			return EntityFactory.getShapeByEntity(entity);
-		});
 	}
 });
 

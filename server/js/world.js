@@ -5,10 +5,11 @@ var cls = require("./lib/class"),
 	_ = require("underscore");
 
 module.exports = cls.Class.extend({
-	init: function (ups, map_filepath, engine, server) {
+	init: function (ups, map_filepath, engine, server, debug) {
 		this.ups = ups;
 		this.engine = engine;
 		this.server = server;
+		this.debug = debug;
 		this.map = new WorldMap(map_filepath);
 		this.engine.addEntities(this.map.entities);
 		this.onPlayerConnect(this.playerConnect);
@@ -16,7 +17,7 @@ module.exports = cls.Class.extend({
 	},
 	playerConnect: function (connection) {
 		var self = this;
-		var player = new Player(connection, connection.id);
+		var player = new Player(connection, connection.id, this.debug);
 		player.setPosition(100, 100);
 		log.info("Player " + player.id + " connected");
 
@@ -29,11 +30,6 @@ module.exports = cls.Class.extend({
 
 		log.info("Send Welcome to player " + player.id);
 		player.send(Constants.Types.Messages.Welcome, player.getBaseState());
-
-		log.info("Send Static objects to player " + player.id);
-		player.sendEntities(self.engine.getEntities(function (entity) {
-			return entity.isStatic;
-		}), true);
 
 		this.engine.addEntity(player);
 	},
@@ -62,14 +58,10 @@ module.exports = cls.Class.extend({
 		var players = self.engine.getEntities(function (entity) {
 			return entity instanceof Player;
 		});
-		var dynamicObjects = self.engine.getEntities(function (entity) {
-			return !entity.isStatic;
-		});
 		_.each(players, function (player) {
-			var entities = self.processEntities(player, dynamicObjects);
+			var entities = self.processEntities(player, self.engine.getEntities());
 			player.sendEntities(entities.visible);
 			player.sendRemoveList(entities.nonvisible, entities.visible);
-			player.sendEntities(self.engine.debugEntities(), true);
 		});
 	},
 	run: function () {
