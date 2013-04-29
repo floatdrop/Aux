@@ -119,12 +119,6 @@ var Player = module.exports = Entity.extend({
 			self.animationType = "idle";
 		}, 250, this.id);
 	},
-	turn_cw: function () {
-
-	},
-	turn_ccw: function () {
-
-	},
 	onAction: function (data) {
 		if (this.body === undefined) return false;
 		if (data === "up") this.move(new b2Vec2(0, -0.01));
