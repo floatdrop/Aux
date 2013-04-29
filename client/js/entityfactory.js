@@ -2,8 +2,6 @@
 
 define(['entities/player', 'entities/commonEntity', 'entities/circleEntity', 'entities/polygonEntity', 'entities/bullet'], 
 	function (Player, CommonEntity, CircleEntity, PolygonEntity, Bullet) {
-
-function (Player, CommonEntity, CircleEntity, PolygonEntity) {
 	var EntityFactory = {
 		entities: {}
 	};

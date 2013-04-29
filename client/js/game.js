@@ -10,6 +10,7 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 			this.renderer = renderer;
 
 			this.renderer.view.onmousedown = this.shoot.bind(this);
+			this.renderer.view.onmousemove = this.moveCursor.bind(this);
 			this.keybindings['w'] = this.moveUp.bind(this);
 			this.keybindings['s'] = this.moveDown.bind(this);
 			this.keybindings['a'] = this.moveLeft.bind(this);

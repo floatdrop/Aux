@@ -40,7 +40,7 @@ var Bullet = module.exports = Entity.extend({
 		this.remove_callback = callback;
 	},
 	onCollision: function (contactBody) {
-		if (!(contactBody instanceof Player)) return true;
+		if (contactBody.kind !== Constants.Types.Entities.PLAYER) return true;
 		if (Bullet.TimeToLife - this.ttl < Bullet.DontHurtShootingPlayerTime &&
 			this.player.id === contactBody.id) {
 			return false;
