@@ -1,9 +1,0 @@
-{
-	"id": "stone6",
-	"width": 59,
-	"height": 63,
-	"image": "img/1/stone6.png",
-	"animations": { "default": {} },
-	"offset_x": 0,
-	"offset_y": 0
-}
