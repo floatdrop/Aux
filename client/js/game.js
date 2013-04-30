@@ -9,6 +9,7 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 		init: function (renderer) {
 			this.renderer = renderer;
 
+			this.renderer.view.onmousedown = this.shoot.bind(this);
 			this.renderer.view.onmousemove = this.moveCursor.bind(this);
 			this.keybindings['w'] = this.moveUp.bind(this);
 			this.keybindings['s'] = this.moveDown.bind(this);
@@ -122,7 +123,7 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 					x: event.x,
 					y: event.y
 				}, this.player.getPosition());
-				this.client.sendAngle(angle);
+				this.client.sendAngle(parseInt(angle, 10));
 			}
 		},
 		getAngle: function (cursor, point) {
@@ -139,6 +140,9 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 			}
 			var angle = Math.atan(x / y) * 180 / Math.PI;
 			return (y > 0) ? angle + 90 : angle + 270;
+		},
+		shoot: function () {
+			this.client.sendShoot();
 		},
 		moveUp: function () {
 			return this.client.sendAction('up');
