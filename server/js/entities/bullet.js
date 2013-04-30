@@ -1,5 +1,4 @@
 var Entity = require('../entity'),
-	Player = require('./player'),
 	Box2D = require('../lib/box2d'),
 	b2FixtureDef = Box2D.Dynamics.b2FixtureDef,
 	b2BodyDef = Box2D.Dynamics.b2BodyDef,
