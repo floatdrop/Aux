@@ -6,7 +6,7 @@
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":1,"h":1},
-	"sourceSize": {"w":1,"h":1},
+	"sourceSize": {"w":1,"h":1}
 },
 "pillar.png":
 {
@@ -14,7 +14,7 @@
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":28,"h":64},
-	"sourceSize": {"w":28,"h":64},
+	"sourceSize": {"w":28,"h":64}
 },
 "pillar2.png":
 {
@@ -22,7 +22,7 @@
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":23,"h":51},
-	"sourceSize": {"w":23,"h":51},
+	"sourceSize": {"w":23,"h":51}
 },
 "signpost.png":
 {
@@ -49,7 +49,7 @@
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":42,"h":31},
-	"sourceSize": {"w":42,"h":31},
+	"sourceSize": {"w":42,"h":31}
 },
 "stone3.png":
 {
@@ -113,10 +113,11 @@
 "meta": {
 	"app": "http://www.texturepacker.com",
 	"version": "1.0",
-	"image": "atlas.png",
+	"image": "img/1/atlas.png",
 	"format": "RGBA8888",
 	"size": {"w":256,"h":512},
 	"scale": "1",
 	"smartupdate": "$TexturePacker:SmartUpdate:21ed0a2a4719013c02e8f1fe5ee74de0$"
-}
+},
+"isAtlas": true
 }
