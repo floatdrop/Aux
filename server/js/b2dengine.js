@@ -1,6 +1,7 @@
 var Box2D = require('./lib/box2d'),
 	_ = require('underscore'),
-	cls = require('./lib/class');
+	cls = require('./lib/class'),
+	EntityFactory = require('./entityFactory');
 
 var b2Vec2 = Box2D.Common.Math.b2Vec2,
 	b2World = Box2D.Dynamics.b2World,
