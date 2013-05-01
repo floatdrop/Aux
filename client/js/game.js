@@ -17,15 +17,18 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 			this.keybindings['d'] = this.moveRight.bind(this);
 
 			this.stage = new PIXI.Stage(0x000000);
+			this.layers = new PIXI.Layers("game", "debug", "ui");
+			this.stage.addChild(this.layers);
+
 			this.view = new View(this.renderer.width, this.renderer.height);
+			this.layers.game.addChild(this.view);
 
 			this.canvas = document.createElement('canvas');
 			this.canvas.width = this.renderer.width;
 			this.canvas.height = this.renderer.height;
 			this.context = this.canvas.getContext('2d');
 			this.debugSprite = new PIXI.Sprite(PIXI.Texture.fromCanvas(this.canvas));
-
-			this.stage.addChild(this.view);
+			this.layers.debug.addChild(this.debugSprite);
 		},
 		run: function () {
 			this.tick();
@@ -47,7 +50,6 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 				}
 			});
 			this.debugSprite.setTexture(PIXI.Texture.fromCanvas(this.canvas));
-			this.stage.addChild(this.debugSprite);
 		},
 		_handleKeyboard: function () {
 			var self = this;
