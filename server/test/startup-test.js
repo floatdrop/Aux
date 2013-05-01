@@ -54,6 +54,10 @@ vows.describe('Aux')
 				"should connecting to server": function (connection) {
 					connection.should.be.an.instanceof(ws.connection);
 				}
+			},
+			teardown: function (server) {
+				server.should.be.an.instanceof(Server);
+				server.stop();
 			}
 		}
 	}

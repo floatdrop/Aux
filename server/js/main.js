@@ -49,6 +49,10 @@ var Server = module.exports = cls.Class.extend({
 		this.world.onReady(this.ready_callback);
 		this.world.run();
 	},
+	stop: function () {
+		this.world.stop();
+		this._server.stop();
+	},
 	onReady: function (callback) {
 		this.ready_callback = callback;
 	}

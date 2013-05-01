@@ -145,7 +145,7 @@ WS.MultiVersionWebsocketServer = Server.extend({
 			if (typeof req.headers['sec-websocket-version'] !== 'undefined') {
 				// WebSocket hybi-08/-09/-10 connection (WebSocket-Node)
 				var wsRequest = new worlizeRequest(socket, req, self.worlizeServerConfig);
-				
+
 				wsRequest.readHandshake();
 				var wsConnection = wsRequest.accept(wsRequest.requestedProtocols[0], wsRequest.origin);
 				var c = new WS.worlizeWebSocketConnection(self._createId(), wsConnection, self);
@@ -163,16 +163,18 @@ WS.MultiVersionWebsocketServer = Server.extend({
 		});
 	},
 	_createId: function () {
-        return '5' + Math.floor(Math.random() * 99) + '' + (this._counter++);
-    },
+		return '5' + Math.floor(Math.random() * 99) + '' + (this._counter++);
+	},
 	broadcast: function (message) {
 		this.forEachConnection(function (connection) {
 			connection.send(message);
 		});
 	},
-
 	onRequestStatus: function (status_callback) {
 		this.status_callback = status_callback;
+	},
+	stop: function () {
+		this._httpServer.close();
 	}
 });
 
