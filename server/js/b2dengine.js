@@ -1,7 +1,6 @@
 var Box2D = require('./lib/box2d'),
 	_ = require('underscore'),
-	cls = require('./lib/class'),
-	EntityFactory = require('./entityFactory');
+	cls = require('./lib/class');
 
 var b2Vec2 = Box2D.Common.Math.b2Vec2,
 	b2World = Box2D.Dynamics.b2World,
@@ -52,7 +51,7 @@ var Engine = module.exports = cls.Class.extend({
 			obj2 = contact.GetFixtureB().GetBody().GetUserData(),
 			enabled1 = obj1.onCollision(obj2, contact),
 			enabled2 = obj2.onCollision(obj1, contact);
-		
+
 		contact.SetEnabled(enabled1 && enabled2);
 	},
 	addEntity: function (entity) {
