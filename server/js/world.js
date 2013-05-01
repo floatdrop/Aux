@@ -82,7 +82,7 @@ module.exports = cls.Class.extend({
 	},
 	run: function () {
 		var self = this;
-		setInterval(function () {
+		this.worldUpdater = setInterval(function () {
 			self.engine.tick(1000.0 / self.ups);
 			self.updateWorld();
 			self.updatePlayers();
@@ -90,6 +90,9 @@ module.exports = cls.Class.extend({
 		setTimeout(function () {
 			self.ready_callback();
 		}, 1000 / this.ups);
+	},
+	stop: function () {
+		clearInterval(this.worldUpdater);
 	},
 	onPlayerConnect: function (callback) {
 		this.connect_callback = callback;
