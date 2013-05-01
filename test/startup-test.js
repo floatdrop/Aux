@@ -4,7 +4,7 @@ var vows = require('vows'),
 	events = require('events'),
 	ws = require('websocket');
 
-var Server = require('../js/main');
+var Server = require('../server/js/main');
 
 vows.describe('Aux')
 	.addBatch({
