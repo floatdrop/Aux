@@ -1,0 +1,123 @@
+{"frames": {
+
+"empty.png":
+{
+	"frame": {"x":244,"y":2,"w":1,"h":1},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":1,"h":1},
+	"sourceSize": {"w":1,"h":1}
+},
+"pillar.png":
+{
+	"frame": {"x":169,"y":297,"w":28,"h":64},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":28,"h":64},
+	"sourceSize": {"w":28,"h":64}
+},
+"pillar2.png":
+{
+	"frame": {"x":229,"y":245,"w":23,"h":51},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":23,"h":51},
+	"sourceSize": {"w":23,"h":51}
+},
+"signpost.png":
+{
+	"frame": {"x":176,"y":65,"w":63,"h":62},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":63,"h":62},
+	"sourceSize": {"w":63,"h":62},
+	"offset_y": -18
+},
+"stone.png":
+{
+	"frame": {"x":176,"y":245,"w":51,"h":50},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":51,"h":50},
+	"sourceSize": {"w":51,"h":50},
+	"offset_x": 26,
+	"offset_y": -14
+},
+"stone2.png":
+{
+	"frame": {"x":125,"y":268,"w":42,"h":31},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":42,"h":31},
+	"sourceSize": {"w":42,"h":31}
+},
+"stone3.png":
+{
+	"frame": {"x":199,"y":297,"w":22,"h":20},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":22,"h":20},
+	"sourceSize": {"w":22,"h":20}
+},
+"stone4.png":
+{
+	"frame": {"x":125,"y":214,"w":49,"h":52},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":49,"h":52},
+	"sourceSize": {"w":49,"h":52},
+	"offset_x": 22,
+	"offset_y": 10
+},
+"stone5.png":
+{
+	"frame": {"x":176,"y":2,"w":66,"h":61},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":66,"h":61},
+	"sourceSize": {"w":66,"h":61}
+},
+"stone6.png":
+{
+	"frame": {"x":176,"y":180,"w":57,"h":63},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":0,"w":57,"h":63},
+	"sourceSize": {"w":59,"h":63}
+},
+"stump.png":
+{
+	"frame": {"x":176,"y":129,"w":58,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":58,"h":49},
+	"sourceSize": {"w":58,"h":49}
+},
+"tree.png":
+{
+	"frame": {"x":2,"y":2,"w":172,"h":210},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":172,"h":210},
+	"sourceSize": {"w":172,"h":210},
+	"offset_y": -90
+},
+"well.png":
+{
+	"frame": {"x":2,"y":214,"w":121,"h":107},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":121,"h":107},
+	"sourceSize": {"w":121,"h":107}
+}},
+"meta": {
+	"app": "http://www.texturepacker.com",
+	"version": "1.0",
+	"image": "img/1/atlas.png",
+	"format": "RGBA8888",
+	"size": {"w":256,"h":512},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:21ed0a2a4719013c02e8f1fe5ee74de0$"
+},
+"isAtlas": true
+}
