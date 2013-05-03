@@ -40,6 +40,8 @@ define(['sprites'], function (Sprites) {
 			this.movieclip.animationSpeed = adef.speed;
 			this.movieclip.scale = adef.scale;
 			this.movieclip.anchor = def.anchor;
+			if (def.frame) 
+				this.movieclip.texture.setFrame(def.frame);
 			if (adef.speed !== 0)
 				this.movieclip.play();
 			this.animation = animation;
