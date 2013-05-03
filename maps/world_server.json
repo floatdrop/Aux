@@ -5,6 +5,10 @@
          "height":70,
          "name":"ground",
          "opacity":1,
+         "properties":
+            {
+             "client":"true"
+            },
          "type":"tilelayer",
          "visible":true,
          "width":128,
@@ -16,6 +20,10 @@
          "height":70,
          "name":"grass",
          "opacity":1,
+         "properties":
+            {
+             "client":"true"
+            },
          "type":"tilelayer",
          "visible":true,
          "width":128,
@@ -27,6 +35,10 @@
          "height":70,
          "name":"grass2",
          "opacity":1,
+         "properties":
+            {
+             "client":"true"
+            },
          "type":"tilelayer",
          "visible":true,
          "width":128,
@@ -38,10 +50,6 @@
          "height":70,
          "name":"entities",
          "opacity":1,
-         "properties":
-            {
-             "client":"false"
-            },
          "type":"tilelayer",
          "visible":true,
          "width":128,
@@ -3244,10 +3252,6 @@
                  "y":24
                 }],
          "opacity":1,
-         "properties":
-            {
-             "client":"false"
-            },
          "type":"objectgroup",
          "visible":true,
          "width":128,

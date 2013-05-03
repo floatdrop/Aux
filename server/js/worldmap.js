@@ -6,6 +6,7 @@ var fs = require('fs'),
 
 var WorldMap = module.exports = cls.Class.extend({
 	entities: [],
+	layers: [],
 
 	init: function (map_filepath, engine) {
 		this.json = JSON.parse(fs.readFileSync(map_filepath, 'utf8'));
@@ -21,6 +22,9 @@ var WorldMap = module.exports = cls.Class.extend({
 					WorldMap.adjustInfo(entity_info);
 					self.entities.push(EntityFactory.createEntity(entity_info));
 				});
+			}
+			if (layer.properties && layer.properties.client === "true") {
+				self.layers.push(layer);
 			}
 		});
 	},

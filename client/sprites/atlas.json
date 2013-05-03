@@ -1,5 +1,13 @@
 {"frames": {
 
+"empty.png":
+{
+  "frame": {"x":0,"y":0,"w":1,"h":1},
+  "rotated": false,
+  "trimmed": false,
+  "spriteSourceSize": {"x":0,"y":0,"w":1,"h":1},
+  "sourceSize": {"w":1,"h":1}
+},
 "bullet.png":
 {
 	"frame": {"x":502,"y":230,"w":8,"h":7},
@@ -254,6 +262,14 @@
 	"sourceSize": {"w":74,"h":117}
 },
 "woods.png":
+{
+	"frame": {"x":176,"y":378,"w":35,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":35,"h":49},
+	"sourceSize": {"w":35,"h":49}
+},
+"cactus.png":
 {
 	"frame": {"x":176,"y":378,"w":35,"h":49},
 	"rotated": false,
