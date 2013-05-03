@@ -31,8 +31,8 @@ define(['./lib/text!../sprites/player.json',
 		var image = sprites.meta.image,
 			defs = [];
 		_.each(sprites.frames, function (sprite, imageName) {
-			var offset_x = (sprite.offset_x || 0) + sprite.frame.x,
-				offset_y = (sprite.offset_y || 0) + sprite.frame.y,
+			var offset_x = (sprite.offset_x || 0),
+				offset_y = (sprite.offset_y || 0),
 				def = {
 					id: getNameWithoutExtension(imageName),
 					width: sprite.frame.w,
@@ -40,7 +40,8 @@ define(['./lib/text!../sprites/player.json',
 					baseTexture: PIXI.Texture.fromImage(image).baseTexture,
 					animations: { "default": {} },
 					offset: new PIXI.Point(offset_x, offset_y),
-					anchor: new PIXI.Point(sprite.anchor_x || 0.5, sprite.anchor_y || 0.5)
+					anchor: new PIXI.Point(sprite.anchor_x || 0.5, sprite.anchor_y || 0.5),
+					frame: new PIXI.Rectangle(sprite.frame.x, sprite.frame.y, sprite.frame.w, sprite.frame.h)
 				};
 			defs.push(def);
 		});
