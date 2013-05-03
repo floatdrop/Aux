@@ -7,7 +7,7 @@
   <image source="../client/img/tileset2.png" width="640" height="3136"/>
  </tileset>
  <layer name="ground" width="128" height="70">
- <properties>
+  <properties>
    <property name="client" value="true"/>
   </properties>
   <data encoding="base64" compression="zlib">
@@ -131,10 +131,8 @@
   <object type="empty" x="3410" y="1733" width="29" height="51"/>
   <object type="empty" x="3430" y="1716" width="29" height="51"/>
   <object type="empty" x="3458" y="1633" width="29" height="113"/>
-  <object type="well2" x="962" y="1899" width="64" height="56"/>
-  <object type="well2" x="162" y="1164" width="64" height="56"/>
+  <object type="well2" x="159" y="1163" width="70" height="56"/>
   <object type="well2" x="2692" y="1800" width="64" height="56"/>
-  <object type="well2" x="3394" y="232" width="64" height="56"/>
   <object type="tree2" x="352" y="2140" width="59" height="32"/>
   <object type="tree2" x="1795" y="1851" width="59" height="32"/>
   <object type="empty" x="1790" y="1897" width="102" height="21"/>
@@ -221,13 +219,7 @@
   <object type="empty" x="767" y="1449" width="105" height="17"/>
   <object type="stone7" x="256" y="1185" width="32" height="30"/>
   <object type="stone7" x="800" y="1475" width="32" height="30"/>
-  <object type="stone8" x="1227" y="1725">
-   <polygon points="0,0 81,0 84,-33 35,-93 1,-89 -13,-60"/>
-  </object>
-  <object type="stone8" x="1484" y="1251">
-   <polygon points="0,0 81,0 84,-33 35,-93 1,-89 -13,-60"/>
-  </object>
-  <object type="stone9" x="489" y="1501">
+  <object type="stone9" x="488" y="1506">
    <polyline points="0,0 81,3 87,-60 65,-93 36,-93 -11,-33 0,-4"/>
   </object>
   <object type="grave" x="418" y="1871" width="29" height="46"/>
@@ -279,5 +271,13 @@
   <object type="woods" x="4034" y="569" width="28" height="36"/>
   <object type="woods" x="4066" y="601" width="28" height="36"/>
   <object type="woods" x="3520" y="24" width="28" height="36"/>
+  <object type="stone8" x="1228" y="1725">
+   <polyline points="0,0 74,2 84,-13 83,-35 -5,-43 -15,-25 -1,-3"/>
+  </object>
+  <object type="stone8" x="1482" y="1246">
+   <polyline points="0,0 74,2 84,-13 83,-35 -5,-43 -15,-25 -1,-3"/>
+  </object>
+  <object type="well2" x="959" y="1900" width="70" height="56"/>
+  <object type="well2" x="3391" y="237" width="70" height="56"/>
  </objectgroup>
 </map>

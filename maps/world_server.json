@@ -1335,22 +1335,9 @@
                     },
                  "type":"well2",
                  "visible":true,
-                 "width":64,
-                 "x":962,
-                 "y":1899
-                }, 
-                {
-                 "height":56,
-                 "name":"",
-                 "properties":
-                    {
-
-                    },
-                 "type":"well2",
-                 "visible":true,
-                 "width":64,
-                 "x":162,
-                 "y":1164
+                 "width":70,
+                 "x":159,
+                 "y":1163
                 }, 
                 {
                  "height":56,
@@ -1364,19 +1351,6 @@
                  "width":64,
                  "x":2692,
                  "y":1800
-                }, 
-                {
-                 "height":56,
-                 "name":"",
-                 "properties":
-                    {
-
-                    },
-                 "type":"well2",
-                 "visible":true,
-                 "width":64,
-                 "x":3394,
-                 "y":232
                 }, 
                 {
                  "height":32,
@@ -2499,82 +2473,6 @@
                 {
                  "height":0,
                  "name":"",
-                 "polygon":[
-                        {
-                         "x":0,
-                         "y":0
-                        }, 
-                        {
-                         "x":81,
-                         "y":0
-                        }, 
-                        {
-                         "x":84,
-                         "y":-33
-                        }, 
-                        {
-                         "x":35,
-                         "y":-93
-                        }, 
-                        {
-                         "x":1,
-                         "y":-89
-                        }, 
-                        {
-                         "x":-13,
-                         "y":-60
-                        }],
-                 "properties":
-                    {
-
-                    },
-                 "type":"stone8",
-                 "visible":true,
-                 "width":0,
-                 "x":1227,
-                 "y":1725
-                }, 
-                {
-                 "height":0,
-                 "name":"",
-                 "polygon":[
-                        {
-                         "x":0,
-                         "y":0
-                        }, 
-                        {
-                         "x":81,
-                         "y":0
-                        }, 
-                        {
-                         "x":84,
-                         "y":-33
-                        }, 
-                        {
-                         "x":35,
-                         "y":-93
-                        }, 
-                        {
-                         "x":1,
-                         "y":-89
-                        }, 
-                        {
-                         "x":-13,
-                         "y":-60
-                        }],
-                 "properties":
-                    {
-
-                    },
-                 "type":"stone8",
-                 "visible":true,
-                 "width":0,
-                 "x":1484,
-                 "y":1251
-                }, 
-                {
-                 "height":0,
-                 "name":"",
                  "polyline":[
                         {
                          "x":0,
@@ -2611,8 +2509,8 @@
                  "type":"stone9",
                  "visible":true,
                  "width":0,
-                 "x":489,
-                 "y":1501
+                 "x":488,
+                 "y":1506
                 }, 
                 {
                  "height":46,
@@ -3250,6 +3148,116 @@
                  "width":28,
                  "x":3520,
                  "y":24
+                }, 
+                {
+                 "height":0,
+                 "name":"",
+                 "polyline":[
+                        {
+                         "x":0,
+                         "y":0
+                        }, 
+                        {
+                         "x":74,
+                         "y":2
+                        }, 
+                        {
+                         "x":84,
+                         "y":-13
+                        }, 
+                        {
+                         "x":83,
+                         "y":-35
+                        }, 
+                        {
+                         "x":-5,
+                         "y":-43
+                        }, 
+                        {
+                         "x":-15,
+                         "y":-25
+                        }, 
+                        {
+                         "x":-1,
+                         "y":-3
+                        }],
+                 "properties":
+                    {
+
+                    },
+                 "type":"stone8",
+                 "visible":true,
+                 "width":0,
+                 "x":1228,
+                 "y":1725
+                }, 
+                {
+                 "height":0,
+                 "name":"",
+                 "polyline":[
+                        {
+                         "x":0,
+                         "y":0
+                        }, 
+                        {
+                         "x":74,
+                         "y":2
+                        }, 
+                        {
+                         "x":84,
+                         "y":-13
+                        }, 
+                        {
+                         "x":83,
+                         "y":-35
+                        }, 
+                        {
+                         "x":-5,
+                         "y":-43
+                        }, 
+                        {
+                         "x":-15,
+                         "y":-25
+                        }, 
+                        {
+                         "x":-1,
+                         "y":-3
+                        }],
+                 "properties":
+                    {
+
+                    },
+                 "type":"stone8",
+                 "visible":true,
+                 "width":0,
+                 "x":1482,
+                 "y":1246
+                }, 
+                {
+                 "height":56,
+                 "name":"",
+                 "properties":
+                    {
+
+                    },
+                 "type":"well2",
+                 "visible":true,
+                 "width":70,
+                 "x":959,
+                 "y":1900
+                }, 
+                {
+                 "height":56,
+                 "name":"",
+                 "properties":
+                    {
+
+                    },
+                 "type":"well2",
+                 "visible":true,
+                 "width":70,
+                 "x":3391,
+                 "y":237
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -3267,7 +3275,7 @@
  "tilesets":[
         {
          "firstgid":1,
-         "image":"\/img\/tileset.png",
+         "image":"img\/tileset.png",
          "imageheight":2048,
          "imagewidth":2048,
          "margin":0,
@@ -3282,7 +3290,7 @@
         }, 
         {
          "firstgid":4097,
-         "image":"\/img\/tileset2.png",
+         "image":"img\/tileset2.png",
          "imageheight":3136,
          "imagewidth":640,
          "margin":0,

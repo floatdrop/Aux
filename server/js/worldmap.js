@@ -49,10 +49,6 @@ WorldMap.adjustInfo = function (entity_info) {
 		});
 		entity_info.points.reverse();
 	}
-	entity_info.width = entity_info.width / 2;
-	entity_info.height = entity_info.height / 2;
-	entity_info.x = entity_info.x + entity_info.width;
-	entity_info.y = entity_info.y + entity_info.height;
 };
 
 return WorldMap;
