@@ -3263,7 +3263,7 @@
  "tilesets":[
         {
          "firstgid":1,
-         "image":"..\/client\/img\/sprites\/ground_64x64.png",
+         "image":"\/img\/tileset.png",
          "imageheight":2048,
          "imagewidth":2048,
          "margin":0,
@@ -3278,7 +3278,7 @@
         }, 
         {
          "firstgid":4097,
-         "image":"..\/client\/img\/tileset2.png",
+         "image":"\/img\/tileset2.png",
          "imageheight":3136,
          "imagewidth":640,
          "margin":0,

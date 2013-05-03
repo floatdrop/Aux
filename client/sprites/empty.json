@@ -1,7 +1,0 @@
-{
-	"id": "empty",
-	"width": 1,
-	"image": "img/1/empty.png",
-	"height": 1,
-	"animations": { "default": {} }
-}
