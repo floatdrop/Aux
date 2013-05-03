@@ -194,11 +194,11 @@
 },
 "stone7.png":
 {
-	"frame": {"x":134,"y":505,"w":28,"h":28},
+	"frame": {"x":131,"y":500,"w":39,"h":33},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":28,"h":28},
-	"sourceSize": {"w":28,"h":28},
+	"spriteSourceSize": {"x":0,"y":0,"w":39,"h":33},
+	"sourceSize": {"w":39,"h":33},
 	"offset_x": 16,
 	"offset_y": 15
 },
