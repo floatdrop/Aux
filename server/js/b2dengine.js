@@ -51,7 +51,6 @@ var Engine = module.exports = cls.Class.extend({
 			obj2 = contact.GetFixtureB().GetBody().GetUserData(),
 			enabled1 = obj1.onCollision(obj2, contact),
 			enabled2 = obj2.onCollision(obj1, contact);
-
 		contact.SetEnabled(enabled1 && enabled2);
 	},
 	addEntity: function (entity) {
