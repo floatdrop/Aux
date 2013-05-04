@@ -1,25 +1,24 @@
 /* global _ */
 
-define(['./lib/text!../sprites/player.json',
-	'./lib/text!../sprites/tree.json',
-	'./lib/text!../sprites/stone.json',
-	'./lib/text!../sprites/stone2.json',
-	'./lib/text!../sprites/stone3.json',
-	'./lib/text!../sprites/stone4.json',
-	'./lib/text!../sprites/stump.json',
-	'./lib/text!../sprites/empty.json',
-	'./lib/text!../sprites/pillar.json',
-	'./lib/text!../sprites/pillar2.json',
-	'./lib/text!../sprites/signpost.json',
-	'./lib/text!../sprites/stone5.json',
-	'./lib/text!../sprites/stone6.json',
-	'./lib/text!../sprites/well.json',
-	'./lib/text!../sprites/bullet.json'], function () {
+define(['./lib/json!../sprites/player.json',
+	'./lib/json!../sprites/tree.json',
+	'./lib/json!../sprites/stone.json',
+	'./lib/json!../sprites/stone2.json',
+	'./lib/json!../sprites/stone3.json',
+	'./lib/json!../sprites/stone4.json',
+	'./lib/json!../sprites/stump.json',
+	'./lib/json!../sprites/empty.json',
+	'./lib/json!../sprites/pillar.json',
+	'./lib/json!../sprites/pillar2.json',
+	'./lib/json!../sprites/signpost.json',
+	'./lib/json!../sprites/stone5.json',
+	'./lib/json!../sprites/stone6.json',
+	'./lib/json!../sprites/well.json',
+	'./lib/json!../sprites/bullet.json'], function () {
 
 	var Sprites = { definitions: {} };
 
-	_.each(arguments, function (spriteJson) {
-		var sprite = JSON.parse(spriteJson);
+	_.each(arguments, function (sprite) {
 		var def = { 
 			width: sprite.width,
 			height: sprite.height,
