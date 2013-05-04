@@ -1,25 +1,24 @@
 /* global _ */
 
-define(['./lib/text!../sprites/player.json',
-	'./lib/text!../sprites/tree.json',
-	'./lib/text!../sprites/stone.json',
-	'./lib/text!../sprites/stone2.json',
-	'./lib/text!../sprites/stone3.json',
-	'./lib/text!../sprites/stone4.json',
-	'./lib/text!../sprites/stump.json',
-	'./lib/text!../sprites/empty.json',
-	'./lib/text!../sprites/pillar.json',
-	'./lib/text!../sprites/pillar2.json',
-	'./lib/text!../sprites/signpost.json',
-	'./lib/text!../sprites/stone5.json',
-	'./lib/text!../sprites/stone6.json',
-	'./lib/text!../sprites/well.json',
-	'./lib/text!../sprites/bullet.json'], function () {
+define(['./lib/json!../sprites/player.json',
+	'./lib/json!../sprites/tree.json',
+	'./lib/json!../sprites/stone.json',
+	'./lib/json!../sprites/stone2.json',
+	'./lib/json!../sprites/stone3.json',
+	'./lib/json!../sprites/stone4.json',
+	'./lib/json!../sprites/stump.json',
+	'./lib/json!../sprites/empty.json',
+	'./lib/json!../sprites/pillar.json',
+	'./lib/json!../sprites/pillar2.json',
+	'./lib/json!../sprites/signpost.json',
+	'./lib/json!../sprites/stone5.json',
+	'./lib/json!../sprites/stone6.json',
+	'./lib/json!../sprites/well.json',
+	'./lib/json!../sprites/bullet.json'], function () {
 
 	var Sprites = { definitions: {} };
 
-	_.each(arguments, function (spriteJson) {
-		var sprite = JSON.parse(spriteJson);
+	_.each(arguments, function (sprite) {
 		var def = { 
 			width: sprite.width,
 			height: sprite.height,
@@ -31,14 +30,15 @@ define(['./lib/text!../sprites/player.json',
 		_.each(sprite.animations, function (animation, name) {
 			var adef = {
 				length: animation.length,
-				row: animation.row || 0,
+				x: animation.x || 0,
+				y: animation.y || 0,
 				scale: new PIXI.Point(animation.scale_x || 1, animation.scale_y || 1),
 				speed: animation.speed || 0,
 				textures: []
 			};
 			for (var i = 0; i < (adef.length || 1); i++) {
 				adef.textures.push(new PIXI.Texture(def.baseTexture, 
-					new PIXI.Rectangle(i * def.width, (adef.row || 0) * def.height, def.width, def.height)));
+					new PIXI.Rectangle(i * def.width + adef.x, adef.y, def.width, def.height)));
 			}
 			def.animations[name] = adef;
 		});
