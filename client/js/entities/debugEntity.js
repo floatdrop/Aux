@@ -5,7 +5,7 @@ define(['entities/entity'], function (Entity) {
 			this._super(id, Constants.Types.Entities.CircleEntity);
 			this.movieclip = PIXI.Sprite.fromImage("img/1/empty.png");
             this.movieclip.visible = true;
-            this._container.addChild(this.movieclip);
+            this.animation.add("default", this.movieclip);
 		},
 		getPosition: function () {
 			return {
