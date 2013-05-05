@@ -12,6 +12,7 @@ var Entity = module.exports = cls.Class.extend({
 		this.position = {x: 0, y: 0};
 		this.angle = 0;
 		this.animation = null;
+		this.layer = "default";
 	},
 	setId: function (id) {
 		if (id === null) {
@@ -56,7 +57,8 @@ var Entity = module.exports = cls.Class.extend({
 			kind: this.kind,
 			position: this.getPosition(),
 			angle: this.getAngle(),
-			animation: this.animation
+			animation: this.animation,
+			layer: this.layer
 		};
 	}
 });

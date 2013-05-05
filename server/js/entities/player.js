@@ -29,27 +29,20 @@ var Player = module.exports = Entity.extend({
 		});
 
 		this.callbacks = {};
-		this.callbacks[Constants.Types.Messages.Action] = function (data) {
-			self.onAction(data);
-		};
-		this.callbacks[Constants.Types.Messages.Angle] = function (data) {
-			self.onAngle(data);
-		};
-		this.callbacks[Constants.Types.Messages.Shoot] = function (data) {
-			self.shoot_callback(self, data);
-		};
-
+		this.callbacks[Constants.Types.Messages.Action] = this.onAction.bind(this);
+		this.callbacks[Constants.Types.Messages.Angle] = this.onAngle.bind(this);
+		this.callbacks[Constants.Types.Messages.Shoot] = function (data) { self.shoot_callback(data); };
 		this.bodyDef = new b2BodyDef();
 		this.bodyDef.type = b2Body.b2_dynamicBody;
 		this.bodyDef.linearDamping = 4;
 
 		this.fixtureDef = new b2FixtureDef();
-		this.fixtureDef.density = 1.5;
+		this.fixtureDef.density = 5;
 		this.fixtureDef.friction = 0.01;
 		this.fixtureDef.restitution = 1;
 
 		var circleShape = new b2CircleShape();
-		circleShape.m_radius = 0.1;
+		circleShape.m_radius = 0.05;
 		this.fixtureDef.shape = circleShape;
 	},
 	send: function (event, message) {
