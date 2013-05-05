@@ -30,28 +30,16 @@ var Engine = module.exports = cls.Class.extend({
 		this.b2w.ClearForces();
 	},
 	isVisible: function (a, b) {
-		var a_proxy = new b2DistanceProxy();
-		a_proxy.Set(a.fixture.GetShape());
-		var b_proxy = new b2DistanceProxy();
-		b_proxy.Set(b.fixture.GetShape());
-		var input = new b2DistanceInput();
-		input.proxyA = a_proxy;
-		input.transformA = b2Transform_identity;
-		input.proxyB = b_proxy;
-		input.transformB = b2Transform_identity;
-		var output = new b2DistanceOutput();
-		var simplexCache = new b2SimplexCache();
-		simplexCache.count = 0;
-		b2Distance.Distance(output, simplexCache, input);
-		if (Math.abs(output.pointB.x - output.pointA.x) < this.viewarea.width && Math.abs(output.pointB.y - output.pointA.y) < this.viewarea.height) return true;
-		return false;
+		var a = entityA.getPosition();
+		var b = entityB.getPosition();
+		return Math.abs(b.x - a.x) < this.viewarea.width && Math.abs(b.y - a.y) < this.viewarea.height;
 	},
 	preSolve: function (contact) {
 		var obj1 = contact.GetFixtureA().GetBody().GetUserData(),
 			obj2 = contact.GetFixtureB().GetBody().GetUserData(),
 			enabled1 = obj1.onCollision(obj2, contact),
 			enabled2 = obj2.onCollision(obj1, contact);
-		
+
 		contact.SetEnabled(enabled1 && enabled2);
 	},
 	addEntity: function (entity) {
