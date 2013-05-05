@@ -23,9 +23,8 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 			this.view = new View(this.renderer.width, this.renderer.height);
 			this.layers.game.addChild(this.view);
 
-			var viewlayers = new PIXI.Layers("tiles", "default");
-			this.view.addChild(viewlayers);
-			this.view.layers = viewlayers;
+			this.view.layers = new PIXI.Layers("tiles", "default", "objects");
+			this.view.addChild(this.view.layers);
 
 			this.canvas = document.createElement('canvas');
 			this.canvas.width = this.renderer.width;
@@ -70,9 +69,6 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 		addToView: function (entity) {
 			var obj = entity.getDisplayObject();
 			if (obj) {
-				if (!(this.view.layers[entity.layer])) {
-					this.view.layers.addLayer(entity.layer);
-				}
 				this.view.layers[entity.layer].addChild(obj);
 			}
 		},
