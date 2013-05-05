@@ -10,7 +10,6 @@ require('../../../client/js/constants');
 var CircleEntity = module.exports = Entity.extend({
 	init: function (id, radius) {
 		this._super(id, "CircleEntity", Constants.Types.Entities.CircleEntity);
-
 		var fixDef = new b2FixtureDef();
 		fixDef.density = 1.5;
 		fixDef.friction = 1;
@@ -32,7 +31,8 @@ var CircleEntity = module.exports = Entity.extend({
 			position: this.getPosition(),
 			radius: this.shape.GetRadius(),
 			kind: this.kind,
-			id: this.id
+			id: this.id,
+			layer: this.layer
 		};
 	}
 });

@@ -11,7 +11,7 @@ var Bullet = module.exports = Entity.extend({
 	init: function (id, player) {
 		this._super(id, "bullet " + player.id, Constants.Types.Entities.Bullet);
 		this.player = player;
-		this.ttl = Bullet.TimeToLife;		
+		this.ttl = Bullet.TimeToLife;
 
 		this.bodyDef = new b2BodyDef();
 		this.bodyDef.type = b2Body.b2_dynamicBody;
@@ -33,6 +33,7 @@ var Bullet = module.exports = Entity.extend({
 			id: this.id,
 			kind: this.kind,
 			position: this.getPosition(),
+			layer: this.layer
 		};
 	},
 	onRemove: function (callback) {

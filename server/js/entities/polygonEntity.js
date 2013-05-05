@@ -30,13 +30,14 @@ var PolygonEntity = module.exports = Entity.extend({
 		this.bodyDef.linearDamping = 4;
 
 	},
-	
+
 	getBaseState: function () {
 		return {
 			position: this.getPosition(),
 			points: this.points,
 			kind: this.kind,
-			id: this.id
+			id: this.id,
+			layer: this.layer
 		};
 	}
 });
