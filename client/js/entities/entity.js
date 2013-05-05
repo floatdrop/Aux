@@ -7,6 +7,7 @@ define(['sprites'], function (Sprites) {
 			this.id = id;
 			this.kind = kind;
 			this.animation = new PIXI.MovieClipManager();
+			this.layer = "default";
 		},
 		getDisplayObject: function () {
 			return this.animation;

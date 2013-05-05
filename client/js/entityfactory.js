@@ -24,7 +24,8 @@ define(['entities/player', 'entities/commonEntity', 'entities/circleEntity', 'en
 	EntityFactory.builders = [];
 
 	EntityFactory.builders[Constants.Types.Entities.CommonEntity] = function (entity_info) {
-		return new CommonEntity(entity_info.id, entity_info.sprite);
+		var entity = new CommonEntity(entity_info.id, entity_info.sprite);
+		return entity;
 	};
 
 	EntityFactory.builders[Constants.Types.Entities.PolygonEntity] = function (entity_info) {
@@ -38,11 +39,14 @@ define(['entities/player', 'entities/commonEntity', 'entities/circleEntity', 'en
 	EntityFactory.builders[Constants.Types.Entities.PLAYER] = function (entity_info) {
 		var entity = new Player(entity_info.id);
 		entity.animation.set("idle_right");
+		entity.layer = entity_info.layer || "default";
 		return entity;
 	};
 
 	EntityFactory.builders[Constants.Types.Entities.Bullet] = function (entity_info) {
-		return new Bullet(entity_info.id);
+		var entity = new Bullet(entity_info.id);
+		entity.layer = entity_info.layer || "default";
+		return entity;
 	};
 
 	return EntityFactory;

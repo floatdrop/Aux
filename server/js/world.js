@@ -36,14 +36,13 @@ module.exports = cls.Class.extend({
 		log.info("Send Welcome to player " + player.id);
 		player.send(Constants.Types.Messages.Welcome, player.getBaseState());
 
-		player.onShoot(function (player) {
+		player.onShoot(function () {
 			var bullet = EntityFactory.createBullet(player);
 			self.engine.addEntity(bullet);
 			bullet.onRemove(self.engine.removeEntity.bind(self.engine));
 			var angle = player.getAngle() * Math.PI / 180,
 				x = Math.cos(angle) * Bullet.SpeedRatio,
 				y = -Math.sin(angle) * Bullet.SpeedRatio;
-
 			bullet.body.ApplyImpulse(new b2Vec2(x, y), new b2Vec2(0, 0));
 		});
 
