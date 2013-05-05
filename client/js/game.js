@@ -58,13 +58,15 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 			});
 		},
 		removeFromView: function (entity) {
-			if (entity.isDisplayed()) {
-				this.view.removeChild(entity.getDisplayObject());
+			var obj = entity.getDisplayObject();
+			if (obj) {
+				this.view.removeChild(obj);
 			}
 		},
 		addToView: function (entity) {
-			if (entity.isDisplayed()) {
-				this.view.addChild(entity.getDisplayObject());
+			var obj = entity.getDisplayObject();
+			if (obj) {
+				this.view.addChild(obj);
 			}
 		},
 		connect: function () {
