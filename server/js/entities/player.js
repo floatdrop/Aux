@@ -52,27 +52,18 @@ var Player = module.exports = Entity.extend({
 			d: message
 		});
 	},
-	sendRemoveList: function (nonVisibleEntities, visibleEntities) {
-		var nonVisible_ids = _.pluck(nonVisibleEntities, 'id');
-		var visible_ids = _.pluck(visibleEntities, 'id');
-		var remove_ids = _.union(nonVisible_ids, _.difference(this.entities_ids, visible_ids));
-		if (_.isEmpty(remove_ids)) return;
-		this.entities_ids = _.without(this.entities_ids, remove_ids);
-		if (this.debug) {
-			remove_ids = _.union(remove_ids, _.map(remove_ids, function (id) {
-				return "debug-" + id;
-			}));
-		}
-		this.send(Constants.Types.Messages.RemoveList, remove_ids);
-	},
 	sendEntities: function (entities) {
 		var ids = _.pluck(entities, 'id');
-		this.entities_ids = _.union(this.entities_ids, ids);
-		if (this.debug) {
-			entities = _.union(entities, _.map(entities, function (entity) {
+		var remove_ids = _.without.apply(_, [this.entities_ids].concat(ids));
+		this.entities_ids = ids;
+		if (!this.debug) {
+			entities = _.union(entities, _.map(_.filter(entities, function (entity) {
+				return entity.debuggable === true;
+			}), function (entity) {
 				return EntityFactory.getShapeByEntity(entity);
 			}));
 		}
+		this.send(Constants.Types.Messages.RemoveList, remove_ids);
 		this.send(Constants.Types.Messages.EntityList, _.map(entities, function (entity) {
 			return entity.getBaseState();
 		}));

@@ -29,7 +29,7 @@ var Engine = module.exports = cls.Class.extend({
 		this.b2w.Step(1 / fps, 10, 10);
 		this.b2w.ClearForces();
 	},
-	isVisible: function (a, b) {
+	isVisible: function (entityA, entityB) {
 		var a = entityA.getPosition();
 		var b = entityB.getPosition();
 		return Math.abs(b.x - a.x) < this.viewarea.width && Math.abs(b.y - a.y) < this.viewarea.height;

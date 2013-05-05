@@ -57,26 +57,14 @@ module.exports = cls.Class.extend({
 			entity.update();
 		});
 	},
-	processEntities: function (player, entities) {
-		var self = this;
-		var result = {
-			visible: [],
-			nonvisible: []
-		};
-		_.each(entities, function (entity) {
-			result[self.engine.isVisible(player, entity) ? "visible" : "nonvisible"].push(entity);
-		});
-		return result;
-	},
 	updatePlayers: function () {
 		var self = this;
 		var players = self.engine.getEntities(function (entity) {
 			return entity instanceof Player;
 		});
 		_.each(players, function (player) {
-			var entities = self.processEntities(player, self.engine.getEntities());
-			player.sendEntities(entities.visible);
-			player.sendRemoveList(entities.nonvisible, entities.visible);
+			var entities = self.engine.getEntities(function (entity) { return self.engine.isVisible(player, entity); });
+			player.sendEntities(entities);
 		});
 	},
 	run: function () {
