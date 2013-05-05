@@ -1,6 +1,6 @@
 /* global _ */
 
-define(['entities/player', 'entities/commonEntity', 'entities/circleEntity', 'entities/polygonEntity', 'entities/bullet'], 
+define(['entities/player', 'entities/commonEntity', 'entities/circleEntity', 'entities/polygonEntity', 'entities/bullet'],
 	function (Player, CommonEntity, CircleEntity, PolygonEntity, Bullet) {
 	var EntityFactory = {
 		entities: {}
@@ -24,9 +24,7 @@ define(['entities/player', 'entities/commonEntity', 'entities/circleEntity', 'en
 	EntityFactory.builders = [];
 
 	EntityFactory.builders[Constants.Types.Entities.CommonEntity] = function (entity_info) {
-		var entity = new CommonEntity(entity_info.id, entity_info.sprite);
-		entity.setAnimation(entity_info.sprite, "default");
-		return entity;
+		return new CommonEntity(entity_info.id, entity_info.sprite);
 	};
 
 	EntityFactory.builders[Constants.Types.Entities.PolygonEntity] = function (entity_info) {
@@ -39,14 +37,12 @@ define(['entities/player', 'entities/commonEntity', 'entities/circleEntity', 'en
 
 	EntityFactory.builders[Constants.Types.Entities.PLAYER] = function (entity_info) {
 		var entity = new Player(entity_info.id);
-		entity.setAnimation("player", "idle_right");
+		entity.animation.set("idle_right");
 		return entity;
 	};
 
 	EntityFactory.builders[Constants.Types.Entities.Bullet] = function (entity_info) {
-		var entity = new Bullet(entity_info.id);
-		entity.setAnimation("bullet", "default");
-		return entity;
+		return new Bullet(entity_info.id);
 	};
 
 	return EntityFactory;
