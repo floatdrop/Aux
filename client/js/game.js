@@ -23,6 +23,10 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 			this.view = new View(this.renderer.width, this.renderer.height);
 			this.layers.game.addChild(this.view);
 
+			var viewlayers = new PIXI.Layers("tiles","default");
+			this.view.addChild(viewlayers);
+			this.view.layers = viewlayers;
+
 			this.canvas = document.createElement('canvas');
 			this.canvas.width = this.renderer.width;
 			this.canvas.height = this.renderer.height;
@@ -59,14 +63,17 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 		},
 		removeFromView: function (entity) {
 			var obj = entity.getDisplayObject();
-			if (obj) {
-				this.view.removeChild(obj);
+			if (obj && this.view.layers[entity.layer]) {
+				this.view.layers[entity.layer].removeChild(obj);
 			}
 		},
 		addToView: function (entity) {
 			var obj = entity.getDisplayObject();
 			if (obj) {
-				this.view.addChild(obj);
+				if (!(this.view.layers[entity.layer])) {
+					this.view.layers.addLayer(entity.layer);
+				}
+				this.view.layers[entity.layer].addChild(obj);
 			}
 		},
 		connect: function () {
@@ -75,7 +82,7 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 			this.map.onMapLoaded(function () {
 				self.view.setLimits(self.map.pixelwidth, self.map.pixelheight);
 				_.each(self.map.getDisplayObjects(), function (displayObject) {
-					self.view.addChild(displayObject);
+					self.view.layers.tiles.addChild(displayObject);
 				});
 			});
 

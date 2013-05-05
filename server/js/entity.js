@@ -12,7 +12,7 @@ var Entity = module.exports = cls.Class.extend({
 		this.position = {x: 0, y: 0};
 		this.angle = 0;
 		this.animation = null;
-		this.layer = "default";
+		this.layer = undefined;
 	},
 	setId: function (id) {
 		if (id === null) {

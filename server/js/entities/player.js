@@ -23,6 +23,7 @@ var Player = module.exports = Entity.extend({
 		this.animationType = "idle";
 		this.setAnimation();
 		this.entities_ids = [];
+		this.layer = "objects";
 
 		this.connection.listen(function (message) {
 			self.callbacks[message.t](message.d);
