@@ -23,7 +23,7 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 			this.view = new View(this.renderer.width, this.renderer.height);
 			this.layers.game.addChild(this.view);
 
-			var viewlayers = new PIXI.Layers("tiles","default");
+			var viewlayers = new PIXI.Layers("tiles", "default");
 			this.view.addChild(viewlayers);
 			this.view.layers = viewlayers;
 
