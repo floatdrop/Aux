@@ -1,58 +1,43 @@
+/* global _ */
+
 define(['sprites'], function (Sprites) {
 
 	var Entity = Class.extend({
 		init: function (id, kind) {
 			this.id = id;
 			this.kind = kind;
-			this.movieclip = {
-				position: new PIXI.Point()
-			};
-			this._container = new PIXI.DisplayObjectContainer();
+			this.animation = new PIXI.MovieClipManager();
 		},
 		getDisplayObject: function () {
-			return this._container;
+			return this.animation;
 		},
 		getPosition: function () {
-			return this.movieclip.position;
+			return this.animation.position;
 		},
 		setPosition: function (x, y) {
-			this.movieclip.position.x = x | 0;
-			this.movieclip.position.y = y | 0;
+			this.animation.position.x = x | 0;
+			this.animation.position.y = y | 0;
 		},
 		getAngle: function () {
-			return this.movieclip.rotation;
+			return this.animation.rotation;
 		},
 		setAngle: function () {
 			// this.movieclip.rotation = a;
 		},
-		setAnimation: function (sprite, animation) {
-			if (sprite === undefined || animation === undefined || animation === this.animation) return;
-
+		loadAnimations: function (sprite) {
+			var self = this;
 			var def = Sprites.definitions[sprite];
-			var adef = def.animations[animation];
-			var movieclip = adef.speed === 0 ? new PIXI.Sprite(adef.textures[0]) : new PIXI.MovieClip(adef.textures);
-
-			if (this.isAnimated()) this._container.removeChild(this.movieclip);
-			this.movieclip = movieclip;
-			this._container.addChild(this.movieclip);
-
-			this._container.position = def.offset;
-			this.movieclip.animationSpeed = adef.speed;
-			this.movieclip.scale = adef.scale;
-			this.movieclip.anchor = def.anchor;
-			if (adef.speed !== 0)
-				this.movieclip.play();
-			this.animation = animation;
-
-		},
-		isDisplayed: function () {
-			return this.movieclip instanceof PIXI.DisplayObject;
-		},
-		isAnimated: function () {
-			return this.movieclip instanceof PIXI.MovieClip;
+			_.each(def.animations, function (adef, name) {
+				var movieclip = new PIXI.MovieClip(adef.textures);
+				movieclip.position = def.offset;
+				movieclip.animationSpeed = adef.speed;
+				movieclip.scale = adef.scale;
+				movieclip.anchor = def.anchor;
+				self.animation.add(name, movieclip).play();
+			});
 		},
 		update: function (entity_info) {
-			this.setAnimation(entity_info.sprite || this.kind, entity_info.animation);
+			this.animation.set(entity_info.animation || "default").play();
 			this.setPosition(entity_info.position.x, entity_info.position.y);
 			this.setAngle(entity_info.angle);
 		}
