@@ -42,29 +42,35 @@ var Engine = module.exports = cls.Class.extend({
 
 		contact.SetEnabled(enabled1 && enabled2);
 	},
+	_setPosition: function (x, y) {
+		this.body.SetPosition(new b2Vec2(x / Scale, y / Scale));
+	},
+	_getPosition: function () {
+		var b2dPosition = this.body.GetPosition();
+		return {
+			x: b2dPosition.x * Scale,
+			y: b2dPosition.y * Scale
+		};
+	},
+	_setAngle: function (a) {
+		this.body.SetAngle(a);
+	},
+	_getAngle: function () {
+		return this.body.GetAngle();
+	},
 	addEntity: function (entity) {
+		var p = entity.getPosition();
+		entity.bodyDef.position = { x: p.x / Scale, y: p.y / Scale };
+		entity.angle = entity.getAngle();
 		entity.body = this.b2w.CreateBody(entity.bodyDef);
 		entity.body.m_userData = entity;
-		entity.fixture = entity.body.CreateFixture(entity.fixtureDef);
-		entity.setPosition = function (x, y) {
-			this.body.SetPosition(new b2Vec2(x / Scale, y / Scale));
-		};
-		var position = entity.getPosition();
-		entity.setPosition(position.x, position.y);
-		entity.getPosition = function () {
-			var b2dPosition = this.body.GetPosition();
-			return {
-				x: b2dPosition.x * Scale,
-				y: b2dPosition.y * Scale
-			};
-		};
-		entity.setAngle = function (a) {
-			this.body.SetAngle(a);
-		};
-		entity.setAngle(entity.getAngle());
-		entity.getAngle = function () {
-			return this.body.GetAngle();
-		};
+		if (entity.fixtureDef) {
+			entity.fixture = entity.body.CreateFixture(entity.fixtureDef);
+		}
+		entity.setPosition = this._setPosition;
+		entity.getPosition = this._getPosition;
+		entity.setAngle = this._setAngle;
+		entity.getAngle = this._getAngle;
 	},
 	addEntities: function (entities_list) {
 		var self = this;
