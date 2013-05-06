@@ -5,12 +5,6 @@ var Box2D = require('./lib/box2d'),
 var b2Vec2 = Box2D.Common.Math.b2Vec2,
 	b2World = Box2D.Dynamics.b2World,
 	b2Body = Box2D.Dynamics.b2Body,
-	b2SimplexCache = Box2D.Collision.b2SimplexCache,
-	b2Distance = Box2D.Collision.b2Distance,
-	b2Transform_identity = Box2D.Common.Math.b2Math.b2Transform_identity,
-	b2DistanceInput = Box2D.Collision.b2DistanceInput,
-	b2DistanceOutput = Box2D.Collision.b2DistanceOutput,
-	b2DistanceProxy = Box2D.Collision.b2DistanceProxy,
 	b2listener = Box2D.Dynamics.b2ContactListener;
 
 var Scale = 100;
