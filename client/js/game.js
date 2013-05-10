@@ -11,8 +11,8 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 
 			/* BIND MOUSE */
 			this.mouse = new LINK.Mouse();
-			this.mouse.ondown = this.shoot.bind(this);
-			this.mouse.onmove = this.moveCursor.bind(this);
+			this.mouse.ondown(this.shoot.bind(this));
+			this.mouse.onmove(this.moveCursor.bind(this));
 
 			/* BIND KEYBOARD */
 			this.keyboard = new LINK.Keyboard();
