@@ -2,11 +2,13 @@
 
 define(function () {
 	var Client = Class.extend({
-		useBison: true,
 		callbacks: {},
 		init: function (host, port) {
 			this.host = host;
 			this.port = port;
+
+			this.network = new LINK.Network({binary: true});
+
 		},
 		connect: function () {
 			var self = this;
@@ -17,38 +19,19 @@ define(function () {
 					self.callbacks[code] = self[callback].bind(self);
 			});
 
-			this.socket = new WebSocket("ws://" + this.host);
-			this.socket.onmessage = function (event) {
+			this.network.onmessage = function (event) {
 				self.decodeMessage(event, function (message) {
 					self.callbacks[message.t](message.d);
 				});
 			};
-			this.socket.onerror = function (error) {
+			this.network.onerror = function (error) {
 				console.log(error);
 			};
-			this.socket.onclose = function (error) {
+			this.network.onclose = function (error) {
 				console.log("Connection closed: " + error);
 			};
-		},
-		decodeMessage: function (event, callback) {
-			if (typeof event.data === "string") {
-				callback(JSON.parse(event.data));
-			} else {
-				var reader = new FileReader();
-				reader.readAsArrayBuffer(event.data);
-				reader.onloadend = function () {
-					var message = msgpack.decode(this.result);
-					callback(message);
-				};
-			}
-		},
-		send: function (message) {
-			if (this.useBison) {
-				var encoded = msgpack.encode(message);
-				this.socket.send(encoded);
-			} else {
-				this.socket.send(JSON.stringify(message));
-			}
+
+			this.network.connect(this.host, this.port);
 		},
 		onRemoveList: function (callback) {
 			this.removelist_callback = callback;
@@ -63,19 +46,19 @@ define(function () {
 			this.map_callback = callback;
 		},
 		sendAction: function (action) {
-			this.send({
+			this.network.send({
 				t: Constants.Types.Messages.Action,
 				d: action
 			});
 		},
 		sendAngle: function (angle) {
-			this.send({
+			this.network.send({
 				t: Constants.Types.Messages.Angle,
 				d: angle
 			});
 		},
 		sendShoot: function () {
-			this.send({
+			this.network.send({
 				t: Constants.Types.Messages.Shoot,
 				d: null
 			});

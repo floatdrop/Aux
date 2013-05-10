@@ -1,10 +1,475 @@
 /**
  * @license
+ * Link.JS Game Engine - v0.0.1
+ * Copyright (c) 2013, Vsevolod Strukchinsky
+ * hhttps://github.com/floatdrop/link.js
+ *
+ * Compiled: 2013-05-10
+ *
+ * Link.JS Game Engine is licensed under the MIT License.
+ * http://www.opensource.org/licenses/mit-license.php
+ */
+/*!{id:msgpack.codec.js,ver:1.05,license:"MIT",author:"uupaa.js@gmail.com"}*/
+
+// === msgpack ===
+// MessagePack -> http://msgpack.sourceforge.net/
+
+this.msgpack || (function(globalScope) {
+
+globalScope.msgpack = {
+    pack:       msgpackpack,    // msgpack.pack(data:Mix,
+                                //              toString:Boolean = false):ByteArray/ByteString/false
+                                //  [1][mix to String]    msgpack.pack({}, true) -> "..."
+                                //  [2][mix to ByteArray] msgpack.pack({})       -> [...]
+    unpack:     msgpackunpack   // msgpack.unpack(data:BinaryString/ByteArray):Mix
+                                //  [1][String to mix]    msgpack.unpack("...") -> {}
+                                //  [2][ByteArray to mix] msgpack.unpack([...]) -> {}
+};
+
+var _bin2num    = {}, // BinaryStringToNumber   { "\00": 0, ... "\ff": 255 }
+    _num2bin    = {}, // NumberToBinaryString   { 0: "\00", ... 255: "\ff" }
+    _buf        = [], // decode buffer
+    _idx        = 0,  // decode buffer[index]
+    _error      = 0,  // msgpack.pack() error code. 1 = CYCLIC_REFERENCE_ERROR
+    _isArray    = Array.isArray || (function(mix) {
+                    return Object.prototype.toString.call(mix) === "[object Array]";
+                  }),
+    _toString   = String.fromCharCode, // CharCode/ByteArray to String
+    _MAX_DEPTH  = 512;
+
+// msgpack.pack
+function msgpackpack(data,       // @param Mix:
+                     toString) { // @param Boolean(= false):
+                                 // @return ByteArray/BinaryString/false:
+                                 //     false is error return
+    //  [1][mix to String]    msgpack.pack({}, true) -> "..."
+    //  [2][mix to ByteArray] msgpack.pack({})       -> [...]
+
+    _error = 0;
+
+    var byteArray = encode([], data, 0);
+
+    return _error ? false
+                  : toString ? byteArrayToByteString(byteArray)
+                             : byteArray;
+}
+
+// msgpack.unpack
+function msgpackunpack(data) { // @param BinaryString/ByteArray:
+                               // @return Mix/undefined:
+                               //       undefined is error return
+    //  [1][String to mix]    msgpack.unpack("...") -> {}
+    //  [2][ByteArray to mix] msgpack.unpack([...]) -> {}
+
+    _buf = typeof data === "string" ? toByteArray(data) : data;
+    _idx = -1;
+    return decode(); // mix or undefined
+}
+
+// inner - encoder
+function encode(rv,      // @param ByteArray: result
+                mix,     // @param Mix: source data
+                depth) { // @param Number: depth
+    var size, i, iz, c, pos,        // for UTF8.encode, Array.encode, Hash.encode
+        high, low, sign, exp, frac; // for IEEE754
+
+    if (mix == null) { // null or undefined -> 0xc0 ( null )
+        rv.push(0xc0);
+    } else if (mix === false) { // false -> 0xc2 ( false )
+        rv.push(0xc2);
+    } else if (mix === true) {  // true  -> 0xc3 ( true  )
+        rv.push(0xc3);
+    } else {
+        switch (typeof mix) {
+        case "number":
+            if (mix !== mix) { // isNaN
+                rv.push(0xcb, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff); // quiet NaN
+            } else if (mix === Infinity) {
+                rv.push(0xcb, 0x7f, 0xf0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00); // positive infinity
+            } else if (Math.floor(mix) === mix) { // int or uint
+                if (mix < 0) {
+                    // int
+                    if (mix >= -32) { // negative fixnum
+                        rv.push(0xe0 + mix + 32);
+                    } else if (mix > -0x80) {
+                        rv.push(0xd0, mix + 0x100);
+                    } else if (mix > -0x8000) {
+                        mix += 0x10000;
+                        rv.push(0xd1, mix >> 8, mix & 0xff);
+                    } else if (mix > -0x80000000) {
+                        mix += 0x100000000;
+                        rv.push(0xd2, mix >>> 24, (mix >> 16) & 0xff,
+                                                  (mix >>  8) & 0xff, mix & 0xff);
+                    } else {
+                        high = Math.floor(mix / 0x100000000);
+                        low  = mix & 0xffffffff;
+                        rv.push(0xd3, (high >> 24) & 0xff, (high >> 16) & 0xff,
+                                      (high >>  8) & 0xff,         high & 0xff,
+                                      (low  >> 24) & 0xff, (low  >> 16) & 0xff,
+                                      (low  >>  8) & 0xff,          low & 0xff);
+                    }
+                } else {
+                    // uint
+                    if (mix < 0x80) {
+                        rv.push(mix); // positive fixnum
+                    } else if (mix < 0x100) { // uint 8
+                        rv.push(0xcc, mix);
+                    } else if (mix < 0x10000) { // uint 16
+                        rv.push(0xcd, mix >> 8, mix & 0xff);
+                    } else if (mix < 0x100000000) { // uint 32
+                        rv.push(0xce, mix >>> 24, (mix >> 16) & 0xff,
+                                                  (mix >>  8) & 0xff, mix & 0xff);
+                    } else {
+                        high = Math.floor(mix / 0x100000000);
+                        low  = mix & 0xffffffff;
+                        rv.push(0xcf, (high >> 24) & 0xff, (high >> 16) & 0xff,
+                                      (high >>  8) & 0xff,         high & 0xff,
+                                      (low  >> 24) & 0xff, (low  >> 16) & 0xff,
+                                      (low  >>  8) & 0xff,          low & 0xff);
+                    }
+                }
+            } else { // double
+                // THX!! @edvakf
+                // http://javascript.g.hatena.ne.jp/edvakf/20101128/1291000731
+                sign = mix < 0;
+                sign && (mix *= -1);
+
+                // add offset 1023 to ensure positive
+                // 0.6931471805599453 = Math.LN2;
+                exp  = ((Math.log(mix) / 0.6931471805599453) + 1023) | 0;
+
+                // shift 52 - (exp - 1023) bits to make integer part exactly 53 bits,
+                // then throw away trash less than decimal point
+                frac = mix * Math.pow(2, 52 + 1023 - exp);
+
+                //  S+-Exp(11)--++-----------------Fraction(52bits)-----------------------+
+                //  ||          ||                                                        |
+                //  v+----------++--------------------------------------------------------+
+                //  00000000|00000000|00000000|00000000|00000000|00000000|00000000|00000000
+                //  6      5    55  4        4        3        2        1        8        0
+                //  3      6    21  8        0        2        4        6
+                //
+                //  +----------high(32bits)-----------+ +----------low(32bits)------------+
+                //  |                                 | |                                 |
+                //  +---------------------------------+ +---------------------------------+
+                //  3      2    21  1        8        0
+                //  1      4    09  6
+                low  = frac & 0xffffffff;
+                sign && (exp |= 0x800);
+                high = ((frac / 0x100000000) & 0xfffff) | (exp << 20);
+
+                rv.push(0xcb, (high >> 24) & 0xff, (high >> 16) & 0xff,
+                              (high >>  8) & 0xff,  high        & 0xff,
+                              (low  >> 24) & 0xff, (low  >> 16) & 0xff,
+                              (low  >>  8) & 0xff,  low         & 0xff);
+            }
+            break;
+        case "string":
+            // http://d.hatena.ne.jp/uupaa/20101128
+            iz = mix.length;
+            pos = rv.length; // keep rewrite position
+
+            rv.push(0); // placeholder
+
+            // utf8.encode
+            for (i = 0; i < iz; ++i) {
+                c = mix.charCodeAt(i);
+                if (c < 0x80) { // ASCII(0x00 ~ 0x7f)
+                    rv.push(c & 0x7f);
+                } else if (c < 0x0800) {
+                    rv.push(((c >>>  6) & 0x1f) | 0xc0, (c & 0x3f) | 0x80);
+                } else if (c < 0x10000) {
+                    rv.push(((c >>> 12) & 0x0f) | 0xe0,
+                            ((c >>>  6) & 0x3f) | 0x80, (c & 0x3f) | 0x80);
+                }
+            }
+            size = rv.length - pos - 1;
+
+            if (size < 32) {
+                rv[pos] = 0xa0 + size; // rewrite
+            } else if (size < 0x10000) { // 16
+                rv.splice(pos, 1, 0xda, size >> 8, size & 0xff);
+            } else if (size < 0x100000000) { // 32
+                rv.splice(pos, 1, 0xdb,
+                          size >>> 24, (size >> 16) & 0xff,
+                                       (size >>  8) & 0xff, size & 0xff);
+            }
+            break;
+        default: // array or hash
+            if (++depth >= _MAX_DEPTH) {
+                _error = 1; // CYCLIC_REFERENCE_ERROR
+                return rv = []; // clear
+            }
+            if (_isArray(mix)) {
+                size = mix.length;
+                if (size < 16) {
+                    rv.push(0x90 + size);
+                } else if (size < 0x10000) { // 16
+                    rv.push(0xdc, size >> 8, size & 0xff);
+                } else if (size < 0x100000000) { // 32
+                    rv.push(0xdd, size >>> 24, (size >> 16) & 0xff,
+                                               (size >>  8) & 0xff, size & 0xff);
+                }
+                for (i = 0; i < size; ++i) {
+                    encode(rv, mix[i], depth);
+                }
+            } else { // hash
+                // http://d.hatena.ne.jp/uupaa/20101129
+                pos = rv.length; // keep rewrite position
+                rv.push(0); // placeholder
+                size = 0;
+                for (i in mix) {
+                    ++size;
+                    encode(rv, i,      depth);
+                    encode(rv, mix[i], depth);
+                }
+                if (size < 16) {
+                    rv[pos] = 0x80 + size; // rewrite
+                } else if (size < 0x10000) { // 16
+                    rv.splice(pos, 1, 0xde, size >> 8, size & 0xff);
+                } else if (size < 0x100000000) { // 32
+                    rv.splice(pos, 1, 0xdf,
+                              size >>> 24, (size >> 16) & 0xff,
+                                           (size >>  8) & 0xff, size & 0xff);
+                }
+            }
+        }
+    }
+    return rv;
+}
+
+// inner - decoder
+function decode() { // @return Mix:
+    var size, i, iz, c, num = 0,
+        sign, exp, frac, ary, hash,
+        buf = _buf, type = buf[++_idx];
+
+    if (type >= 0xe0) {             // Negative FixNum (111x xxxx) (-32 ~ -1)
+        return type - 0x100;
+    }
+    if (type < 0xc0) {
+        if (type < 0x80) {          // Positive FixNum (0xxx xxxx) (0 ~ 127)
+            return type;
+        }
+        if (type < 0x90) {          // FixMap (1000 xxxx)
+            num  = type - 0x80;
+            type = 0x80;
+        } else if (type < 0xa0) {   // FixArray (1001 xxxx)
+            num  = type - 0x90;
+            type = 0x90;
+        } else { // if (type < 0xc0) {   // FixRaw (101x xxxx)
+            num  = type - 0xa0;
+            type = 0xa0;
+        }
+    }
+    switch (type) {
+    case 0xc0:  return null;
+    case 0xc2:  return false;
+    case 0xc3:  return true;
+    case 0xca:  // float
+                num = buf[++_idx] * 0x1000000 + (buf[++_idx] << 16) +
+                                                (buf[++_idx] <<  8) + buf[++_idx];
+                sign =  num & 0x80000000;    //  1bit
+                exp  = (num >> 23) & 0xff;   //  8bits
+                frac =  num & 0x7fffff;      // 23bits
+                if (!num || num === 0x80000000) { // 0.0 or -0.0
+                    return 0;
+                }
+                if (exp === 0xff) { // NaN or Infinity
+                    return frac ? NaN : Infinity;
+                }
+                return (sign ? -1 : 1) *
+                            (frac | 0x800000) * Math.pow(2, exp - 127 - 23); // 127: bias
+    case 0xcb:  // double
+                num = buf[++_idx] * 0x1000000 + (buf[++_idx] << 16) +
+                                                (buf[++_idx] <<  8) + buf[++_idx];
+                sign =  num & 0x80000000;    //  1bit
+                exp  = (num >> 20) & 0x7ff;  // 11bits
+                frac =  num & 0xfffff;       // 52bits - 32bits (high word)
+                if (!num || num === 0x80000000) { // 0.0 or -0.0
+                    _idx += 4;
+                    return 0;
+                }
+                if (exp === 0x7ff) { // NaN or Infinity
+                    _idx += 4;
+                    return frac ? NaN : Infinity;
+                }
+                num = buf[++_idx] * 0x1000000 + (buf[++_idx] << 16) +
+                                                (buf[++_idx] <<  8) + buf[++_idx];
+                return (sign ? -1 : 1) *
+                            ((frac | 0x100000) * Math.pow(2, exp - 1023 - 20) // 1023: bias
+                             + num * Math.pow(2, exp - 1023 - 52));
+    // 0xcf: uint64, 0xce: uint32, 0xcd: uint16
+    case 0xcf:  num =  buf[++_idx] * 0x1000000 + (buf[++_idx] << 16) +
+                                                 (buf[++_idx] <<  8) + buf[++_idx];
+                return num * 0x100000000 +
+                       buf[++_idx] * 0x1000000 + (buf[++_idx] << 16) +
+                                                 (buf[++_idx] <<  8) + buf[++_idx];
+    case 0xce:  num += buf[++_idx] * 0x1000000 + (buf[++_idx] << 16);
+    case 0xcd:  num += buf[++_idx] << 8;
+    case 0xcc:  return num + buf[++_idx];
+    // 0xd3: int64, 0xd2: int32, 0xd1: int16, 0xd0: int8
+    case 0xd3:  num = buf[++_idx];
+                if (num & 0x80) { // sign -> avoid overflow
+                    return ((num         ^ 0xff) * 0x100000000000000 +
+                            (buf[++_idx] ^ 0xff) *   0x1000000000000 +
+                            (buf[++_idx] ^ 0xff) *     0x10000000000 +
+                            (buf[++_idx] ^ 0xff) *       0x100000000 +
+                            (buf[++_idx] ^ 0xff) *         0x1000000 +
+                            (buf[++_idx] ^ 0xff) *           0x10000 +
+                            (buf[++_idx] ^ 0xff) *             0x100 +
+                            (buf[++_idx] ^ 0xff) + 1) * -1;
+                }
+                return num         * 0x100000000000000 +
+                       buf[++_idx] *   0x1000000000000 +
+                       buf[++_idx] *     0x10000000000 +
+                       buf[++_idx] *       0x100000000 +
+                       buf[++_idx] *         0x1000000 +
+                       buf[++_idx] *           0x10000 +
+                       buf[++_idx] *             0x100 +
+                       buf[++_idx];
+    case 0xd2:  num  =  buf[++_idx] * 0x1000000 + (buf[++_idx] << 16) +
+                       (buf[++_idx] << 8) + buf[++_idx];
+                return num < 0x80000000 ? num : num - 0x100000000; // 0x80000000 * 2
+    case 0xd1:  num  = (buf[++_idx] << 8) + buf[++_idx];
+                return num < 0x8000 ? num : num - 0x10000; // 0x8000 * 2
+    case 0xd0:  num  =  buf[++_idx];
+                return num < 0x80 ? num : num - 0x100; // 0x80 * 2
+    // 0xdb: raw32, 0xda: raw16, 0xa0: raw ( string )
+    case 0xdb:  num +=  buf[++_idx] * 0x1000000 + (buf[++_idx] << 16);
+    case 0xda:  num += (buf[++_idx] << 8)       +  buf[++_idx];
+    case 0xa0:  // utf8.decode
+                for (ary = [], i = _idx, iz = i + num; i < iz; ) {
+                    c = buf[++i]; // lead byte
+                    ary.push(c < 0x80 ? c : // ASCII(0x00 ~ 0x7f)
+                             c < 0xe0 ? ((c & 0x1f) <<  6 | (buf[++i] & 0x3f)) :
+                                        ((c & 0x0f) << 12 | (buf[++i] & 0x3f) << 6
+                                                          | (buf[++i] & 0x3f)));
+                }
+                _idx = i;
+                return ary.length < 10240 ? _toString.apply(null, ary)
+                                          : byteArrayToByteString(ary);
+    // 0xdf: map32, 0xde: map16, 0x80: map
+    case 0xdf:  num +=  buf[++_idx] * 0x1000000 + (buf[++_idx] << 16);
+    case 0xde:  num += (buf[++_idx] << 8)       +  buf[++_idx];
+    case 0x80:  hash = {};
+                while (num--) {
+                    // make key/value pair
+                    size = buf[++_idx] - 0xa0;
+
+                    for (ary = [], i = _idx, iz = i + size; i < iz; ) {
+                        c = buf[++i]; // lead byte
+                        ary.push(c < 0x80 ? c : // ASCII(0x00 ~ 0x7f)
+                                 c < 0xe0 ? ((c & 0x1f) <<  6 | (buf[++i] & 0x3f)) :
+                                            ((c & 0x0f) << 12 | (buf[++i] & 0x3f) << 6
+                                                              | (buf[++i] & 0x3f)));
+                    }
+                    _idx = i;
+                    hash[_toString.apply(null, ary)] = decode();
+                }
+                return hash;
+    // 0xdd: array32, 0xdc: array16, 0x90: array
+    case 0xdd:  num +=  buf[++_idx] * 0x1000000 + (buf[++_idx] << 16);
+    case 0xdc:  num += (buf[++_idx] << 8)       +  buf[++_idx];
+    case 0x90:  ary = [];
+                while (num--) {
+                    ary.push(decode());
+                }
+                return ary;
+    }
+    return;
+}
+
+// inner - byteArray To ByteString
+function byteArrayToByteString(byteArray) { // @param ByteArray
+                                            // @return String
+    // http://d.hatena.ne.jp/uupaa/20101128
+    try {
+        return _toString.apply(this, byteArray); // toString
+    } catch(err) {
+        ; // avoid "Maximum call stack size exceeded"
+    }
+    var rv = [], i = 0, iz = byteArray.length, num2bin = _num2bin;
+
+    for (; i < iz; ++i) {
+        rv[i] = num2bin[byteArray[i]];
+    }
+    return rv.join("");
+}
+
+// inner - BinaryString To ByteArray
+function toByteArray(data) { // @param BinaryString: "\00\01"
+                             // @return ByteArray: [0x00, 0x01]
+    var rv = [], bin2num = _bin2num, remain,
+        ary = data.split(""),
+        i = -1, iz;
+
+    iz = ary.length;
+    remain = iz % 8;
+
+    while (remain--) {
+        ++i;
+        rv[i] = bin2num[ary[i]];
+    }
+    remain = iz >> 3;
+    while (remain--) {
+        rv.push(bin2num[ary[++i]], bin2num[ary[++i]],
+                bin2num[ary[++i]], bin2num[ary[++i]],
+                bin2num[ary[++i]], bin2num[ary[++i]],
+                bin2num[ary[++i]], bin2num[ary[++i]]);
+    }
+    return rv;
+}
+
+// --- init ---
+(function() {
+    var i = 0, v;
+
+    for (; i < 0x100; ++i) {
+        v = _toString(i);
+        _bin2num[v] = i; // "\00" -> 0x00
+        _num2bin[i] = v; //     0 -> "\00"
+    }
+    // http://twitter.com/edvakf/statuses/15576483807
+    for (i = 0x80; i < 0x100; ++i) { // [Webkit][Gecko]
+        _bin2num[_toString(0xf700 + i)] = i; // "\f780" -> 0x80
+    }
+})();
+
+})(this);
+(function(o){"function"==typeof define?define(o):"function"==typeof YUI?YUI.add("es5",o):o()})(function(){function o(){}function v(a){a=+a;a!==a?a=0:0!==a&&(a!==1/0&&a!==-(1/0))&&(a=(0<a||-1)*Math.floor(Math.abs(a)));return a}function s(a){var b=typeof a;return null===a||"undefined"===b||"boolean"===b||"number"===b||"string"===b}Function.prototype.bind||(Function.prototype.bind=function(a){var b=this;if("function"!=typeof b)throw new TypeError("Function.prototype.bind called on incompatible "+b);
+var d=q.call(arguments,1),c=function(){if(this instanceof c){var e=b.apply(this,d.concat(q.call(arguments)));return Object(e)===e?e:this}return b.apply(a,d.concat(q.call(arguments)))};b.prototype&&(o.prototype=b.prototype,c.prototype=new o,o.prototype=null);return c});var k=Function.prototype.call,p=Object.prototype,q=Array.prototype.slice,h=k.bind(p.toString),t=k.bind(p.hasOwnProperty);t(p,"__defineGetter__")&&(k.bind(p.__defineGetter__),k.bind(p.__defineSetter__),k.bind(p.__lookupGetter__),k.bind(p.__lookupSetter__));
+if(2!=[1,2].splice(0).length){var y=Array.prototype.splice;Array.prototype.splice=function(a,b){return arguments.length?y.apply(this,[a===void 0?0:a,b===void 0?this.length-a:b].concat(q.call(arguments,2))):[]}}if(1!=[].unshift(0)){var z=Array.prototype.unshift;Array.prototype.unshift=function(){z.apply(this,arguments);return this.length}}Array.isArray||(Array.isArray=function(a){return h(a)=="[object Array]"});var k=Object("a"),l="a"!=k[0]||!(0 in k);Array.prototype.forEach||(Array.prototype.forEach=
+function(a,b){var d=n(this),c=l&&h(this)=="[object String]"?this.split(""):d,e=-1,f=c.length>>>0;if(h(a)!="[object Function]")throw new TypeError;for(;++e<f;)e in c&&a.call(b,c[e],e,d)});Array.prototype.map||(Array.prototype.map=function(a,b){var d=n(this),c=l&&h(this)=="[object String]"?this.split(""):d,e=c.length>>>0,f=Array(e);if(h(a)!="[object Function]")throw new TypeError(a+" is not a function");for(var g=0;g<e;g++)g in c&&(f[g]=a.call(b,c[g],g,d));return f});Array.prototype.filter||(Array.prototype.filter=
+function(a,b){var d=n(this),c=l&&h(this)=="[object String]"?this.split(""):d,e=c.length>>>0,f=[],g;if(h(a)!="[object Function]")throw new TypeError(a+" is not a function");for(var i=0;i<e;i++)if(i in c){g=c[i];a.call(b,g,i,d)&&f.push(g)}return f});Array.prototype.every||(Array.prototype.every=function(a,b){var d=n(this),c=l&&h(this)=="[object String]"?this.split(""):d,e=c.length>>>0;if(h(a)!="[object Function]")throw new TypeError(a+" is not a function");for(var f=0;f<e;f++)if(f in c&&!a.call(b,c[f],
+f,d))return false;return true});Array.prototype.some||(Array.prototype.some=function(a,b){var d=n(this),c=l&&h(this)=="[object String]"?this.split(""):d,e=c.length>>>0;if(h(a)!="[object Function]")throw new TypeError(a+" is not a function");for(var f=0;f<e;f++)if(f in c&&a.call(b,c[f],f,d))return true;return false});Array.prototype.reduce||(Array.prototype.reduce=function(a){var b=n(this),d=l&&h(this)=="[object String]"?this.split(""):b,c=d.length>>>0;if(h(a)!="[object Function]")throw new TypeError(a+
+" is not a function");if(!c&&arguments.length==1)throw new TypeError("reduce of empty array with no initial value");var e=0,f;if(arguments.length>=2)f=arguments[1];else{do{if(e in d){f=d[e++];break}if(++e>=c)throw new TypeError("reduce of empty array with no initial value");}while(1)}for(;e<c;e++)e in d&&(f=a.call(void 0,f,d[e],e,b));return f});Array.prototype.reduceRight||(Array.prototype.reduceRight=function(a){var b=n(this),d=l&&h(this)=="[object String]"?this.split(""):b,c=d.length>>>0;if(h(a)!=
+"[object Function]")throw new TypeError(a+" is not a function");if(!c&&arguments.length==1)throw new TypeError("reduceRight of empty array with no initial value");var e,c=c-1;if(arguments.length>=2)e=arguments[1];else{do{if(c in d){e=d[c--];break}if(--c<0)throw new TypeError("reduceRight of empty array with no initial value");}while(1)}do c in this&&(e=a.call(void 0,e,d[c],c,b));while(c--);return e});if(!Array.prototype.indexOf||-1!=[0,1].indexOf(1,2))Array.prototype.indexOf=function(a){var b=l&&
+h(this)=="[object String]"?this.split(""):n(this),d=b.length>>>0;if(!d)return-1;var c=0;arguments.length>1&&(c=v(arguments[1]));for(c=c>=0?c:Math.max(0,d+c);c<d;c++)if(c in b&&b[c]===a)return c;return-1};if(!Array.prototype.lastIndexOf||-1!=[0,1].lastIndexOf(0,-3))Array.prototype.lastIndexOf=function(a){var b=l&&h(this)=="[object String]"?this.split(""):n(this),d=b.length>>>0;if(!d)return-1;var c=d-1;arguments.length>1&&(c=Math.min(c,v(arguments[1])));for(c=c>=0?c:d-Math.abs(c);c>=0;c--)if(c in b&&
+a===b[c])return c;return-1};if(!Object.keys){var w=!0,x="toString toLocaleString valueOf hasOwnProperty isPrototypeOf propertyIsEnumerable constructor".split(" "),A=x.length,r;for(r in{toString:null})w=!1;Object.keys=function(a){if(typeof a!="object"&&typeof a!="function"||a===null)throw new TypeError("Object.keys called on a non-object");var b=[],d;for(d in a)t(a,d)&&b.push(d);if(w)for(d=0;d<A;d++){var c=x[d];t(a,c)&&b.push(c)}return b}}if(!Date.prototype.toISOString||-1===(new Date(-621987552E5)).toISOString().indexOf("-000001"))Date.prototype.toISOString=
+function(){var a,b,d,c;if(!isFinite(this))throw new RangeError("Date.prototype.toISOString called on non-finite value.");c=this.getUTCFullYear();a=this.getUTCMonth();c=c+Math.floor(a/12);a=[(a%12+12)%12+1,this.getUTCDate(),this.getUTCHours(),this.getUTCMinutes(),this.getUTCSeconds()];c=(c<0?"-":c>9999?"+":"")+("00000"+Math.abs(c)).slice(0<=c&&c<=9999?-4:-6);for(b=a.length;b--;){d=a[b];d<10&&(a[b]="0"+d)}return c+"-"+a.slice(0,2).join("-")+"T"+a.slice(2).join(":")+"."+("000"+this.getUTCMilliseconds()).slice(-3)+
+"Z"};r=!1;try{r=Date.prototype.toJSON&&null===(new Date(NaN)).toJSON()&&-1!==(new Date(-621987552E5)).toJSON().indexOf("-000001")&&Date.prototype.toJSON.call({toISOString:function(){return true}})}catch(H){}r||(Date.prototype.toJSON=function(){var a=Object(this),b;a:if(s(a))b=a;else{b=a.valueOf;if(typeof b==="function"){b=b.call(a);if(s(b))break a}b=a.toString;if(typeof b==="function"){b=b.call(a);if(s(b))break a}throw new TypeError;}if(typeof b==="number"&&!isFinite(b))return null;b=a.toISOString;
+if(typeof b!="function")throw new TypeError("toISOString property is not callable");return b.call(a)});var g=Date,m=function(a,b,d,c,e,f,h){var i=arguments.length;if(this instanceof g){i=i==1&&String(a)===a?new g(m.parse(a)):i>=7?new g(a,b,d,c,e,f,h):i>=6?new g(a,b,d,c,e,f):i>=5?new g(a,b,d,c,e):i>=4?new g(a,b,d,c):i>=3?new g(a,b,d):i>=2?new g(a,b):i>=1?new g(a):new g;i.constructor=m;return i}return g.apply(this,arguments)},u=function(a,b){var d=b>1?1:0;return B[b]+Math.floor((a-1969+d)/4)-Math.floor((a-
+1901+d)/100)+Math.floor((a-1601+d)/400)+365*(a-1970)},C=RegExp("^(\\d{4}|[+-]\\d{6})(?:-(\\d{2})(?:-(\\d{2})(?:T(\\d{2}):(\\d{2})(?::(\\d{2})(?:\\.(\\d{3}))?)?(Z|(?:([-+])(\\d{2}):(\\d{2})))?)?)?)?$"),B=[0,31,59,90,120,151,181,212,243,273,304,334,365],j;for(j in g)m[j]=g[j];m.now=g.now;m.UTC=g.UTC;m.prototype=g.prototype;m.prototype.constructor=m;m.parse=function(a){var b=C.exec(a);if(b){var d=Number(b[1]),c=Number(b[2]||1)-1,e=Number(b[3]||1)-1,f=Number(b[4]||0),h=Number(b[5]||0),i=Number(b[6]||
+0),j=Number(b[7]||0),m=!b[4]||b[8]?0:Number(new g(1970,0)),k=b[9]==="-"?1:-1,l=Number(b[10]||0),b=Number(b[11]||0);if(f<(h>0||i>0||j>0?24:25)&&h<60&&i<60&&j<1E3&&c>-1&&c<12&&l<24&&b<60&&e>-1&&e<u(d,c+1)-u(d,c)){d=((u(d,c)+e)*24+f+l*k)*60;d=((d+h+b*k)*60+i)*1E3+j+m;if(-864E13<=d&&d<=864E13)return d}return NaN}return g.parse.apply(this,arguments)};Date=m;Date.now||(Date.now=function(){return(new Date).getTime()});if("0".split(void 0,0).length){var D=String.prototype.split;String.prototype.split=function(a,
+b){return a===void 0&&b===0?[]:D.apply(this,arguments)}}if("".substr&&"b"!=="0b".substr(-1)){var E=String.prototype.substr;String.prototype.substr=function(a,b){return E.call(this,a<0?(a=this.length+a)<0?0:a:a,b)}}j="\t\n\x0B\f\r \u00a0\u1680\u180e\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u202f\u205f\u3000\u2028\u2029\ufeff";if(!String.prototype.trim||j.trim()){j="["+j+"]";var F=RegExp("^"+j+j+"*"),G=RegExp(j+j+"*$");String.prototype.trim=function(){if(this===void 0||this===
+null)throw new TypeError("can't convert "+this+" to object");return String(this).replace(F,"").replace(G,"")}}var n=function(a){if(a==null)throw new TypeError("can't convert "+a+" to object");return Object(a)}});
+
+(function(f){"function"==typeof define?define(f):"function"==typeof YUI?YUI.add("es5-sham",f):f()})(function(){function f(a){try{return Object.defineProperty(a,"sentinel",{}),"sentinel"in a}catch(c){}}var b=Function.prototype.call,g=Object.prototype,h=b.bind(g.hasOwnProperty),p,q,k,l,i;if(i=h(g,"__defineGetter__"))p=b.bind(g.__defineGetter__),q=b.bind(g.__defineSetter__),k=b.bind(g.__lookupGetter__),l=b.bind(g.__lookupSetter__);Object.getPrototypeOf||(Object.getPrototypeOf=function(a){return a.__proto__||
+(a.constructor?a.constructor.prototype:g)});Object.getOwnPropertyDescriptor||(Object.getOwnPropertyDescriptor=function(a,c){if(typeof a!="object"&&typeof a!="function"||a===null)throw new TypeError("Object.getOwnPropertyDescriptor called on a non-object: "+a);if(h(a,c)){var d={enumerable:true,configurable:true};if(i){var b=a.__proto__;a.__proto__=g;var e=k(a,c),f=l(a,c);a.__proto__=b;if(e||f){if(e)d.get=e;if(f)d.set=f;return d}}d.value=a[c];return d}});Object.getOwnPropertyNames||(Object.getOwnPropertyNames=
+function(a){return Object.keys(a)});if(!Object.create){var m;if(null===Object.prototype.__proto__||"undefined"==typeof document)m=function(){return{__proto__:null}};else{var r=function(){},b=document.createElement("iframe"),j=document.body||document.documentElement;b.style.display="none";j.appendChild(b);b.src="javascript:";var e=b.contentWindow.Object.prototype;j.removeChild(b);b=null;delete e.constructor;delete e.hasOwnProperty;delete e.propertyIsEnumerable;delete e.isPrototypeOf;delete e.toLocaleString;
+delete e.toString;delete e.valueOf;e.__proto__=null;r.prototype=e;m=function(){return new r}}Object.create=function(a,c){function d(){}var b;if(a===null)b=m();else{if(typeof a!=="object"&&typeof a!=="function")throw new TypeError("Object prototype may only be an Object or null");d.prototype=a;b=new d;b.__proto__=a}c!==void 0&&Object.defineProperties(b,c);return b}}if(Object.defineProperty&&(b=f({}),j="undefined"==typeof document||f(document.createElement("div")),!b||!j))var n=Object.defineProperty,
+o=Object.defineProperties;if(!Object.defineProperty||n)Object.defineProperty=function(a,c,d){if(typeof a!="object"&&typeof a!="function"||a===null)throw new TypeError("Object.defineProperty called on non-object: "+a);if(typeof d!="object"&&typeof d!="function"||d===null)throw new TypeError("Property description must be an object: "+d);if(n)try{return n.call(Object,a,c,d)}catch(b){}if(h(d,"value"))if(i&&(k(a,c)||l(a,c))){var e=a.__proto__;a.__proto__=g;delete a[c];a[c]=d.value;a.__proto__=e}else a[c]=
+d.value;else{if(!i)throw new TypeError("getters & setters can not be defined on this javascript engine");h(d,"get")&&p(a,c,d.get);h(d,"set")&&q(a,c,d.set)}return a};if(!Object.defineProperties||o)Object.defineProperties=function(a,c){if(o)try{return o.call(Object,a,c)}catch(d){}for(var b in c)h(c,b)&&b!="__proto__"&&Object.defineProperty(a,b,c[b]);return a};Object.seal||(Object.seal=function(a){return a});Object.freeze||(Object.freeze=function(a){return a});try{Object.freeze(function(){})}catch(t){var s=
+Object.freeze;Object.freeze=function(a){return typeof a=="function"?a:s(a)}}Object.preventExtensions||(Object.preventExtensions=function(a){return a});Object.isSealed||(Object.isSealed=function(){return false});Object.isFrozen||(Object.isFrozen=function(){return false});Object.isExtensible||(Object.isExtensible=function(a){if(Object(a)!==a)throw new TypeError;for(var c="";h(a,c);)c=c+"?";a[c]=true;var b=h(a,c);delete a[c];return b})});
+
+/**
+ * @license
  * Pixi.JS - v1.0.0
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-05-04
+ * Compiled: 2013-04-22
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -200,12 +665,6 @@ PIXI.DisplayObject = function()
 	
 	// [readonly] best not to toggle directly! use setInteractive()
 	this.interactive = false;
-	
-	/**
-	 * This is used to indicate if the displayObject should display a mouse hand cursor on rollover
-	 * @property buttonMode
-	 * @type Boolean
-	 */
 	this.buttonMode = false;
 	
 	/*
@@ -838,155 +1297,6 @@ PIXI.MovieClip.prototype.updateTransform = function()
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
-/**
- * A Text Object will create a line of text
- * @class Text
- * @extends Sprite
- * @constructor
- * @param text {String} The copy that you would like the text to display
- * @param fontStyle {String} the style and size of the font eg "bold 20px Arial"
- * @param fillStyle {Object} a canvas fillstyle that will be used on the text eg "red", "#00FF00" can also be null
- * @param strokeStyle {String} a canvas fillstyle that will be used on the text stroke eg "blue", "#FCFF00" can also be null
- * @param strokeThickness {Number} A number that represents the thicknes of the stroke. default is 0 (no stroke)
- */
-PIXI.Text = function(text, fontStyle, fillStyle, strokeStyle, strokeThickness)
-{
-	this.canvas = document.createElement("canvas");
-	
-	this.context = this.canvas.getContext("2d");
-	//document.body.appendChild(this.canvas);
-	this.setText(text);
-	this.setStyle(fontStyle, fillStyle, strokeStyle, strokeThickness);
-	
-	this.updateText();
-	
-	PIXI.Sprite.call( this, PIXI.Texture.fromCanvas(this.canvas));
-	
-	// need to store a canvas that can
-}
-
-// constructor
-PIXI.Text.constructor = PIXI.Text;
-PIXI.Text.prototype = Object.create( PIXI.Sprite.prototype );
-
-/**
- * Set the copy for the text object
- * @methos setText
- * @param text {String} The copy that you would like the text to display
- */
-PIXI.Text.prototype.setText = function(text)
-{
-	this.text = text || " ";
-	this.dirty = true;
-}
-
-/**
- * Set the style of the text
- * @method setStyle
- * @constructor
- * @param fontStyle {String} the style and size of the font eg "bold 20px Arial"
- * @param fillStyle {Object} a canvas fillstyle that will be used on the text eg "red", "#00FF00" can also be null
- * @param strokeStyle {String} a canvas fillstyle that will be used on the text stroke eg "blue", "#FCFF00" can also be null
- * @param strokeThickness {Number} A number that represents the thicknes of the stroke. default is 0 (no stroke)
- */
-PIXI.Text.prototype.setStyle = function(fontStyle, fillStyle, strokeStyle, strokeThickness)
-{
-	this.fontStyle = fontStyle || "bold 20pt Arial";
-	this.fillStyle = fillStyle;
-	this.strokeStyle = strokeStyle;
-	this.strokeThickness = strokeThickness || 0;
-	
-	this.dirty = true;
-}
-
-/**
- * @private
- */
-PIXI.Text.prototype.updateText = function()
-{
-//	console.log(this.text);
-	this.context.font = this.fontStyle;
-		
-	this.canvas.width = this.context.measureText(this.text).width + this.strokeThickness//textDimensions.width;
-	this.canvas.height = this.determineFontHeight("font: " + this.fontStyle  + ";")+ this.strokeThickness;// textDimensions.height;
-
-	this.context.fillStyle = this.fillStyle;
-	this.context.font = this.fontStyle;
-	
-    this.context.strokeStyle = this.strokeStyle;
-	this.context.lineWidth = this.strokeThickness;
-
-	this.context.textBaseline="top"; 
-
-    if(this.strokeStyle && this.strokeThickness)this.context.strokeText(this.text,  this.strokeThickness/2, this.strokeThickness/2);
-	if(this.fillStyle)this.context.fillText(this.text,  this.strokeThickness/2, this.strokeThickness/2);
-	
-	
-//	console.log("//")
-}
-
-PIXI.Text.prototype.updateTransform = function()
-{
-	if(this.dirty)
-	{
-		this.updateText();	
-		
-		// update the texture..
-		this.texture.baseTexture.width = this.canvas.width;
-		this.texture.baseTexture.height = this.canvas.height;
-		this.texture.frame.width = this.canvas.width;
-		this.texture.frame.height = this.canvas.height;
-		
-		PIXI.texturesToUpdate.push(this.texture.baseTexture);
-		this.dirty = false;
-	}
-	
-	PIXI.Sprite.prototype.updateTransform.call( this );
-}
-
-/*
- * http://stackoverflow.com/users/34441/ellisbben
- * great solution to the problem!
- */
-PIXI.Text.prototype.determineFontHeight = function(fontStyle) 
-{
-	// build a little refference dictionary so if the font style has been used return a
-	// cached version...
-	var result = PIXI.Text.heightCache[fontStyle]
-	
-	if(!result)
-	{
-		var body = document.getElementsByTagName("body")[0];
-		var dummy = document.createElement("div");
-		var dummyText = document.createTextNode("M");
-		dummy.appendChild(dummyText);
-		dummy.setAttribute("style", fontStyle);
-		body.appendChild(dummy);
-		
-		result = dummy.offsetHeight;
-		PIXI.Text.heightCache[fontStyle] = result
-		
-		body.removeChild(dummy);
-	}
-	
-	return result;
-};
-
-PIXI.Text.prototype.destroy = function(destroyTexture)
-{
-	if(destroyTexture)
-	{
-		this.texture.destroy();
-	}
-		
-}
-
-PIXI.Text.heightCache = {};
-
-/**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- */
-
 
 
 /**
@@ -1122,7 +1432,7 @@ PIXI.InteractionManager.prototype.update = function()
 		var len = this.interactiveItems.length;
 		
 		for (var i=0; i < this.interactiveItems.length; i++) {
-		  this.interactiveItems[i].interactiveChildren = false;
+		  this.interactiveItems[i].interactiveChildren = true;
 		}
 		
 		this.interactiveItems = [];
@@ -1135,8 +1445,6 @@ PIXI.InteractionManager.prototype.update = function()
 	// loop through interactive objects!
 	var length = this.interactiveItems.length;
 	
-	if(this.target)this.target.view.style.cursor = "default";	
-				
 	for (var i = 0; i < length; i++)
 	{
 		var item = this.interactiveItems[i];
@@ -1145,8 +1453,6 @@ PIXI.InteractionManager.prototype.update = function()
 		// OPTIMISATION - only calculate every time if the mousemove function exists..
 		// OK so.. does the object have any other interactive functions?
 		// hit-test the clip!
-		
-		
 		if(item.mouseover || item.mouseout || item.buttonMode)
 		{
 			// ok so there are some functions so lets hit test it..
@@ -1155,11 +1461,9 @@ PIXI.InteractionManager.prototype.update = function()
 			// loks like there was a hit!
 			if(item.__hit)
 			{
-				if(item.buttonMode)this.target.view.style.cursor = "pointer";	
-				
 				if(!item.__isOver)
 				{
-					
+					if(item.buttonMode)this.target.view.style.cursor = "pointer";	
 					if(item.mouseover)item.mouseover(this.mouse);
 					item.__isOver = true;	
 				}
@@ -1169,6 +1473,7 @@ PIXI.InteractionManager.prototype.update = function()
 				if(item.__isOver)
 				{
 					// roll out!
+					if(item.buttonMode)this.target.view.style.cursor = "default";	
 					if(item.mouseout)item.mouseout(this.mouse);
 					item.__isOver = false;	
 				}
@@ -1317,8 +1622,6 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 			
 			if(y > y1 && y < y1 + height)
 			{
-				// set the target property if a hit is true!
-				interactionData.target = item
 				return true;
 			}
 		}
@@ -2018,180 +2321,6 @@ PIXI.mat4.multiply = function (mat, mat2, dest)
 }
 
 /**
- * @author Vsevolod Strukchinsky @floatdrop
- */
-
-
-/**
- * A class MovieClipManager contains and manages MovieClips
- * @class MovieClipManager
- * @extends DisplayObjectContainer
- * @constructor
- */
-PIXI.MovieClipManager = function () {
-    PIXI.DisplayObjectContainer.call(this);
-
-    /**
-     * [read-only] The map of name to MovieClip objects.
-     * @property _animations {Object}
-     */
-    this._animations = {};
-
-    /**
-     * [read-only] The current displaying animation.
-     * @property children {MovieClip}
-     */
-    this._current = undefined;
-
-    for (var argumentIndex in arguments) {
-        var arg = arguments[argumentIndex];
-        this.addLayer(arg.name, arg.clip);
-    }
-
-};
-
-PIXI.MovieClipManager.constructor = PIXI.MovieClipManager;
-PIXI.MovieClipManager.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
-
-/**
- * Gets movieClip with `name`
- * @method get
- * @param  name {String}
- * @return MovieClip
- */
-PIXI.MovieClipManager.prototype.get = function (name) {
-    return this._animations[name];
-};
-
-
-/**
- * Changes movieClip to another
- * @method set
- * @param  name {String}
- * @return DisplayObject
- */
-PIXI.MovieClipManager.prototype.set = function (name) {
-    if (this._current) {
-        this._current.stop();
-        this.removeChild(this._current);
-    }
-    this._current = this._animations[name];
-    if (this._current) {
-        this.addChild(this._current);
-    }
-    return this;
-};
-
-/**
- * Plays movieClip
- * @method play
- * @param  name {String} (set as undefined to play current MovieClip)
- * @return DisplayObject
- */
-PIXI.MovieClipManager.prototype.play = function (name) {
-    if (name) {
-        this.set(name);
-    }
-    if (this._current) {
-        this._current.play();
-    }
-    return this;
-};
-
-/**
- * Stops the current MovieClip and goes to a specific frame
- * @method gotoAndStop
- * @param frameNumber {Number} frame index to stop at
- */
-PIXI.MovieClipManager.prototype.gotoAndStop = function (frameNumber) {
-    this._current.gotoAndStop(frameNumber);
-    return this;
-};
-
-/**
- * Goes to a specific frame and begins playing the current MovieClip
- * @method gotoAndPlay
- * @param frameNumber {Number} frame index to start at
- */
-PIXI.MovieClipManager.prototype.gotoAndPlay = function(frameNumber)
-{
-    this._current.gotoAndPlay(frameNumber);
-    return this;
-};
-
-/**
- * Sets animationSpeed property on current MovieClip
- * @method animationSpeed
- * @param speed {Number}
- */
-PIXI.MovieClipManager.prototype.animationSpeed = function(speed)
-{
-    this._current.animationSpeed = speed;
-    return this;
-};
-
-
-/**
- * Sets loop property on current MovieClip
- * @method loop
- * @param isLooped {Boolean}
- */
-PIXI.MovieClipManager.prototype.loop = function(isLooped)
-{
-    this._current.loop = isLooped;
-    return this;
-};
-
-/**
- * Sets onComplete callback on current MovieClip
- * @method onComplete
- * @param frameNumber {Number} frame index to start at
- */
-PIXI.MovieClipManager.prototype.onComplete = function(callback)
-{
-    this._current.onComplete = callback;
-    return this;
-};
-
-
-/**
- * Stops current MovieClip
- * @method stop
- */
-PIXI.MovieClipManager.prototype.stop = function () {
-    if (this._current) {
-        this._current.stop();
-    }
-    return this;
-};
-
-/**
- * Creates new animation with name `name`.
- * @method add
- * @param  name {String}
- * @param  movieClip {MovieClip}
- * @return DisplayObject
- */
-PIXI.MovieClipManager.prototype.add = function (name, movieClip) {
-    this._animations[name] = movieClip;
-    return this;
-};
-
-
-/**
- * Removes a animation from the container.
- * @method remove
- * @param name {String}
- */
-PIXI.MovieClipManager.prototype.remove = function (name) {
-    if (this._animations[name] === this._current) {
-        this.removeChild(this._current);
-        this._current = undefined;
-    }
-    delete this._animations[name];
-};
-
-/**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
@@ -2229,57 +2358,71 @@ PIXI.autoDetectRenderer = function(width, height, view, transparent)
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
+	
+PIXI.shaderFragmentSrc = [	"precision mediump float;",
+					  		"varying vec2 vTextureCoord;",
+					  		"varying float vColor;",
+					  		"uniform sampler2D uSampler;",
+					  		"void main(void) {",
+					  		"gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y));",
+					  		"gl_FragColor = gl_FragColor * vColor;",
+					  		"}"];
 
-PIXI.shaderFragmentSrc = [
-  "precision mediump float;",
-  "varying vec2 vTextureCoord;",
-  "varying float vColor;",
-  "uniform sampler2D uSampler;",
-  "void main(void) {",
-    "gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y));",
-    "gl_FragColor = gl_FragColor * vColor;",
-  "}"
-];
-
-PIXI.shaderVertexSrc = [
-  "attribute vec2 aVertexPosition;",
-  "attribute vec2 aTextureCoord;",
-  "attribute float aColor;",
-  "uniform mat4 uMVMatrix;",
-  "varying vec2 vTextureCoord;",
-  "varying float vColor;",
-  "void main(void) {",
-    "gl_Position = uMVMatrix * vec4(aVertexPosition, 1.0, 1.0);",
-    "vTextureCoord = aTextureCoord;",
-    "vColor = aColor;",
-  "}"
-];
+PIXI.shaderVertexSrc = [	"attribute vec2 aVertexPosition;",
+	    					"attribute vec2 aTextureCoord;",
+	    					"attribute float aColor;",
+	  						"uniform mat4 uMVMatrix;",
+							"varying vec2 vTextureCoord;",
+							"varying float vColor;",
+							"void main(void) {",
+							"gl_Position = uMVMatrix * vec4(aVertexPosition, 1.0, 1.0);",
+							"vTextureCoord = aTextureCoord;",
+							"vColor = aColor;",
+	   					 	"}"]
 
 PIXI.CompileVertexShader = function(gl, shaderSrc)
 {
-  return PIXI._CompileShader(gl, shaderSrc, gl.VERTEX_SHADER);
+	var src = "";
+	
+	for (var i=0; i < shaderSrc.length; i++) {
+	  src += shaderSrc[i];
+	};
+	
+	var shader;
+    shader = gl.createShader(gl.VERTEX_SHADER);
+       
+    gl.shaderSource(shader, src);
+    gl.compileShader(shader);
+
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        alert(gl.getShaderInfoLog(shader));
+        return null;
+    }
+    
+    return shader;
 }
 
 PIXI.CompileFragmentShader = function(gl, shaderSrc)
 {
-  return PIXI._CompileShader(gl, shaderSrc, gl.FRAGMENT_SHADER);
+	var src = "";
+	
+	for (var i=0; i < shaderSrc.length; i++) {
+	  src += shaderSrc[i];
+	};
+	
+	var shader;
+    shader = gl.createShader(gl.FRAGMENT_SHADER);
+        
+    gl.shaderSource(shader, src);
+    gl.compileShader(shader);
+	
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        alert(gl.getShaderInfoLog(shader));
+        return null;
+    }
+    
+    return shader;
 }
-
-PIXI._CompileShader = function(gl, shaderSrc, shaderType)
-{
-  var src = shaderSrc.join("\n");
-  var shader = gl.createShader(shaderType);
-  gl.shaderSource(shader, src);
-  gl.compileShader(shader);
-
-  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    alert(gl.getShaderInfoLog(shader));
-    return null;
-  }
-
-  return shader;
-}
-
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -2302,8 +2445,6 @@ PIXI._defaultFrame = new PIXI.Rectangle(0,0,1,1);
  */
 PIXI.WebGLRenderer = function(width, height, view, transparent)
 {
-	// do a catch.. only 1 webGL renderer..
-
 	//console.log(transparent)
 	this.transparent = !!transparent;
 	
@@ -2351,31 +2492,6 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
 
 // constructor
 PIXI.WebGLRenderer.constructor = PIXI.WebGLRenderer;
-
-/**
- * @private 
- */
-PIXI.WebGLRenderer.prototype.getBatch = function()
-{
-	if(PIXI._batchs.length == 0)
-	{
-		return new PIXI.WebGLBatch(this.gl);
-	}
-	else
-	{
-		return PIXI._batchs.pop();
-	}
-}
-
-/**
- * @private
- */
-PIXI.WebGLRenderer.prototype.returnBatch = function(batch)
-{
-	batch.clean();	
-	PIXI._batchs.push(batch);
-}
-
 
 /**
  * @private
@@ -2494,13 +2610,12 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 
 	// update any textures	
 	for (var i=0; i < PIXI.texturesToUpdate.length; i++) this.updateTexture(PIXI.texturesToUpdate[i]);
-	for (var i=0; i < PIXI.texturesToDestroy.length; i++) this.destroyTexture(PIXI.texturesToDestroy[i]);
 	
 	// empty out the arrays
 	stage.__childrenRemoved = [];
 	stage.__childrenAdded = [];
 	PIXI.texturesToUpdate = [];
-	PIXI.texturesToDestroy = [];
+	
 	// recursivly loop through all items!
 	this.checkVisibility(stage, true);
 	
@@ -2580,8 +2695,8 @@ PIXI.WebGLRenderer.prototype.updateTexture = function(texture)
 		gl.bindTexture(gl.TEXTURE_2D, texture._glTexture);
 	 	gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.source);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
 		
 		// reguler...
 		
@@ -2605,23 +2720,12 @@ PIXI.WebGLRenderer.prototype.updateTexture = function(texture)
 	this.refreshBatchs = true;
 }
 
-PIXI.WebGLRenderer.prototype.destroyTexture = function(texture)
-{
-	var gl = this.gl;
-	
-	if(texture._glTexture)
-	{
-		texture._glTexture = gl.createTexture();
-		gl.deleteTexture(gl.TEXTURE_2D, texture._glTexture);
-	}
-}
-
 /**
  * @private
  */
 PIXI.WebGLRenderer.prototype.addDisplayObject = function(displayObject)
 {
-	var objectDetaildisplayObject
+	
 	if(!displayObject.stage)return; // means it was removed 
 	if(displayObject.__inWebGL)return; //means it is already in webgL
 	
@@ -2762,7 +2866,7 @@ PIXI.WebGLRenderer.prototype.addDisplayObject = function(displayObject)
 							 * seems the new sprite is in the middle of a batch
 							 * lets split it.. 
 							 */
-							var batch = this.getBatch();
+							var batch = PIXI._getBatch(this.gl);
 
 							var index = this.batchs.indexOf( previousBatch );
 							batch.init(displayObject);
@@ -2786,7 +2890,7 @@ PIXI.WebGLRenderer.prototype.addDisplayObject = function(displayObject)
 		 * time to create anew one!
 		 */
 		
-		var batch =  this.getBatch();
+		var batch = PIXI._getBatch(this.gl);
 		batch.init(displayObject);
 
 		if(previousBatch) // if this is invalid it means 
@@ -2845,6 +2949,7 @@ PIXI.WebGLRenderer.prototype.removeDisplayObject = function(displayObject)
 		
 		batch.remove(displayObject);
 		
+		
 		if(batch.size==0)
 		{
 			batchToRemove = batch
@@ -2869,7 +2974,7 @@ PIXI.WebGLRenderer.prototype.removeDisplayObject = function(displayObject)
 		{
 			// wha - eva! just get of the empty batch!
 			this.batchs.splice(index, 1);
-			if(batchToRemove instanceof PIXI.WebGLBatch)this.returnBatch(batchToRemove);
+			if(batchToRemove instanceof PIXI.WebGLBatch)PIXI._returnBatch(batchToRemove);
 		
 			return;
 		}
@@ -2881,8 +2986,8 @@ PIXI.WebGLRenderer.prototype.removeDisplayObject = function(displayObject)
 				//console.log("MERGE")
 				this.batchs[index-1].merge(this.batchs[index+1]);
 				
-				if(batchToRemove instanceof PIXI.WebGLBatch)this.returnBatch(batchToRemove);
-				this.returnBatch(this.batchs[index+1]);
+				if(batchToRemove instanceof PIXI.WebGLBatch)PIXI._returnBatch(batchToRemove);
+				PIXI._returnBatch(this.batchs[index+1]);
 				this.batchs.splice(index, 2);
 				return;
 			}
@@ -2890,7 +2995,7 @@ PIXI.WebGLRenderer.prototype.removeDisplayObject = function(displayObject)
 		
 		
 		this.batchs.splice(index, 1);
-		if(batchToRemove instanceof PIXI.WebGLBatch)this.returnBatch(batchToRemove);
+		if(batchToRemove instanceof PIXI.WebGLBatch)PIXI._returnBatch(batchToRemove);
 	}
 	
 	
@@ -3820,7 +3925,6 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 	
 	// update textures if need be
 	PIXI.texturesToUpdate = [];
-	PIXI.texturesToDestroy = [];
 	
 	this.context.setTransform(1,0,0,1,0,0); 
 	stage.updateTransform();
@@ -4001,8 +4105,6 @@ PIXI.CanvasRenderer.prototype.renderTilingSprite = function(sprite)
 	
 	context.scale(1/tileScale.x, 1/tileScale.y);
     context.translate(-tilePosition.x, -tilePosition.y);
-    
-    context.closePath();
 }
 
 
@@ -4407,7 +4509,6 @@ PIXI.TilingSprite.prototype.onTextureUpdate = function(event)
 
 PIXI.BaseTextureCache = {};
 PIXI.texturesToUpdate = [];
-PIXI.texturesToDestroy = [];
 
 /**
  * A texture stores the information that represents an image. All textures have a base texture
@@ -4489,18 +4590,6 @@ PIXI.BaseTexture = function(source)
 }
 
 PIXI.BaseTexture.constructor = PIXI.BaseTexture;
-
-PIXI.BaseTexture.prototype.destroy = function()
-{
-	
-	if(this.source instanceof Image)
-	{
-		this.source.src = null;
-	}
-	this.source = null;
-	PIXI.texturesToDestroy.push(this);
-}
-
 
 /**
  * 
@@ -4606,11 +4695,6 @@ PIXI.Texture.prototype.onBaseTextureLoaded = function(event)
 	this.scope.dispatchEvent( { type: 'update', content: this } );
 }
 
-PIXI.Texture.prototype.destroy = function(destroyBase)
-{
-	if(destroyBase)this.baseTexture.destroy();
-}
-
 /**
  * Specifies the rectangle region of the baseTexture
  * @method setFrame
@@ -4649,6 +4733,7 @@ PIXI.Texture.fromImage = function(imageUrl, crossorigin)
 	if(!texture)
 	{
 		texture = new PIXI.Texture(PIXI.BaseTexture.fromImage(imageUrl, crossorigin));
+		
 		PIXI.TextureCache[imageUrl] = texture;
 	}
 	
@@ -4969,3 +5054,353 @@ PIXI.AssetLoader.prototype.onAssetLoaded = function()
 	}
 }
 
+
+/**
+ * @author Vsevolod Strukchinsky (@floatdrop)
+ */
+
+(function () {
+
+	var root = this;
+/**
+ * @author Vsevolod Strukchinsky (@floatdrop)
+ */
+
+/**
+@module LINK
+ */
+var LINK = LINK || {};
+/**
+ * @author Vsevolod Strukchinsky @floatdrop
+ */
+
+
+/**
+A class Layers represents a named collection of display objects container (layers). It is the base class of all display objects that act as a container for other objects.
+
+Single level layers inheritance: 
+
+@example 
+	// Create three layers, that can be getted by layers.top, layers.middle, layers.bottom
+	var layers = new LINK.Layers("bottom", "middle", "top");
+	layers.top.addChild(...);
+	layers.bottom.addChild(...);
+
+Multi level layers inheritance (be careful with swapping between different levels of layers):
+
+@example
+	var layers = new LINK.Layers({
+			"ground": new LINK.Layers("earth",{"grass": new LINK.Layers("leafs", "flowers")), 
+			"sky": new LINK.Layers("birds", "clouds")
+		}, "ui");
+	layers.ground.earth.addChild(...);
+	layers.ground.grass.flowers.addChild(...);
+	layers.sky.clouds.addChild(...);
+	layers.ui.addChild(...);
+
+@class Layers
+@extends DisplayObjectContainer
+@constructor
+**/
+LINK.Layers = function () {
+	PIXI.DisplayObjectContainer.call(this);
+
+	this.blockedNames = Object.keys(this);
+
+	for (var argumentIndex in arguments) {
+		var arg = arguments[argumentIndex];
+		if (typeof arg === "string") {
+			this.addLayer(arg);
+		} else if (arg instanceof Object) {
+			for (var layersGroupName in arg) {
+				this[layersGroupName] = arg[layersGroupName];
+				this.addChild(arg[layersGroupName]);
+			}
+		}
+	}
+};
+
+LINK.Layers.constructor = LINK.Layers;
+LINK.Layers.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
+
+/**
+ * Creates new layer with name layerName above others layers.
+ * @method addLayer
+ * @param  layerName {String}
+ * @return DisplayObject
+ */
+LINK.Layers.prototype.addLayer = function (layerName) {
+	return this.addLayerAt(layerName, this.children.length);
+};
+
+/**
+ * Creates new layer with name layerName at specified index.
+ * @method addLayerAt
+ * @param Layer {DisplayObject}
+ * @param index {Number}
+ */
+LINK.Layers.prototype.addLayerAt = function (layerName, index) {
+	if (layerName in this) {
+		throw new Error(layerName + " Suplied name already used by " + this[layerName]);
+	}
+	var layer = new PIXI.DisplayObjectContainer();
+	layer.layername = layerName;
+	this.addChildAt(layer, index);
+	this[layerName] = layer;
+	return layer;
+};
+
+/**
+ * Swaps 2 Layers
+ * @method swapChildren
+ * @param  LayerName {String}
+ * @param  LayerName2 {String}
+ */
+LINK.DisplayObjectContainer.prototype.swapLayers = function (layerName, layerName2) {
+
+	var layer = this[layerName];
+	var layer2 = this[layerName2];
+
+	this.swapChildren(layer, layer2);
+};
+
+/**
+ * Returns the Layer with specified name or creates it
+ * @method getLayer
+ * @param  layerName {String}
+ * @return DisplayObjectContainer
+ */
+LINK.DisplayObjectContainer.prototype.getLayer = function (layerName) {
+	if (!this[layerName])
+		this.addLayer(layerName);
+	return this[layerName];
+};
+
+/**
+ * Returns the Layer at the specified index
+ * @method getLayerAt
+ * @param  index {Number}
+ * @return DisplayObjectContainer
+ */
+LINK.DisplayObjectContainer.prototype.getLayerAt = function (index) {
+	return this.getChildAt(index);
+};
+
+/**
+ * Removes a layer from the container.
+ * @method removeLayer
+ * @param String {LayerName}
+ */
+LINK.Layers.prototype.removeLayer = function (layerName) {
+	if (!(layerName in this) || (layerName in this.blockedNames)) return;
+	PIXI.DisplayObjectContainer.prototype.removeChild.call(this, this[layerName]);
+	delete this[layerName];
+};
+
+/**
+ * Removes a child from the container.
+ * @method removeChild
+ * @param  DisplayObject {DisplayObject}
+ */
+LINK.Layers.prototype.removeChild = function (child) {
+	if (child.layername && child.layername in this) {
+		delete this[child.layername];
+	}
+	PIXI.DisplayObjectContainer.prototype.removeChild.call(this, child);
+};
+/**
+ * @author Vsevolod Strukchinsky @floatdrop
+ */
+
+
+/**
+A class MovieClipManager contains and manages MovieClips.
+
+@example
+    var mcn = new PIXI.MovieClipManager();
+    mcn.add("walk", new PIXI.MovieClip([texture1, texture2, ...], 0.23));
+    mcn.set("walk").animationSpeed(0.22).loop(false).play();
+@class MovieClipManager
+@extends DisplayObjectContainer
+@constructor
+**/
+LINK.MovieClipManager = function () {
+    PIXI.DisplayObjectContainer.call(this);
+
+    /**
+     * [read-only] The map of name to MovieClip objects.
+     * @property _animations {Object}
+     */
+    this._animations = {};
+
+    /**
+     * [read-only] The current displaying animation.
+     * @property children {MovieClip}
+     */
+    this._current = undefined;
+
+    for (var argumentIndex in arguments) {
+        var arg = arguments[argumentIndex];
+        this.add(arg.name, arg.clip);
+    }
+
+};
+
+LINK.MovieClipManager.constructor = LINK.MovieClipManager;
+LINK.MovieClipManager.prototype = Object.create(LINK.DisplayObjectContainer.prototype);
+
+/**
+ * Gets movieClip with `name`
+ * @method get
+ * @param  name {String}
+ * @return MovieClip
+ */
+LINK.MovieClipManager.prototype.get = function (name) {
+    return this._animations[name];
+};
+
+
+/**
+ * Changes movieClip to another
+ * @method set
+ * @param  name {String}
+ * @return DisplayObject
+ */
+LINK.MovieClipManager.prototype.set = function (name) {
+    if (this._current) {
+        this._current.stop();
+        this._current.visible = false;
+    }
+    this._current = this._animations[name];
+    if (this._current) {
+        this._current.visible = true;
+    }
+    return this;
+};
+
+/**
+ * Plays movieClip
+ * @method play
+ * @param  name {String} (set as undefined to play current MovieClip)
+ * @return DisplayObject
+ */
+LINK.MovieClipManager.prototype.play = function (name) {
+    if (name) {
+        this.set(name);
+    }
+    if (this._current) {
+        this._current.play();
+    }
+    return this;
+};
+
+/**
+ * Stops the current MovieClip and goes to a specific frame
+ * @method gotoAndStop
+ * @param frameNumber {Number} frame index to stop at
+ */
+LINK.MovieClipManager.prototype.gotoAndStop = function (frameNumber) {
+    this._current.gotoAndStop(frameNumber);
+    return this;
+};
+
+/**
+ * Goes to a specific frame and begins playing the current MovieClip
+ * @method gotoAndPlay
+ * @param frameNumber {Number} frame index to start at
+ */
+LINK.MovieClipManager.prototype.gotoAndPlay = function(frameNumber)
+{
+    this._current.gotoAndPlay(frameNumber);
+    return this;
+};
+
+/**
+ * Sets animationSpeed property on current MovieClip
+ * @method animationSpeed
+ * @param speed {Number}
+ */
+LINK.MovieClipManager.prototype.animationSpeed = function(speed)
+{
+    this._current.animationSpeed = speed;
+    return this;
+};
+
+
+/**
+ * Sets loop property on current MovieClip
+ * @method loop
+ * @param isLooped {Boolean}
+ */
+LINK.MovieClipManager.prototype.loop = function(isLooped)
+{
+    this._current.loop = isLooped;
+    return this;
+};
+
+/**
+ * Sets onComplete callback on current MovieClip
+ * @method onComplete
+ * @param frameNumber {Number} frame index to start at
+ */
+LINK.MovieClipManager.prototype.onComplete = function(callback)
+{
+    this._current.onComplete = callback;
+    return this;
+};
+
+
+/**
+ * Stops current MovieClip
+ * @method stop
+ */
+LINK.MovieClipManager.prototype.stop = function () {
+    if (this._current) {
+        this._current.stop();
+    }
+    return this;
+};
+
+/**
+ * Creates new animation with name `name`.
+ * @method add
+ * @param  name {String}
+ * @param  movieClip {MovieClip}
+ * @return DisplayObject
+ */
+LINK.MovieClipManager.prototype.add = function (name, movieClip, speed) {
+    this._animations[name] = movieClip;
+    movieClip.animationSpeed = speed || movieClip.animationSpeed;
+    this.addChild(movieClip);
+    movieClip.visible = false;
+    return this;
+};
+
+
+/**
+ * Removes a animation from the container.
+ * @method remove
+ * @param name {String}
+ */
+LINK.MovieClipManager.prototype.remove = function (name) {
+    if (this._animations[name] === this._current) {
+        this._current.visible = false;
+        this._current = undefined;
+    }
+    delete this._animations[name];
+};
+ /**
+  * @author Vsevolod Strukchinsky (@floatdrop)
+  */
+
+ if (typeof exports !== 'undefined') {
+ 	if (typeof module !== 'undefined' && module.exports) {
+ 		exports = module.exports = LINK;
+ 	}
+ 	exports.LINK = LINK;
+ } else {
+ 	root.LINK = LINK;
+ }
+
+
+ }).call(this);
