@@ -10,16 +10,16 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 			this.renderer = renderer;
 
 			/* BIND MOUSE */
-			this.mouse = new LINK.Mouse();
+			this.mouse = new LINK.Mouse(this.renderer.view);
 			this.mouse.ondown(this.shoot.bind(this));
 			this.mouse.onmove(this.moveCursor.bind(this));
 
 			/* BIND KEYBOARD */
 			this.keyboard = new LINK.Keyboard();
-			this.keyboard.W.onpress(this.moveUp.bind(this));
-			this.keyboard.A.onpress(this.moveDown.bind(this));
-			this.keyboard.S.onpress(this.moveLeft.bind(this));
-			this.keyboard.D.onpress(this.moveRight.bind(this));
+			this.keyboard.onpress("W", this.moveUp.bind(this));
+			this.keyboard.onpress("A", this.moveDown.bind(this));
+			this.keyboard.onpress("S", this.moveLeft.bind(this));
+			this.keyboard.onpress("D", this.moveRight.bind(this));
 
 			/* CREATE STAGE */
 			this.stage = new PIXI.Stage(0x000000);
@@ -78,27 +78,14 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 				self.entityList(entitieslist);
 			});
 
-			this.client.onRemoveList(function (idsList) {
-				self.removeList(idsList);
-			});
-
 			this.client.connect();
-		},
-		removeList: function (list) {
-			var self = this;
-			_.each(list, function (id) {
-				if (self.entities[id]) {
-					self.removeFromView(self.entities[id]);
-					delete self.entities[id];
-				}
-			});
 		},
 		entityList: function (list) {
 			var self = this;
-			_.each(list, function (entity_info) {
-				var id = entity_info.id;
-				var entity = id in self.entities ? self.entities[id] : entity = EntityFactory.createEntity(entity_info, id);
-				entity.update(entity_info);
+			_.each(list, function (info) {
+				var id = info.id;
+				var entity = id in self.entities ? self.entities[id] : entity = EntityFactory.createEntity(info, id);
+				entity.update(info.data);
 				self.layers.game.objects.getLayer(entity.layer).addChild(entity);
 				self.entities[id] = entity;
 			});
