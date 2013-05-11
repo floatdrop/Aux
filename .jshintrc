@@ -13,7 +13,6 @@
     "maxdepth": 5,
     "maxstatements": 25,
     "maxcomplexity": 10,
-    "es5": true,
     "browser": true,
     "boss": false,
     "curly": false,
