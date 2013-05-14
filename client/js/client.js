@@ -19,17 +19,16 @@ define(function () {
 					self.callbacks[code] = self[callback].bind(self);
 			});
 
-			this.network.onmessage = function (event) {
-				self.decodeMessage(event, function (message) {
+			this.network.onmessage(function (message) {
+				if (self.callbacks[message.t])
 					self.callbacks[message.t](message.d);
-				});
-			};
-			this.network.onerror = function (error) {
+			});
+			this.network.onerror(function (error) {
 				console.log(error);
-			};
-			this.network.onclose = function (error) {
+			});
+			this.network.onclose(function (error) {
 				console.log("Connection closed: " + error);
-			};
+			});
 
 			this.network.connect(this.host, this.port);
 		},

@@ -4,439 +4,611 @@
  * Copyright (c) 2013, Vsevolod Strukchinsky
  * hhttps://github.com/floatdrop/link.js
  *
- * Compiled: 2013-05-10
+ * Compiled: 2013-05-14
  *
  * Link.JS Game Engine is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
  */
-/*!{id:msgpack.codec.js,ver:1.05,license:"MIT",author:"uupaa.js@gmail.com"}*/
+( // Module boilerplate to support browser globals and browserify and AMD.
+  typeof define === "function" ? function (m) { define("msgpack-js", m); } :
+  typeof exports === "object" ? function (m) { module.exports = m(); } :
+  function(m){ this.msgpack = m(); }
+)(function () {
+"use strict";
 
-// === msgpack ===
-// MessagePack -> http://msgpack.sourceforge.net/
+var exports = {};
 
-this.msgpack || (function(globalScope) {
+exports.inspect = inspect;
+function inspect(buffer) {
+  if (buffer === undefined) return "undefined";
+  var view;
+  var type;
+  if (buffer instanceof ArrayBuffer) {
+    type = "ArrayBuffer";
+    view = new DataView(buffer);
+  }
+  else if (buffer instanceof DataView) {
+    type = "DataView";
+    view = buffer;
+  }
+  if (!view) return JSON.stringify(buffer);
+  var bytes = [];
+  for (var i = 0; i < buffer.byteLength; i++) {
+    if (i > 20) {
+      bytes.push("...");
+      break;
+    }
+    var byte = view.getUint8(i).toString(16);
+    if (byte.length === 1) byte = "0" + byte;
+    bytes.push(byte);
+  }
+  return "<" + type + " " + bytes.join(" ") + ">";
+}
 
-globalScope.msgpack = {
-    pack:       msgpackpack,    // msgpack.pack(data:Mix,
-                                //              toString:Boolean = false):ByteArray/ByteString/false
-                                //  [1][mix to String]    msgpack.pack({}, true) -> "..."
-                                //  [2][mix to ByteArray] msgpack.pack({})       -> [...]
-    unpack:     msgpackunpack   // msgpack.unpack(data:BinaryString/ByteArray):Mix
-                                //  [1][String to mix]    msgpack.unpack("...") -> {}
-                                //  [2][ByteArray to mix] msgpack.unpack([...]) -> {}
+// Encode string as utf8 into dataview at offset
+exports.utf8Write = utf8Write;
+function utf8Write(view, offset, string) {
+  var byteLength = view.byteLength;
+  for(var i = 0, l = string.length; i < l; i++) {
+    var codePoint = string.charCodeAt(i);
+
+    // One byte of UTF-8
+    if (codePoint < 0x80) {
+      view.setUint8(offset++, codePoint >>> 0 & 0x7f | 0x00);
+      continue;
+    }
+
+    // Two bytes of UTF-8
+    if (codePoint < 0x800) {
+      view.setUint8(offset++, codePoint >>> 6 & 0x1f | 0xc0);
+      view.setUint8(offset++, codePoint >>> 0 & 0x3f | 0x80);
+      continue;
+    }
+
+    // Three bytes of UTF-8.  
+    if (codePoint < 0x10000) {
+      view.setUint8(offset++, codePoint >>> 12 & 0x0f | 0xe0);
+      view.setUint8(offset++, codePoint >>> 6  & 0x3f | 0x80);
+      view.setUint8(offset++, codePoint >>> 0  & 0x3f | 0x80);
+      continue;
+    }
+
+    // Four bytes of UTF-8
+    if (codePoint < 0x110000) {
+      view.setUint8(offset++, codePoint >>> 18 & 0x07 | 0xf0);
+      view.setUint8(offset++, codePoint >>> 12 & 0x3f | 0x80);
+      view.setUint8(offset++, codePoint >>> 6  & 0x3f | 0x80);
+      view.setUint8(offset++, codePoint >>> 0  & 0x3f | 0x80);
+      continue;
+    }
+    throw new Error("bad codepoint " + codePoint);
+  }
+}
+
+exports.utf8Read = utf8Read;
+function utf8Read(view, offset, length) {
+  var string = "";
+  for (var i = offset, end = offset + length; i < end; i++) {
+    var byte = view.getUint8(i);
+    // One byte character
+    if ((byte & 0x80) === 0x00) {
+      string += String.fromCharCode(byte);
+      continue;
+    }
+    // Two byte character
+    if ((byte & 0xe0) === 0xc0) {
+      string += String.fromCharCode(
+        ((byte & 0x0f) << 6) | 
+        (view.getUint8(++i) & 0x3f)
+      );
+      continue;
+    }
+    // Three byte character
+    if ((byte & 0xf0) === 0xe0) {
+      string += String.fromCharCode(
+        ((byte & 0x0f) << 12) |
+        ((view.getUint8(++i) & 0x3f) << 6) |
+        ((view.getUint8(++i) & 0x3f) << 0)
+      );
+      continue;
+    }
+    // Four byte character
+    if ((byte & 0xf8) === 0xf0) {
+      string += String.fromCharCode(
+        ((byte & 0x07) << 18) |
+        ((view.getUint8(++i) & 0x3f) << 12) |
+        ((view.getUint8(++i) & 0x3f) << 6) |
+        ((view.getUint8(++i) & 0x3f) << 0)
+      );
+      continue;
+    }
+    throw new Error("Invalid byte " + byte.toString(16));
+  }
+  return string;
+}
+
+exports.utf8ByteCount = utf8ByteCount;
+function utf8ByteCount(string) {
+  var count = 0;
+  for(var i = 0, l = string.length; i < l; i++) {
+    var codePoint = string.charCodeAt(i);
+    if (codePoint < 0x80) {
+      count += 1;
+      continue;
+    }
+    if (codePoint < 0x800) {
+      count += 2;
+      continue;
+    }
+    if (codePoint < 0x10000) {
+      count += 3;
+      continue;
+    }
+    if (codePoint < 0x110000) {
+      count += 4;
+      continue;
+    }
+    throw new Error("bad codepoint " + codePoint);
+  }
+  return count;
+}
+
+exports.encode = function (value) {
+  var buffer = new ArrayBuffer(sizeof(value));
+  var view = new DataView(buffer);
+  encode(value, view, 0);
+  return buffer;
+}
+
+exports.decode = decode;
+
+// http://wiki.msgpack.org/display/MSGPACK/Format+specification
+// I've extended the protocol to have two new types that were previously reserved.
+//   buffer 16  11011000  0xd8
+//   buffer 32  11011001  0xd9
+// These work just like raw16 and raw32 except they are node buffers instead of strings.
+//
+// Also I've added a type for `undefined`
+//   undefined  11000100  0xc4
+
+function Decoder(view, offset) {
+  this.offset = offset || 0;
+  this.view = view;
+}
+Decoder.prototype.map = function (length) {
+  var value = {};
+  for (var i = 0; i < length; i++) {
+    var key = this.parse();
+    value[key] = this.parse();
+  }
+  return value;
 };
-
-var _bin2num    = {}, // BinaryStringToNumber   { "\00": 0, ... "\ff": 255 }
-    _num2bin    = {}, // NumberToBinaryString   { 0: "\00", ... 255: "\ff" }
-    _buf        = [], // decode buffer
-    _idx        = 0,  // decode buffer[index]
-    _error      = 0,  // msgpack.pack() error code. 1 = CYCLIC_REFERENCE_ERROR
-    _isArray    = Array.isArray || (function(mix) {
-                    return Object.prototype.toString.call(mix) === "[object Array]";
-                  }),
-    _toString   = String.fromCharCode, // CharCode/ByteArray to String
-    _MAX_DEPTH  = 512;
-
-// msgpack.pack
-function msgpackpack(data,       // @param Mix:
-                     toString) { // @param Boolean(= false):
-                                 // @return ByteArray/BinaryString/false:
-                                 //     false is error return
-    //  [1][mix to String]    msgpack.pack({}, true) -> "..."
-    //  [2][mix to ByteArray] msgpack.pack({})       -> [...]
-
-    _error = 0;
-
-    var byteArray = encode([], data, 0);
-
-    return _error ? false
-                  : toString ? byteArrayToByteString(byteArray)
-                             : byteArray;
+Decoder.prototype.buf = function (length) {
+  var value = new ArrayBuffer(length);
+  (new Uint8Array(value)).set(new Uint8Array(this.view.buffer, this.offset, length), 0);
+  this.offset += length;
+  return value;
+};
+Decoder.prototype.raw = function (length) {
+  var value = utf8Read(this.view, this.offset, length);
+  this.offset += length;
+  return value;
+};
+Decoder.prototype.array = function (length) {
+  var value = new Array(length);
+  for (var i = 0; i < length; i++) {
+    value[i] = this.parse();
+  }
+  return value;
+};
+Decoder.prototype.parse = function () {
+  var type = this.view.getUint8(this.offset);
+  var value, length;
+  // FixRaw
+  if ((type & 0xe0) === 0xa0) {
+    length = type & 0x1f;
+    this.offset++;
+    return this.raw(length);
+  }
+  // FixMap
+  if ((type & 0xf0) === 0x80) {
+    length = type & 0x0f;
+    this.offset++;
+    return this.map(length);
+  }
+  // FixArray
+  if ((type & 0xf0) === 0x90) {
+    length = type & 0x0f;
+    this.offset++;
+    return this.array(length);
+  }
+  // Positive FixNum
+  if ((type & 0x80) === 0x00) {
+    this.offset++;
+    return type;
+  }
+  // Negative Fixnum
+  if ((type & 0xe0) === 0xe0) {
+    value = this.view.getInt8(this.offset);
+    this.offset++;
+    return value;
+  }
+  switch (type) {
+  // raw 16
+  case 0xda:
+    length = this.view.getUint16(this.offset + 1);
+    this.offset += 3;
+    return this.raw(length);
+  // raw 32
+  case 0xdb:
+    length = this.view.getUint32(this.offset + 1);
+    this.offset += 5;
+    return this.raw(length);
+  // nil
+  case 0xc0:
+    this.offset++;
+    return null;
+  // false
+  case 0xc2:
+    this.offset++;
+    return false;
+  // true
+  case 0xc3:
+    this.offset++;
+    return true;
+  // undefined
+  case 0xc4:
+    this.offset++;
+    return undefined;
+  // uint8
+  case 0xcc:
+    value = this.view.getUint8(this.offset + 1);
+    this.offset += 2;
+    return value;
+  // uint 16
+  case 0xcd:
+    value = this.view.getUint16(this.offset + 1);
+    this.offset += 3;
+    return value;
+  // uint 32
+  case 0xce:
+    value = this.view.getUint32(this.offset + 1);
+    this.offset += 5;
+    return value;
+  // int 8
+  case 0xd0:
+    value = this.view.getInt8(this.offset + 1);
+    this.offset += 2;
+    return value;
+  // int 16
+  case 0xd1:
+    value = this.view.getInt16(this.offset + 1);
+    this.offset += 3;
+    return value;
+  // int 32
+  case 0xd2:
+    value = this.view.getInt32(this.offset + 1);
+    this.offset += 5;
+    return value;
+  // map 16
+  case 0xde:
+    length = this.view.getUint16(this.offset + 1);
+    this.offset += 3;
+    return this.map(length);
+  // map 32
+  case 0xdf:
+    length = this.view.getUint32(this.offset + 1);
+    this.offset += 5;
+    return this.map(length);
+  // array 16
+  case 0xdc:
+    length = this.view.getUint16(this.offset + 1);
+    this.offset += 3;
+    return this.array(length);
+  // array 32
+  case 0xdd:
+    length = this.view.getUint32(this.offset + 1);
+    this.offset += 5;
+    return this.array(length);
+  // buffer 16
+  case 0xd8:
+    length = this.view.getUint16(this.offset + 1);
+    this.offset += 3;
+    return this.buf(length);
+  // buffer 32
+  case 0xd9:
+    length = this.view.getUint32(this.offset + 1);
+    this.offset += 5;
+    return this.buf(length);
+  // float
+  case 0xca:
+    value = this.view.getFloat32(this.offset + 1);
+    this.offset += 5;
+    return value;
+  // double
+  case 0xcb:
+    value = this.view.getFloat64(this.offset + 1);
+    this.offset += 9;
+    return value;
+  }
+  throw new Error("Unknown type 0x" + type.toString(16));
+};
+function decode(buffer) {
+  var view = new DataView(buffer);
+  var decoder = new Decoder(view);
+  var value = decoder.parse();
+  if (decoder.offset !== buffer.byteLength) throw new Error((buffer.byteLength - decoder.offset) + " trailing bytes");
+  return value;
 }
 
-// msgpack.unpack
-function msgpackunpack(data) { // @param BinaryString/ByteArray:
-                               // @return Mix/undefined:
-                               //       undefined is error return
-    //  [1][String to mix]    msgpack.unpack("...") -> {}
-    //  [2][ByteArray to mix] msgpack.unpack([...]) -> {}
+function encode(value, view, offset) {
+  var type = typeof value;
 
-    _buf = typeof data === "string" ? toByteArray(data) : data;
-    _idx = -1;
-    return decode(); // mix or undefined
+  // Strings Bytes
+  if (type === "string") {
+    var length = utf8ByteCount(value);
+    // fix raw
+    if (length < 0x20) {
+      view.setUint8(offset, length | 0xa0);
+      utf8Write(view, offset + 1, value);
+      return 1 + length;
+    }
+    // raw 16
+    if (length < 0x10000) {
+      view.setUint8(offset, 0xda);
+      view.setUint16(offset + 1, length);
+      utf8Write(view, offset + 3, value);
+      return 3 + length;
+    }
+    // raw 32
+    if (length < 0x100000000) {
+      view.setUint8(offset, 0xdb);
+      view.setUint32(offset + 1, length);
+      utf8Write(view, offset + 5, value);
+      return 5 + length;
+    }
+  }
+
+  if (value instanceof ArrayBuffer) {
+    var length = value.byteLength;
+    // buffer 16
+    if (length < 0x10000) {
+      view.setUint8(offset, 0xd8);
+      view.setUint16(offset + 1, length);
+      (new Uint8Array(view.buffer)).set(new Uint8Array(value), offset + 3);
+      return 3 + length;
+    }
+    // buffer 32
+    if (length < 0x100000000) {
+      view.setUint8(offset, 0xd9);
+      view.setUint32(offset + 1, length);
+      (new Uint8Array(view.buffer)).set(new Uint8Array(value), offset + 5);
+      return 5 + length;
+    }
+  }
+  
+  if (type === "number") {
+    // Floating Point
+    if ((value << 0) !== value) {
+      view.setUint8(offset, 0xcb);
+      view.setFloat64(offset + 1, value);
+      return 9;
+    }
+
+    // Integers
+    if (value >=0) {
+      // positive fixnum
+      if (value < 0x80) {
+        view.setUint8(offset, value);
+        return 1;
+      }
+      // uint 8
+      if (value < 0x100) {
+        view.setUint8(offset, 0xcc);
+        view.setUint8(offset + 1, value);
+        return 2;
+      }
+      // uint 16
+      if (value < 0x10000) {
+        view.setUint8(offset, 0xcd);
+        view.setUint16(offset + 1, value);
+        return 3;
+      }
+      // uint 32
+      if (value < 0x100000000) {
+        view.setUint8(offset, 0xce);
+        view.setUint32(offset + 1, value);
+        return 5;
+      }
+      throw new Error("Number too big 0x" + value.toString(16));
+    }
+    // negative fixnum
+    if (value >= -0x20) {
+      view.setInt8(offset, value);
+      return 1;
+    }
+    // int 8
+    if (value >= -0x80) {
+      view.setUint8(offset, 0xd0);
+      view.setInt8(offset + 1, value);
+      return 2;
+    }
+    // int 16
+    if (value >= -0x8000) {
+      view.setUint8(offset, 0xd1);
+      view.setInt16(offset + 1, value);
+      return 3;
+    }
+    // int 32
+    if (value >= -0x80000000) {
+      view.setUint8(offset, 0xd2);
+      view.setInt32(offset + 1, value);
+      return 5;
+    }
+    throw new Error("Number too small -0x" + (-value).toString(16).substr(1));
+  }
+  
+  // undefined
+  if (type === "undefined") {
+    view.setUint8(offset, 0xc4);
+    return 1;
+  }
+  
+  // null
+  if (value === null) {
+    view.setUint8(offset, 0xc0);
+    return 1;
+  }
+
+  // Boolean
+  if (type === "boolean") {
+    view.setUint8(offset, value ? 0xc3 : 0xc2);
+    return 1;
+  }
+  
+  // Container Types
+  if (type === "object") {
+    var length, size = 0;
+    var isArray = Array.isArray(value);
+
+    if (isArray) {
+      length = value.length;
+    }
+    else {
+      var keys = Object.keys(value);
+      length = keys.length;
+    }
+
+    var size;
+    if (length < 0x10) {
+      view.setUint8(offset, length | (isArray ? 0x90 : 0x80));
+      size = 1;
+    }
+    else if (length < 0x10000) {
+      view.setUint8(offset, isArray ? 0xdc : 0xde);
+      view.setUint16(offset + 1, length);
+      size = 3;
+    }
+    else if (length < 0x100000000) {
+      view.setUint8(offset, isArray ? 0xdd : 0xdf);
+      view.setUint32(offset + 1, length);
+      size = 5;
+    }
+
+    if (isArray) {
+      for (var i = 0; i < length; i++) {
+        size += encode(value[i], view, offset + size);
+      }
+    }
+    else {
+      for (var i = 0; i < length; i++) {
+        var key = keys[i];
+        size += encode(key, view, offset + size);
+        size += encode(value[key], view, offset + size);
+      }
+    }
+    
+    return size;
+  }
+  throw new Error("Unknown type " + type);
 }
 
-// inner - encoder
-function encode(rv,      // @param ByteArray: result
-                mix,     // @param Mix: source data
-                depth) { // @param Number: depth
-    var size, i, iz, c, pos,        // for UTF8.encode, Array.encode, Hash.encode
-        high, low, sign, exp, frac; // for IEEE754
+function sizeof(value) {
+  var type = typeof value;
 
-    if (mix == null) { // null or undefined -> 0xc0 ( null )
-        rv.push(0xc0);
-    } else if (mix === false) { // false -> 0xc2 ( false )
-        rv.push(0xc2);
-    } else if (mix === true) {  // true  -> 0xc3 ( true  )
-        rv.push(0xc3);
-    } else {
-        switch (typeof mix) {
-        case "number":
-            if (mix !== mix) { // isNaN
-                rv.push(0xcb, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff); // quiet NaN
-            } else if (mix === Infinity) {
-                rv.push(0xcb, 0x7f, 0xf0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00); // positive infinity
-            } else if (Math.floor(mix) === mix) { // int or uint
-                if (mix < 0) {
-                    // int
-                    if (mix >= -32) { // negative fixnum
-                        rv.push(0xe0 + mix + 32);
-                    } else if (mix > -0x80) {
-                        rv.push(0xd0, mix + 0x100);
-                    } else if (mix > -0x8000) {
-                        mix += 0x10000;
-                        rv.push(0xd1, mix >> 8, mix & 0xff);
-                    } else if (mix > -0x80000000) {
-                        mix += 0x100000000;
-                        rv.push(0xd2, mix >>> 24, (mix >> 16) & 0xff,
-                                                  (mix >>  8) & 0xff, mix & 0xff);
-                    } else {
-                        high = Math.floor(mix / 0x100000000);
-                        low  = mix & 0xffffffff;
-                        rv.push(0xd3, (high >> 24) & 0xff, (high >> 16) & 0xff,
-                                      (high >>  8) & 0xff,         high & 0xff,
-                                      (low  >> 24) & 0xff, (low  >> 16) & 0xff,
-                                      (low  >>  8) & 0xff,          low & 0xff);
-                    }
-                } else {
-                    // uint
-                    if (mix < 0x80) {
-                        rv.push(mix); // positive fixnum
-                    } else if (mix < 0x100) { // uint 8
-                        rv.push(0xcc, mix);
-                    } else if (mix < 0x10000) { // uint 16
-                        rv.push(0xcd, mix >> 8, mix & 0xff);
-                    } else if (mix < 0x100000000) { // uint 32
-                        rv.push(0xce, mix >>> 24, (mix >> 16) & 0xff,
-                                                  (mix >>  8) & 0xff, mix & 0xff);
-                    } else {
-                        high = Math.floor(mix / 0x100000000);
-                        low  = mix & 0xffffffff;
-                        rv.push(0xcf, (high >> 24) & 0xff, (high >> 16) & 0xff,
-                                      (high >>  8) & 0xff,         high & 0xff,
-                                      (low  >> 24) & 0xff, (low  >> 16) & 0xff,
-                                      (low  >>  8) & 0xff,          low & 0xff);
-                    }
-                }
-            } else { // double
-                // THX!! @edvakf
-                // http://javascript.g.hatena.ne.jp/edvakf/20101128/1291000731
-                sign = mix < 0;
-                sign && (mix *= -1);
-
-                // add offset 1023 to ensure positive
-                // 0.6931471805599453 = Math.LN2;
-                exp  = ((Math.log(mix) / 0.6931471805599453) + 1023) | 0;
-
-                // shift 52 - (exp - 1023) bits to make integer part exactly 53 bits,
-                // then throw away trash less than decimal point
-                frac = mix * Math.pow(2, 52 + 1023 - exp);
-
-                //  S+-Exp(11)--++-----------------Fraction(52bits)-----------------------+
-                //  ||          ||                                                        |
-                //  v+----------++--------------------------------------------------------+
-                //  00000000|00000000|00000000|00000000|00000000|00000000|00000000|00000000
-                //  6      5    55  4        4        3        2        1        8        0
-                //  3      6    21  8        0        2        4        6
-                //
-                //  +----------high(32bits)-----------+ +----------low(32bits)------------+
-                //  |                                 | |                                 |
-                //  +---------------------------------+ +---------------------------------+
-                //  3      2    21  1        8        0
-                //  1      4    09  6
-                low  = frac & 0xffffffff;
-                sign && (exp |= 0x800);
-                high = ((frac / 0x100000000) & 0xfffff) | (exp << 20);
-
-                rv.push(0xcb, (high >> 24) & 0xff, (high >> 16) & 0xff,
-                              (high >>  8) & 0xff,  high        & 0xff,
-                              (low  >> 24) & 0xff, (low  >> 16) & 0xff,
-                              (low  >>  8) & 0xff,  low         & 0xff);
-            }
-            break;
-        case "string":
-            // http://d.hatena.ne.jp/uupaa/20101128
-            iz = mix.length;
-            pos = rv.length; // keep rewrite position
-
-            rv.push(0); // placeholder
-
-            // utf8.encode
-            for (i = 0; i < iz; ++i) {
-                c = mix.charCodeAt(i);
-                if (c < 0x80) { // ASCII(0x00 ~ 0x7f)
-                    rv.push(c & 0x7f);
-                } else if (c < 0x0800) {
-                    rv.push(((c >>>  6) & 0x1f) | 0xc0, (c & 0x3f) | 0x80);
-                } else if (c < 0x10000) {
-                    rv.push(((c >>> 12) & 0x0f) | 0xe0,
-                            ((c >>>  6) & 0x3f) | 0x80, (c & 0x3f) | 0x80);
-                }
-            }
-            size = rv.length - pos - 1;
-
-            if (size < 32) {
-                rv[pos] = 0xa0 + size; // rewrite
-            } else if (size < 0x10000) { // 16
-                rv.splice(pos, 1, 0xda, size >> 8, size & 0xff);
-            } else if (size < 0x100000000) { // 32
-                rv.splice(pos, 1, 0xdb,
-                          size >>> 24, (size >> 16) & 0xff,
-                                       (size >>  8) & 0xff, size & 0xff);
-            }
-            break;
-        default: // array or hash
-            if (++depth >= _MAX_DEPTH) {
-                _error = 1; // CYCLIC_REFERENCE_ERROR
-                return rv = []; // clear
-            }
-            if (_isArray(mix)) {
-                size = mix.length;
-                if (size < 16) {
-                    rv.push(0x90 + size);
-                } else if (size < 0x10000) { // 16
-                    rv.push(0xdc, size >> 8, size & 0xff);
-                } else if (size < 0x100000000) { // 32
-                    rv.push(0xdd, size >>> 24, (size >> 16) & 0xff,
-                                               (size >>  8) & 0xff, size & 0xff);
-                }
-                for (i = 0; i < size; ++i) {
-                    encode(rv, mix[i], depth);
-                }
-            } else { // hash
-                // http://d.hatena.ne.jp/uupaa/20101129
-                pos = rv.length; // keep rewrite position
-                rv.push(0); // placeholder
-                size = 0;
-                for (i in mix) {
-                    ++size;
-                    encode(rv, i,      depth);
-                    encode(rv, mix[i], depth);
-                }
-                if (size < 16) {
-                    rv[pos] = 0x80 + size; // rewrite
-                } else if (size < 0x10000) { // 16
-                    rv.splice(pos, 1, 0xde, size >> 8, size & 0xff);
-                } else if (size < 0x100000000) { // 32
-                    rv.splice(pos, 1, 0xdf,
-                              size >>> 24, (size >> 16) & 0xff,
-                                           (size >>  8) & 0xff, size & 0xff);
-                }
-            }
-        }
+  // Raw Bytes
+  if (type === "string") {
+    var length = utf8ByteCount(value);
+    if (length < 0x20) {
+      return 1 + length;
     }
-    return rv;
+    if (length < 0x10000) {
+      return 3 + length;
+    }
+    if (length < 0x100000000) {
+      return 5 + length;
+    }
+  }
+  
+  if (value instanceof ArrayBuffer) {
+    var length = value.byteLength;
+    if (length < 0x10000) {
+      return 3 + length;
+    }
+    if (length < 0x100000000) {
+      return 5 + length;
+    }
+  }
+  
+  if (type === "number") {
+    // Floating Point
+    // double
+    if (value << 0 !== value) return 9;
+
+    // Integers
+    if (value >=0) {
+      // positive fixnum
+      if (value < 0x80) return 1;
+      // uint 8
+      if (value < 0x100) return 2;
+      // uint 16
+      if (value < 0x10000) return 3;
+      // uint 32
+      if (value < 0x100000000) return 5;
+      // uint 64
+      if (value < 0x10000000000000000) return 9;
+      throw new Error("Number too big 0x" + value.toString(16));
+    }
+    // negative fixnum
+    if (value >= -0x20) return 1;
+    // int 8
+    if (value >= -0x80) return 2;
+    // int 16
+    if (value >= -0x8000) return 3;
+    // int 32
+    if (value >= -0x80000000) return 5;
+    // int 64
+    if (value >= -0x8000000000000000) return 9;
+    throw new Error("Number too small -0x" + value.toString(16).substr(1));
+  }
+  
+  // Boolean, null, undefined
+  if (type === "boolean" || type === "undefined" || value === null) return 1;
+  
+  // Container Types
+  if (type === "object") {
+    var length, size = 0;
+    if (Array.isArray(value)) {
+      length = value.length;
+      for (var i = 0; i < length; i++) {
+        size += sizeof(value[i]);
+      }
+    }
+    else {
+      var keys = Object.keys(value);
+      length = keys.length;
+      for (var i = 0; i < length; i++) {
+        var key = keys[i];
+        size += sizeof(key) + sizeof(value[key]);
+      }
+    }
+    if (length < 0x10) {
+      return 1 + size;
+    }
+    if (length < 0x10000) {
+      return 3 + size;
+    }
+    if (length < 0x100000000) {
+      return 5 + size;
+    }
+    throw new Error("Array or object too long 0x" + length.toString(16));
+  }
+  throw new Error("Unknown type " + type);
 }
 
-// inner - decoder
-function decode() { // @return Mix:
-    var size, i, iz, c, num = 0,
-        sign, exp, frac, ary, hash,
-        buf = _buf, type = buf[++_idx];
+return exports;
 
-    if (type >= 0xe0) {             // Negative FixNum (111x xxxx) (-32 ~ -1)
-        return type - 0x100;
-    }
-    if (type < 0xc0) {
-        if (type < 0x80) {          // Positive FixNum (0xxx xxxx) (0 ~ 127)
-            return type;
-        }
-        if (type < 0x90) {          // FixMap (1000 xxxx)
-            num  = type - 0x80;
-            type = 0x80;
-        } else if (type < 0xa0) {   // FixArray (1001 xxxx)
-            num  = type - 0x90;
-            type = 0x90;
-        } else { // if (type < 0xc0) {   // FixRaw (101x xxxx)
-            num  = type - 0xa0;
-            type = 0xa0;
-        }
-    }
-    switch (type) {
-    case 0xc0:  return null;
-    case 0xc2:  return false;
-    case 0xc3:  return true;
-    case 0xca:  // float
-                num = buf[++_idx] * 0x1000000 + (buf[++_idx] << 16) +
-                                                (buf[++_idx] <<  8) + buf[++_idx];
-                sign =  num & 0x80000000;    //  1bit
-                exp  = (num >> 23) & 0xff;   //  8bits
-                frac =  num & 0x7fffff;      // 23bits
-                if (!num || num === 0x80000000) { // 0.0 or -0.0
-                    return 0;
-                }
-                if (exp === 0xff) { // NaN or Infinity
-                    return frac ? NaN : Infinity;
-                }
-                return (sign ? -1 : 1) *
-                            (frac | 0x800000) * Math.pow(2, exp - 127 - 23); // 127: bias
-    case 0xcb:  // double
-                num = buf[++_idx] * 0x1000000 + (buf[++_idx] << 16) +
-                                                (buf[++_idx] <<  8) + buf[++_idx];
-                sign =  num & 0x80000000;    //  1bit
-                exp  = (num >> 20) & 0x7ff;  // 11bits
-                frac =  num & 0xfffff;       // 52bits - 32bits (high word)
-                if (!num || num === 0x80000000) { // 0.0 or -0.0
-                    _idx += 4;
-                    return 0;
-                }
-                if (exp === 0x7ff) { // NaN or Infinity
-                    _idx += 4;
-                    return frac ? NaN : Infinity;
-                }
-                num = buf[++_idx] * 0x1000000 + (buf[++_idx] << 16) +
-                                                (buf[++_idx] <<  8) + buf[++_idx];
-                return (sign ? -1 : 1) *
-                            ((frac | 0x100000) * Math.pow(2, exp - 1023 - 20) // 1023: bias
-                             + num * Math.pow(2, exp - 1023 - 52));
-    // 0xcf: uint64, 0xce: uint32, 0xcd: uint16
-    case 0xcf:  num =  buf[++_idx] * 0x1000000 + (buf[++_idx] << 16) +
-                                                 (buf[++_idx] <<  8) + buf[++_idx];
-                return num * 0x100000000 +
-                       buf[++_idx] * 0x1000000 + (buf[++_idx] << 16) +
-                                                 (buf[++_idx] <<  8) + buf[++_idx];
-    case 0xce:  num += buf[++_idx] * 0x1000000 + (buf[++_idx] << 16);
-    case 0xcd:  num += buf[++_idx] << 8;
-    case 0xcc:  return num + buf[++_idx];
-    // 0xd3: int64, 0xd2: int32, 0xd1: int16, 0xd0: int8
-    case 0xd3:  num = buf[++_idx];
-                if (num & 0x80) { // sign -> avoid overflow
-                    return ((num         ^ 0xff) * 0x100000000000000 +
-                            (buf[++_idx] ^ 0xff) *   0x1000000000000 +
-                            (buf[++_idx] ^ 0xff) *     0x10000000000 +
-                            (buf[++_idx] ^ 0xff) *       0x100000000 +
-                            (buf[++_idx] ^ 0xff) *         0x1000000 +
-                            (buf[++_idx] ^ 0xff) *           0x10000 +
-                            (buf[++_idx] ^ 0xff) *             0x100 +
-                            (buf[++_idx] ^ 0xff) + 1) * -1;
-                }
-                return num         * 0x100000000000000 +
-                       buf[++_idx] *   0x1000000000000 +
-                       buf[++_idx] *     0x10000000000 +
-                       buf[++_idx] *       0x100000000 +
-                       buf[++_idx] *         0x1000000 +
-                       buf[++_idx] *           0x10000 +
-                       buf[++_idx] *             0x100 +
-                       buf[++_idx];
-    case 0xd2:  num  =  buf[++_idx] * 0x1000000 + (buf[++_idx] << 16) +
-                       (buf[++_idx] << 8) + buf[++_idx];
-                return num < 0x80000000 ? num : num - 0x100000000; // 0x80000000 * 2
-    case 0xd1:  num  = (buf[++_idx] << 8) + buf[++_idx];
-                return num < 0x8000 ? num : num - 0x10000; // 0x8000 * 2
-    case 0xd0:  num  =  buf[++_idx];
-                return num < 0x80 ? num : num - 0x100; // 0x80 * 2
-    // 0xdb: raw32, 0xda: raw16, 0xa0: raw ( string )
-    case 0xdb:  num +=  buf[++_idx] * 0x1000000 + (buf[++_idx] << 16);
-    case 0xda:  num += (buf[++_idx] << 8)       +  buf[++_idx];
-    case 0xa0:  // utf8.decode
-                for (ary = [], i = _idx, iz = i + num; i < iz; ) {
-                    c = buf[++i]; // lead byte
-                    ary.push(c < 0x80 ? c : // ASCII(0x00 ~ 0x7f)
-                             c < 0xe0 ? ((c & 0x1f) <<  6 | (buf[++i] & 0x3f)) :
-                                        ((c & 0x0f) << 12 | (buf[++i] & 0x3f) << 6
-                                                          | (buf[++i] & 0x3f)));
-                }
-                _idx = i;
-                return ary.length < 10240 ? _toString.apply(null, ary)
-                                          : byteArrayToByteString(ary);
-    // 0xdf: map32, 0xde: map16, 0x80: map
-    case 0xdf:  num +=  buf[++_idx] * 0x1000000 + (buf[++_idx] << 16);
-    case 0xde:  num += (buf[++_idx] << 8)       +  buf[++_idx];
-    case 0x80:  hash = {};
-                while (num--) {
-                    // make key/value pair
-                    size = buf[++_idx] - 0xa0;
-
-                    for (ary = [], i = _idx, iz = i + size; i < iz; ) {
-                        c = buf[++i]; // lead byte
-                        ary.push(c < 0x80 ? c : // ASCII(0x00 ~ 0x7f)
-                                 c < 0xe0 ? ((c & 0x1f) <<  6 | (buf[++i] & 0x3f)) :
-                                            ((c & 0x0f) << 12 | (buf[++i] & 0x3f) << 6
-                                                              | (buf[++i] & 0x3f)));
-                    }
-                    _idx = i;
-                    hash[_toString.apply(null, ary)] = decode();
-                }
-                return hash;
-    // 0xdd: array32, 0xdc: array16, 0x90: array
-    case 0xdd:  num +=  buf[++_idx] * 0x1000000 + (buf[++_idx] << 16);
-    case 0xdc:  num += (buf[++_idx] << 8)       +  buf[++_idx];
-    case 0x90:  ary = [];
-                while (num--) {
-                    ary.push(decode());
-                }
-                return ary;
-    }
-    return;
-}
-
-// inner - byteArray To ByteString
-function byteArrayToByteString(byteArray) { // @param ByteArray
-                                            // @return String
-    // http://d.hatena.ne.jp/uupaa/20101128
-    try {
-        return _toString.apply(this, byteArray); // toString
-    } catch(err) {
-        ; // avoid "Maximum call stack size exceeded"
-    }
-    var rv = [], i = 0, iz = byteArray.length, num2bin = _num2bin;
-
-    for (; i < iz; ++i) {
-        rv[i] = num2bin[byteArray[i]];
-    }
-    return rv.join("");
-}
-
-// inner - BinaryString To ByteArray
-function toByteArray(data) { // @param BinaryString: "\00\01"
-                             // @return ByteArray: [0x00, 0x01]
-    var rv = [], bin2num = _bin2num, remain,
-        ary = data.split(""),
-        i = -1, iz;
-
-    iz = ary.length;
-    remain = iz % 8;
-
-    while (remain--) {
-        ++i;
-        rv[i] = bin2num[ary[i]];
-    }
-    remain = iz >> 3;
-    while (remain--) {
-        rv.push(bin2num[ary[++i]], bin2num[ary[++i]],
-                bin2num[ary[++i]], bin2num[ary[++i]],
-                bin2num[ary[++i]], bin2num[ary[++i]],
-                bin2num[ary[++i]], bin2num[ary[++i]]);
-    }
-    return rv;
-}
-
-// --- init ---
-(function() {
-    var i = 0, v;
-
-    for (; i < 0x100; ++i) {
-        v = _toString(i);
-        _bin2num[v] = i; // "\00" -> 0x00
-        _num2bin[i] = v; //     0 -> "\00"
-    }
-    // http://twitter.com/edvakf/statuses/15576483807
-    for (i = 0x80; i < 0x100; ++i) { // [Webkit][Gecko]
-        _bin2num[_toString(0xf700 + i)] = i; // "\f780" -> 0x80
-    }
-})();
-
-})(this);
+});
 (function(o){"function"==typeof define?define(o):"function"==typeof YUI?YUI.add("es5",o):o()})(function(){function o(){}function v(a){a=+a;a!==a?a=0:0!==a&&(a!==1/0&&a!==-(1/0))&&(a=(0<a||-1)*Math.floor(Math.abs(a)));return a}function s(a){var b=typeof a;return null===a||"undefined"===b||"boolean"===b||"number"===b||"string"===b}Function.prototype.bind||(Function.prototype.bind=function(a){var b=this;if("function"!=typeof b)throw new TypeError("Function.prototype.bind called on incompatible "+b);
 var d=q.call(arguments,1),c=function(){if(this instanceof c){var e=b.apply(this,d.concat(q.call(arguments)));return Object(e)===e?e:this}return b.apply(a,d.concat(q.call(arguments)))};b.prototype&&(o.prototype=b.prototype,c.prototype=new o,o.prototype=null);return c});var k=Function.prototype.call,p=Object.prototype,q=Array.prototype.slice,h=k.bind(p.toString),t=k.bind(p.hasOwnProperty);t(p,"__defineGetter__")&&(k.bind(p.__defineGetter__),k.bind(p.__defineSetter__),k.bind(p.__lookupGetter__),k.bind(p.__lookupSetter__));
 if(2!=[1,2].splice(0).length){var y=Array.prototype.splice;Array.prototype.splice=function(a,b){return arguments.length?y.apply(this,[a===void 0?0:a,b===void 0?this.length-a:b].concat(q.call(arguments,2))):[]}}if(1!=[].unshift(0)){var z=Array.prototype.unshift;Array.prototype.unshift=function(){z.apply(this,arguments);return this.length}}Array.isArray||(Array.isArray=function(a){return h(a)=="[object Array]"});var k=Object("a"),l="a"!=k[0]||!(0 in k);Array.prototype.forEach||(Array.prototype.forEach=
@@ -469,11 +641,19 @@ Object.freeze;Object.freeze=function(a){return typeof a=="function"?a:s(a)}}Obje
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-04-22
+ * Compiled: 2013-05-12
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
  */
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+(function(){
+
+	var root = this;
+
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -515,7 +695,7 @@ PIXI.Point = function(x, y)
  * @method clone
  * @return a copy of the point
  */
-PIXI.Point.clone = function()
+PIXI.Point.prototype.clone = function()
 {
 	return new PIXI.Point(this.x, this.y);
 }
@@ -572,7 +752,7 @@ PIXI.Rectangle = function(x, y, width, height)
  * @method clone
  * @return a copy of the rectangle
  */
-PIXI.Rectangle.clone = function()
+PIXI.Rectangle.prototype.clone = function()
 {
 	return new PIXI.Rectangle(this.x, this.y, this.width, this.height);
 }
@@ -665,6 +845,12 @@ PIXI.DisplayObject = function()
 	
 	// [readonly] best not to toggle directly! use setInteractive()
 	this.interactive = false;
+	
+	/**
+	 * This is used to indicate if the displayObject should display a mouse hand cursor on rollover
+	 * @property buttonMode
+	 * @type Boolean
+	 */
 	this.buttonMode = false;
 	
 	/*
@@ -1297,6 +1483,358 @@ PIXI.MovieClip.prototype.updateTransform = function()
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
+/**
+ * A Text Object will create a line(s) of text. To split a line you can use "\n", "\r" or "\r\n"
+ * @class Text
+ * @extends Sprite
+ * @constructor
+ * @param {String} text The copy that you would like the text to display
+ * @param {Object} [style] The style parameters
+ * @param {String} [style.font] default "bold 20pt Arial" The style and size of the font
+ * @param {Object} [style.fill="black"] A canvas fillstyle that will be used on the text eg "red", "#00FF00"
+ * @param {String} [style.align="left"] An alignment of the multiline text ("left", "center" or "right")
+ * @param {String} [style.stroke] A canvas fillstyle that will be used on the text stroke eg "blue", "#FCFF00"
+ * @param {Number} [style.strokeThickness=0] A number that represents the thickness of the stroke. Default is 0 (no stroke)
+ */
+PIXI.Text = function(text, style)
+{
+    this.canvas = document.createElement("canvas");
+    this.context = this.canvas.getContext("2d");
+    PIXI.Sprite.call(this, PIXI.Texture.fromCanvas(this.canvas));
+
+    this.setText(text);
+    this.setStyle(style);
+    this.updateText();
+    this.dirty = false;
+};
+
+// constructor
+PIXI.Text.constructor = PIXI.Text;
+PIXI.Text.prototype = Object.create(PIXI.Sprite.prototype);
+
+/**
+ * Set the style of the text
+ * @method setStyle
+ * @param {Object} [style] The style parameters
+ * @param {String} [style.font="bold 20pt Arial"] The style and size of the font
+ * @param {Object} [style.fill="black"] A canvas fillstyle that will be used on the text eg "red", "#00FF00"
+ * @param {String} [style.align="left"] An alignment of the multiline text ("left", "center" or "right")
+ * @param {String} [style.stroke] A canvas fillstyle that will be used on the text stroke eg "blue", "#FCFF00"
+ * @param {Number} [style.strokeThickness=0] A number that represents the thickness of the stroke. Default is 0 (no stroke)
+ */
+PIXI.Text.prototype.setStyle = function(style)
+{
+    style = style || {};
+    style.font = style.font || "bold 20pt Arial";
+    style.fill = style.fill || "black";
+    style.align = style.align || "left";
+    style.strokeThickness = style.strokeThickness || 0;
+    this.style = style;
+    this.dirty = true;
+};
+
+/**
+ * Set the copy for the text object. To split a line you can use "\n"
+ * @method setText
+ * @param {String} text The copy that you would like the text to display
+ */
+PIXI.Sprite.prototype.setText = function(text)
+{
+    this.text = text || " ";
+    this.dirty = true;
+};
+
+/**
+ * Renders text
+ * @private
+ */
+PIXI.Text.prototype.updateText = function()
+{
+	this.context.font = this.style.font;
+
+	//split text into lines
+	var lines = this.text.split(/(?:\r\n|\r|\n)/);
+
+	//calculate text width
+	var lineWidths = [];
+	var maxLineWidth = 0;
+	for (var i = 0; i < lines.length; i++)
+	{
+		var lineWidth = this.context.measureText(lines[i]).width;
+		lineWidths[i] = lineWidth;
+		maxLineWidth = Math.max(maxLineWidth, lineWidth);
+	}
+	this.canvas.width = maxLineWidth + this.style.strokeThickness;
+	
+	//calculate text height
+	var lineHeight = this.determineFontHeight("font: " + this.style.font  + ";") + this.style.strokeThickness;
+	this.canvas.height = lineHeight * lines.length;
+
+	//set canvas text styles
+	this.context.fillStyle = this.style.fill;
+	this.context.font = this.style.font;
+	
+	this.context.strokeStyle = this.style.stroke;
+	this.context.lineWidth = this.style.strokeThickness;
+
+	this.context.textBaseline = "top";
+
+	//draw lines line by line
+	for (i = 0; i < lines.length; i++)
+	{
+		var linePosition = new PIXI.Point(this.style.strokeThickness / 2, this.style.strokeThickness / 2 + i * lineHeight);
+	
+		if(this.style.align == "right")
+		{
+			linePosition.x += maxLineWidth - lineWidths[i];
+		}
+		else if(this.style.align == "center")
+		{
+			linePosition.x += (maxLineWidth - lineWidths[i]) / 2;
+		}
+
+		if(this.style.stroke && this.style.strokeThickness)
+		{
+			this.context.strokeText(lines[i], linePosition.x, linePosition.y);
+		}
+
+		if(this.style.fill)
+		{
+			this.context.fillText(lines[i], linePosition.x, linePosition.y);
+		}
+	}
+	
+    this.updateTexture();
+};
+
+/**
+ * Updates texture size based on canvas size
+ * @private
+ */
+PIXI.Text.prototype.updateTexture = function()
+{
+
+    this.texture.baseTexture.width = this.canvas.width;
+    this.texture.baseTexture.height = this.canvas.height;
+    this.texture.frame.width = this.canvas.width;
+    this.texture.frame.height = this.canvas.height;
+    PIXI.texturesToUpdate.push(this.texture.baseTexture);
+};
+
+/**
+ * @private
+ */
+PIXI.Text.prototype.updateTransform = function()
+{
+	if(this.dirty)
+	{
+		this.updateText();	
+		this.dirty = false;
+	}
+	
+	PIXI.Sprite.prototype.updateTransform.call(this);
+};
+
+/**
+ * http://stackoverflow.com/users/34441/ellisbben
+ * great solution to the problem!
+ * @private
+ */
+PIXI.Text.prototype.determineFontHeight = function(fontStyle) 
+{
+	// build a little reference dictionary so if the font style has been used return a
+	// cached version...
+	var result = PIXI.Text.heightCache[fontStyle];
+	
+	if(!result)
+	{
+		var body = document.getElementsByTagName("body")[0];
+		var dummy = document.createElement("div");
+		var dummyText = document.createTextNode("M");
+		dummy.appendChild(dummyText);
+		dummy.setAttribute("style", fontStyle);
+		body.appendChild(dummy);
+		
+		result = dummy.offsetHeight;
+		PIXI.Text.heightCache[fontStyle] = result;
+		
+		body.removeChild(dummy);
+	}
+	
+	return result;
+};
+
+PIXI.Text.prototype.destroy = function(destroyTexture)
+{
+	if(destroyTexture)
+	{
+		this.texture.destroy();
+	}
+		
+};
+
+PIXI.Text.heightCache = {};
+
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+/**
+ * A Text Object will create a line(s) of text using bitmap font. To split a line you can use "\n", "\r" or "\r\n"
+ * You can generate the fnt files using 
+ * http://www.angelcode.com/products/bmfont/ for windows or
+ * http://www.bmglyph.com/ for mac.
+ * @class BitmapText
+ * @extends DisplayObjectContainer
+ * @constructor
+ * @param {String} text The copy that you would like the text to display
+ * @param {Object} style The style parameters
+ * @param {String} style.font The size (optional) and bitmap font id (required) eq "Arial" or "20px Arial" (must have loaded previously)
+ * @param {String} [style.align="left"] An alignment of the multiline text ("left", "center" or "right")
+ */
+PIXI.BitmapText = function(text, style)
+{
+    PIXI.DisplayObjectContainer.call(this);
+
+    this.setText(text);
+    this.setStyle(style);
+    this.updateText();
+    this.dirty = false
+
+};
+
+// constructor
+PIXI.BitmapText.constructor = PIXI.BitmapText;
+PIXI.BitmapText.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
+
+/**
+ * Set the copy for the text object
+ * @method setText
+ * @param {String} text The copy that you would like the text to display
+ */
+PIXI.BitmapText.prototype.setText = function(text)
+{
+    this.text = text || " ";
+    this.dirty = true;
+};
+
+/**
+ * Set the style of the text
+ * @method setStyle
+ * @param {Object} style The style parameters
+ * @param {String} style.font The size (optional) and bitmap font id (required) eq "Arial" or "20px Arial" (must have loaded previously)
+ * @param {String} [style.align="left"] An alignment of the multiline text ("left", "center" or "right")
+ */
+PIXI.BitmapText.prototype.setStyle = function(style)
+{
+    style = style || {};
+    style.align = style.align || "left";
+    this.style = style;
+
+    var font = style.font.split(" ");
+    this.fontName = font[font.length - 1];
+    this.fontSize = font.length >= 2 ? parseInt(font[font.length - 2], 10) : PIXI.BitmapText.fonts[this.fontName].size;
+
+    this.dirty = true;
+};
+
+/**
+ * Renders text
+ * @private
+ */
+PIXI.BitmapText.prototype.updateText = function()
+{
+    var data = PIXI.BitmapText.fonts[this.fontName];
+    var pos = new PIXI.Point();
+    var prevCharCode = null;
+    var chars = [];
+    var maxLineWidth = 0;
+    var lineWidths = [];
+    var line = 0;
+    var scale = this.fontSize / data.size;
+    for(var i = 0; i < this.text.length; i++)
+    {
+        var charCode = this.text.charCodeAt(i);
+        if(/(?:\r\n|\r|\n)/.test(this.text.charAt(i)))
+        {
+            lineWidths.push(pos.x);
+            maxLineWidth = Math.max(maxLineWidth, pos.x);
+            line++;
+
+            pos.x = 0;
+            pos.y += data.lineHeight;
+            prevCharCode = null;
+            continue;
+        }
+        
+        var charData = data.chars[charCode];
+        if(!charData) continue;
+
+        if(prevCharCode && charData[prevCharCode])
+        {
+           pos.x += charData.kerning[prevCharCode];
+        }
+        chars.push({line: line, charCode: charCode, position: new PIXI.Point(pos.x + charData.xOffset, pos.y + charData.yOffset)});
+        pos.x += charData.xAdvance;
+
+        prevCharCode = charCode;
+    }
+
+    lineWidths.push(pos.x);
+    maxLineWidth = Math.max(maxLineWidth, pos.x);
+
+    var lineAlignOffsets = [];
+    for(i = 0; i <= line; i++)
+    {
+        var alignOffset = 0;
+        if(this.style.align == "right")
+        {
+            alignOffset = maxLineWidth - lineWidths[i];
+        }
+        else if(this.style.align == "center")
+        {
+            alignOffset = (maxLineWidth - lineWidths[i]) / 2;
+        }
+        lineAlignOffsets.push(alignOffset);
+    }
+
+    for(i = 0; i < chars.length; i++)
+    {
+        var char = PIXI.Sprite.fromFrame(chars[i].charCode);
+        char.position.x = (chars[i].position.x + lineAlignOffsets[chars[i].line]) * scale;
+        char.position.y = chars[i].position.y * scale;
+        char.scale.x = char.scale.y = scale;
+        this.addChild(char);
+    }
+
+    this.width = pos.x * scale;
+    this.height = (pos.y + data.lineHeight) * scale;
+};
+
+/**
+ * @private
+ */
+PIXI.BitmapText.prototype.updateTransform = function()
+{
+	if(this.dirty)
+	{
+        while(this.children.length > 0)
+        {
+            this.removeChild(this.getChildAt(0));
+        }
+        this.updateText();
+
+        this.dirty = false;
+	}
+	
+	PIXI.DisplayObjectContainer.prototype.updateTransform.call(this);
+};
+
+PIXI.BitmapText.fonts = {};
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
 
 
 /**
@@ -1432,7 +1970,7 @@ PIXI.InteractionManager.prototype.update = function()
 		var len = this.interactiveItems.length;
 		
 		for (var i=0; i < this.interactiveItems.length; i++) {
-		  this.interactiveItems[i].interactiveChildren = true;
+		  this.interactiveItems[i].interactiveChildren = false;
 		}
 		
 		this.interactiveItems = [];
@@ -1445,6 +1983,8 @@ PIXI.InteractionManager.prototype.update = function()
 	// loop through interactive objects!
 	var length = this.interactiveItems.length;
 	
+	if(this.target)this.target.view.style.cursor = "default";	
+				
 	for (var i = 0; i < length; i++)
 	{
 		var item = this.interactiveItems[i];
@@ -1453,6 +1993,8 @@ PIXI.InteractionManager.prototype.update = function()
 		// OPTIMISATION - only calculate every time if the mousemove function exists..
 		// OK so.. does the object have any other interactive functions?
 		// hit-test the clip!
+		
+		
 		if(item.mouseover || item.mouseout || item.buttonMode)
 		{
 			// ok so there are some functions so lets hit test it..
@@ -1461,9 +2003,11 @@ PIXI.InteractionManager.prototype.update = function()
 			// loks like there was a hit!
 			if(item.__hit)
 			{
+				if(item.buttonMode)this.target.view.style.cursor = "pointer";	
+				
 				if(!item.__isOver)
 				{
-					if(item.buttonMode)this.target.view.style.cursor = "pointer";	
+					
 					if(item.mouseover)item.mouseover(this.mouse);
 					item.__isOver = true;	
 				}
@@ -1473,7 +2017,6 @@ PIXI.InteractionManager.prototype.update = function()
 				if(item.__isOver)
 				{
 					// roll out!
-					if(item.buttonMode)this.target.view.style.cursor = "default";	
 					if(item.mouseout)item.mouseout(this.mouse);
 					item.__isOver = false;	
 				}
@@ -1622,6 +2165,8 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 			
 			if(y > y1 && y < y1 + height)
 			{
+				// set the target property if a hit is true!
+				interactionData.target = item
 				return true;
 			}
 		}
@@ -2358,71 +2903,57 @@ PIXI.autoDetectRenderer = function(width, height, view, transparent)
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
-	
-PIXI.shaderFragmentSrc = [	"precision mediump float;",
-					  		"varying vec2 vTextureCoord;",
-					  		"varying float vColor;",
-					  		"uniform sampler2D uSampler;",
-					  		"void main(void) {",
-					  		"gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y));",
-					  		"gl_FragColor = gl_FragColor * vColor;",
-					  		"}"];
 
-PIXI.shaderVertexSrc = [	"attribute vec2 aVertexPosition;",
-	    					"attribute vec2 aTextureCoord;",
-	    					"attribute float aColor;",
-	  						"uniform mat4 uMVMatrix;",
-							"varying vec2 vTextureCoord;",
-							"varying float vColor;",
-							"void main(void) {",
-							"gl_Position = uMVMatrix * vec4(aVertexPosition, 1.0, 1.0);",
-							"vTextureCoord = aTextureCoord;",
-							"vColor = aColor;",
-	   					 	"}"]
+PIXI.shaderFragmentSrc = [
+  "precision mediump float;",
+  "varying vec2 vTextureCoord;",
+  "varying float vColor;",
+  "uniform sampler2D uSampler;",
+  "void main(void) {",
+    "gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y));",
+    "gl_FragColor = gl_FragColor * vColor;",
+  "}"
+];
+
+PIXI.shaderVertexSrc = [
+  "attribute vec2 aVertexPosition;",
+  "attribute vec2 aTextureCoord;",
+  "attribute float aColor;",
+  "uniform mat4 uMVMatrix;",
+  "varying vec2 vTextureCoord;",
+  "varying float vColor;",
+  "void main(void) {",
+    "gl_Position = uMVMatrix * vec4(aVertexPosition, 1.0, 1.0);",
+    "vTextureCoord = aTextureCoord;",
+    "vColor = aColor;",
+  "}"
+];
 
 PIXI.CompileVertexShader = function(gl, shaderSrc)
 {
-	var src = "";
-	
-	for (var i=0; i < shaderSrc.length; i++) {
-	  src += shaderSrc[i];
-	};
-	
-	var shader;
-    shader = gl.createShader(gl.VERTEX_SHADER);
-       
-    gl.shaderSource(shader, src);
-    gl.compileShader(shader);
-
-    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        alert(gl.getShaderInfoLog(shader));
-        return null;
-    }
-    
-    return shader;
+  return PIXI._CompileShader(gl, shaderSrc, gl.VERTEX_SHADER);
 }
 
 PIXI.CompileFragmentShader = function(gl, shaderSrc)
 {
-	var src = "";
-	
-	for (var i=0; i < shaderSrc.length; i++) {
-	  src += shaderSrc[i];
-	};
-	
-	var shader;
-    shader = gl.createShader(gl.FRAGMENT_SHADER);
-        
-    gl.shaderSource(shader, src);
-    gl.compileShader(shader);
-	
-    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        alert(gl.getShaderInfoLog(shader));
-        return null;
-    }
-    
-    return shader;
+  return PIXI._CompileShader(gl, shaderSrc, gl.FRAGMENT_SHADER);
 }
+
+PIXI._CompileShader = function(gl, shaderSrc, shaderType)
+{
+  var src = shaderSrc.join("\n");
+  var shader = gl.createShader(shaderType);
+  gl.shaderSource(shader, src);
+  gl.compileShader(shader);
+
+  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+    alert(gl.getShaderInfoLog(shader));
+    return null;
+  }
+
+  return shader;
+}
+
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -2445,6 +2976,8 @@ PIXI._defaultFrame = new PIXI.Rectangle(0,0,1,1);
  */
 PIXI.WebGLRenderer = function(width, height, view, transparent)
 {
+	// do a catch.. only 1 webGL renderer..
+
 	//console.log(transparent)
 	this.transparent = !!transparent;
 	
@@ -2492,6 +3025,31 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
 
 // constructor
 PIXI.WebGLRenderer.constructor = PIXI.WebGLRenderer;
+
+/**
+ * @private 
+ */
+PIXI.WebGLRenderer.prototype.getBatch = function()
+{
+	if(PIXI._batchs.length == 0)
+	{
+		return new PIXI.WebGLBatch(this.gl);
+	}
+	else
+	{
+		return PIXI._batchs.pop();
+	}
+}
+
+/**
+ * @private
+ */
+PIXI.WebGLRenderer.prototype.returnBatch = function(batch)
+{
+	batch.clean();	
+	PIXI._batchs.push(batch);
+}
+
 
 /**
  * @private
@@ -2610,12 +3168,13 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 
 	// update any textures	
 	for (var i=0; i < PIXI.texturesToUpdate.length; i++) this.updateTexture(PIXI.texturesToUpdate[i]);
+	for (var i=0; i < PIXI.texturesToDestroy.length; i++) this.destroyTexture(PIXI.texturesToDestroy[i]);
 	
 	// empty out the arrays
 	stage.__childrenRemoved = [];
 	stage.__childrenAdded = [];
 	PIXI.texturesToUpdate = [];
-	
+	PIXI.texturesToDestroy = [];
 	// recursivly loop through all items!
 	this.checkVisibility(stage, true);
 	
@@ -2695,8 +3254,8 @@ PIXI.WebGLRenderer.prototype.updateTexture = function(texture)
 		gl.bindTexture(gl.TEXTURE_2D, texture._glTexture);
 	 	gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.source);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 		
 		// reguler...
 		
@@ -2720,12 +3279,23 @@ PIXI.WebGLRenderer.prototype.updateTexture = function(texture)
 	this.refreshBatchs = true;
 }
 
+PIXI.WebGLRenderer.prototype.destroyTexture = function(texture)
+{
+	var gl = this.gl;
+	
+	if(texture._glTexture)
+	{
+		texture._glTexture = gl.createTexture();
+		gl.deleteTexture(gl.TEXTURE_2D, texture._glTexture);
+	}
+}
+
 /**
  * @private
  */
 PIXI.WebGLRenderer.prototype.addDisplayObject = function(displayObject)
 {
-	
+	var objectDetaildisplayObject
 	if(!displayObject.stage)return; // means it was removed 
 	if(displayObject.__inWebGL)return; //means it is already in webgL
 	
@@ -2866,7 +3436,7 @@ PIXI.WebGLRenderer.prototype.addDisplayObject = function(displayObject)
 							 * seems the new sprite is in the middle of a batch
 							 * lets split it.. 
 							 */
-							var batch = PIXI._getBatch(this.gl);
+							var batch = this.getBatch();
 
 							var index = this.batchs.indexOf( previousBatch );
 							batch.init(displayObject);
@@ -2890,7 +3460,7 @@ PIXI.WebGLRenderer.prototype.addDisplayObject = function(displayObject)
 		 * time to create anew one!
 		 */
 		
-		var batch = PIXI._getBatch(this.gl);
+		var batch =  this.getBatch();
 		batch.init(displayObject);
 
 		if(previousBatch) // if this is invalid it means 
@@ -2949,7 +3519,6 @@ PIXI.WebGLRenderer.prototype.removeDisplayObject = function(displayObject)
 		
 		batch.remove(displayObject);
 		
-		
 		if(batch.size==0)
 		{
 			batchToRemove = batch
@@ -2974,7 +3543,7 @@ PIXI.WebGLRenderer.prototype.removeDisplayObject = function(displayObject)
 		{
 			// wha - eva! just get of the empty batch!
 			this.batchs.splice(index, 1);
-			if(batchToRemove instanceof PIXI.WebGLBatch)PIXI._returnBatch(batchToRemove);
+			if(batchToRemove instanceof PIXI.WebGLBatch)this.returnBatch(batchToRemove);
 		
 			return;
 		}
@@ -2986,8 +3555,8 @@ PIXI.WebGLRenderer.prototype.removeDisplayObject = function(displayObject)
 				//console.log("MERGE")
 				this.batchs[index-1].merge(this.batchs[index+1]);
 				
-				if(batchToRemove instanceof PIXI.WebGLBatch)PIXI._returnBatch(batchToRemove);
-				PIXI._returnBatch(this.batchs[index+1]);
+				if(batchToRemove instanceof PIXI.WebGLBatch)this.returnBatch(batchToRemove);
+				this.returnBatch(this.batchs[index+1]);
 				this.batchs.splice(index, 2);
 				return;
 			}
@@ -2995,7 +3564,7 @@ PIXI.WebGLRenderer.prototype.removeDisplayObject = function(displayObject)
 		
 		
 		this.batchs.splice(index, 1);
-		if(batchToRemove instanceof PIXI.WebGLBatch)PIXI._returnBatch(batchToRemove);
+		if(batchToRemove instanceof PIXI.WebGLBatch)this.returnBatch(batchToRemove);
 	}
 	
 	
@@ -3925,6 +4494,7 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 	
 	// update textures if need be
 	PIXI.texturesToUpdate = [];
+	PIXI.texturesToDestroy = [];
 	
 	this.context.setTransform(1,0,0,1,0,0); 
 	stage.updateTransform();
@@ -4105,6 +4675,8 @@ PIXI.CanvasRenderer.prototype.renderTilingSprite = function(sprite)
 	
 	context.scale(1/tileScale.x, 1/tileScale.y);
     context.translate(-tilePosition.x, -tilePosition.y);
+    
+    context.closePath();
 }
 
 
@@ -4471,7 +5043,7 @@ PIXI.TilingSprite = function(texture, width, height)
 	 * @property tileScale
 	 * @type Point
 	 */	
-	this.tileScale = new PIXI.Point(2,1);
+	this.tileScale = new PIXI.Point(1,1);
 	/**
 	 * The offset position of the image that is being tiled
 	 * @property tileScale
@@ -4509,6 +5081,7 @@ PIXI.TilingSprite.prototype.onTextureUpdate = function(event)
 
 PIXI.BaseTextureCache = {};
 PIXI.texturesToUpdate = [];
+PIXI.texturesToDestroy = [];
 
 /**
  * A texture stores the information that represents an image. All textures have a base texture
@@ -4590,6 +5163,18 @@ PIXI.BaseTexture = function(source)
 }
 
 PIXI.BaseTexture.constructor = PIXI.BaseTexture;
+
+PIXI.BaseTexture.prototype.destroy = function()
+{
+	
+	if(this.source instanceof Image)
+	{
+		this.source.src = null;
+	}
+	this.source = null;
+	PIXI.texturesToDestroy.push(this);
+}
+
 
 /**
  * 
@@ -4695,6 +5280,11 @@ PIXI.Texture.prototype.onBaseTextureLoaded = function(event)
 	this.scope.dispatchEvent( { type: 'update', content: this } );
 }
 
+PIXI.Texture.prototype.destroy = function(destroyBase)
+{
+	if(destroyBase)this.baseTexture.destroy();
+}
+
 /**
  * Specifies the rectangle region of the baseTexture
  * @method setFrame
@@ -4733,7 +5323,6 @@ PIXI.Texture.fromImage = function(imageUrl, crossorigin)
 	if(!texture)
 	{
 		texture = new PIXI.Texture(PIXI.BaseTexture.fromImage(imageUrl, crossorigin));
-		
 		PIXI.TextureCache[imageUrl] = texture;
 	}
 	
@@ -4806,123 +5395,17 @@ PIXI.Texture.frameUpdates = [];
  */
 
 /**
- * The sprite sheet loader is used to load in JSON sprite sheet data
- * To generate the data you can use http://www.codeandweb.com/texturepacker and publish the "JSON" format
- * There is a free version so thats nice, although the paid version is great value for money.
- * It is highly recommended to use Sprite sheets (also know as texture atlas') as it means sprite's can be batched and drawn together for highly increased rendering speed.
- * Once the data has been loaded the frames are stored in the PIXI texture cache and can be accessed though PIXI.Texture.fromFrameId() and PIXI.Sprite.fromFromeId()
- * This loader will also load the image file that the Spritesheet points to as well as the data.
- * When loaded this class will dispatch a 'loaded' event
- * @class SpriteSheetLoader
- * @extends EventTarget
- * @constructor
- * @param url {String} the url of the sprite sheet JSON file
- */
-
-PIXI.SpriteSheetLoader = function(url)
-{
-	/*
-	 * i use texture packer to load the assets..
-	 * http://www.codeandweb.com/texturepacker
-	 * make sure to set the format as "JSON"
-	 */
-	PIXI.EventTarget.call( this );
-	this.url = url;
-	this.baseUrl = url.replace(/[^\/]*$/, '');
-	this.texture;
-	this.frames = {};
-	this.crossorigin = false;
-}
-
-// constructor
-PIXI.SpriteSheetLoader.constructor = PIXI.SpriteSheetLoader;
-
-/**
- * This will begin loading the JSON file
- */
-PIXI.SpriteSheetLoader.prototype.load = function()
-{
-	this.ajaxRequest = new AjaxRequest();
-	var scope = this;
-	this.ajaxRequest.onreadystatechange=function()
-	{
-		scope.onLoaded();
-	}
-		
-	this.ajaxRequest.open("GET", this.url, true)
-	if (this.ajaxRequest.overrideMimeType) this.ajaxRequest.overrideMimeType("application/json");
-	this.ajaxRequest.send(null)
-}
-
-PIXI.SpriteSheetLoader.prototype.onLoaded = function()
-{
-	if (this.ajaxRequest.readyState==4)
-	{
-		 if (this.ajaxRequest.status==200 || window.location.href.indexOf("http")==-1)
-	 	{
-			var jsondata = eval("("+this.ajaxRequest.responseText+")");
-			
-			var textureUrl = this.baseUrl + jsondata.meta.image;
-			
-			this.texture = PIXI.Texture.fromImage(textureUrl, this.crossorigin).baseTexture;
-			
-		//	if(!this.texture)this.texture = new PIXI.Texture(textureUrl);
-			
-			var frameData = jsondata.frames;
-			for (var i in frameData) 
-			{
-				var rect = frameData[i].frame;
-				if (rect)
-				{
-					PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {x:rect.x, y:rect.y, width:rect.w, height:rect.h});
-					
-					if(frameData[i].trimmed)
-					{
-						//var realSize = frameData[i].spriteSourceSize;
-						PIXI.TextureCache[i].realSize = frameData[i].spriteSourceSize;
-						PIXI.TextureCache[i].trim.x = 0// (realSize.x / rect.w)
-						// calculate the offset!
-					}
-	//				this.frames[i] = ;
-				}
-   			}
-			
-			if(this.texture.hasLoaded)
-			{
-				this.dispatchEvent( { type: 'loaded', content: this } );
-			}
-			else
-			{
-				var scope = this;
-				// wait for the texture to load..
-				this.texture.addEventListener('loaded', function(){
-					
-					scope.dispatchEvent( { type: 'loaded', content: scope } );
-					
-				});
-			}
-	 	}
-	}
-	
-}
-
-
-/**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- */
-
-/**
- * A Class that loads a bunch of images / sprite sheet files. Once the assets have been loaded they are added to the PIXI Texture cache and can be accessed easily through PIXI.Texture.fromFrame(), PIXI.Texture.fromImage() and PIXI.Sprite.fromImage(), PIXI.Sprite.fromFromeId()
- * When all items have been loaded this class will dispatch a 'loaded' event
- * As each individual item is loaded this class will dispatch a 'progress' event
+ * A Class that loads a bunch of images / sprite sheet / bitmap font files. Once the assets have been loaded they are added to the PIXI Texture cache and can be accessed easily through PIXI.Texture.fromImage() and PIXI.Sprite.fromImage()
+ * When all items have been loaded this class will dispatch a "onLoaded" event
+ * As each individual item is loaded this class will dispatch a "onProgress" event
  * @class AssetLoader
  * @constructor
  * @extends EventTarget
- * @param assetURLs {Array} an array of image/sprite sheet urls that you would like loaded supported. Supported image formats include "jpeg", "jpg", "png", "gif". Supported sprite sheet data formats only include "JSON" at this time
+ * @param {Array} assetURLs an array of image/sprite sheet urls that you would like loaded supported. Supported image formats include "jpeg", "jpg", "png", "gif". Supported sprite sheet data formats only include "JSON" at this time. Supported bitmap font data formats include "xml" and "fnt".
  */
 PIXI.AssetLoader = function(assetURLs)
 {
-	PIXI.EventTarget.call( this );
+	PIXI.EventTarget.call(this);
 	
 	/**
 	 * The array of asset URLs that are going to be loaded
@@ -4930,11 +5413,19 @@ PIXI.AssetLoader = function(assetURLs)
 	 * @type Array
 	 */
 	this.assetURLs = assetURLs;
-	
-	this.assets = [];
 
 	this.crossorigin = false;
-}
+
+    this.loadersByType = {
+        "jpg":  PIXI.ImageLoader,
+        "jpeg": PIXI.ImageLoader,
+        "png":  PIXI.ImageLoader,
+        "gif":  PIXI.ImageLoader,
+        "json": PIXI.SpriteSheetLoader,
+        "xml":  PIXI.BitmapFontLoader,
+        "fnt":  PIXI.BitmapFontLoader
+    };
+};
 
 /**
 Fired when an item has loaded
@@ -4954,107 +5445,344 @@ PIXI.AssetLoader.constructor = PIXI.AssetLoader;
  */
 PIXI.AssetLoader.prototype.load = function()
 {
-	this.loadCount = this.assetURLs.length;
-	var imageTypes = ["jpeg", "jpg", "png", "gif"];
-	
-	var spriteSheetTypes = ["json"];
-	
-	for (var i=0; i < this.assetURLs.length; i++) 
-	{
-		var filename = this.assetURLs[i];
-		var fileType = filename.split('.').pop().toLowerCase();
-		// what are we loading?
-		var type = null;
-		
-		for (var j=0; j < imageTypes.length; j++) 
-		{
-			if(fileType == imageTypes[j])
-			{
-				type = "img";
-				break;
-			}
-		}
-		
-		if(type != "img")
-		{
-			for (var j=0; j < spriteSheetTypes.length; j++) 
-			{
-				if(fileType == spriteSheetTypes[j])
-				{
-					type = "atlas";
-					break;
-				}
-			}
-		}
-		
-		if(type == "img")
-		{
-			
-			var texture = PIXI.Texture.fromImage(filename, this.crossorigin);
-			if(!texture.baseTexture.hasLoaded)
-			{
-				
-				var scope = this;
-				texture.baseTexture.addEventListener( 'loaded', function ( event ) 
-				{
-					scope.onAssetLoaded();
-				});
-	
-				this.assets.push(texture);
-			}
-			else
-			{
-				
-				// already loaded!
-				this.loadCount--;
-				// if this hits zero here.. then everything was cached!
-				if(this.loadCount == 0)
-				{
-					this.dispatchEvent( { type: 'onComplete', content: this } );
-					if(this.onComplete)this.onComplete();
-				}
-			}
-			
-		}
-		else if(type == "atlas")
-		{
-			var spriteSheetLoader = new PIXI.SpriteSheetLoader(filename);
-			spriteSheetLoader.crossorigin = this.crossorigin;
-			this.assets.push(spriteSheetLoader);
-			
-			var scope = this;
-			spriteSheetLoader.addEventListener( 'loaded', function ( event ) 
-			{
-				scope.onAssetLoaded();
-			});
-			
-			spriteSheetLoader.load();
-		}
-		else
-		{
-			// dont know what the file is! :/
-			//this.loadCount--;
-			throw new Error(filename + " is an unsupported file type " + this);
-		}
-		
-		//this.assets[i].load();
-	};
-}
+    var scope = this;
 
+	this.loadCount = this.assetURLs.length;
+
+    for (var i=0; i < this.assetURLs.length; i++)
+	{
+		var fileName = this.assetURLs[i];
+		var fileType = fileName.split(".").pop().toLowerCase();
+
+        var loaderClass = this.loadersByType[fileType];
+        if(!loaderClass)
+            throw new Error(fileType + " is an unsupported file type");
+
+        var loader = new loaderClass(fileName, this.crossorigin);
+
+        loader.addEventListener("loaded", function()
+        {
+            scope.onAssetLoaded();
+        });
+        loader.load();
+	}
+};
+
+/**
+ * Invoked after each file is loaded
+ * @private
+ */
 PIXI.AssetLoader.prototype.onAssetLoaded = function()
 {
-	this.loadCount--;
-	this.dispatchEvent( { type: 'onProgress', content: this } );
-	if(this.onProgress)this.onProgress();
+    this.loadCount--;
+	this.dispatchEvent({type: "onProgress", content: this});
+	if(this.onProgress) this.onProgress();
 	
 	if(this.loadCount == 0)
 	{
-		this.dispatchEvent( { type: 'onComplete', content: this } );
-		if(this.onComplete)this.onComplete();
+		this.dispatchEvent({type: "onComplete", content: this});
+		if(this.onComplete) this.onComplete();
 	}
-}
+};
 
 
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+/**
+ * The sprite sheet loader is used to load in JSON sprite sheet data
+ * To generate the data you can use http://www.codeandweb.com/texturepacker and publish the "JSON" format
+ * There is a free version so thats nice, although the paid version is great value for money.
+ * It is highly recommended to use Sprite sheets (also know as texture atlas") as it means sprite"s can be batched and drawn together for highly increased rendering speed.
+ * Once the data has been loaded the frames are stored in the PIXI texture cache and can be accessed though PIXI.Texture.fromFrameId() and PIXI.Sprite.fromFromeId()
+ * This loader will also load the image file that the Spritesheet points to as well as the data.
+ * When loaded this class will dispatch a "loaded" event
+ * @class SpriteSheetLoader
+ * @extends EventTarget
+ * @constructor
+ * @param {String} url the url of the sprite sheet JSON file
+ * @param {Boolean} crossorigin
+ */
+
+PIXI.SpriteSheetLoader = function(url, crossorigin)
+{
+	/*
+	 * i use texture packer to load the assets..
+	 * http://www.codeandweb.com/texturepacker
+	 * make sure to set the format as "JSON"
+	 */
+	PIXI.EventTarget.call(this);
+	this.url = url;
+	this.baseUrl = url.replace(/[^\/]*$/, "");
+	this.texture = null;
+	this.frames = {};
+	this.crossorigin = crossorigin;
+};
+
+// constructor
+PIXI.SpriteSheetLoader.constructor = PIXI.SpriteSheetLoader;
+
+/**
+ * This will begin loading the JSON file
+ */
+PIXI.SpriteSheetLoader.prototype.load = function()
+{
+	this.ajaxRequest = new AjaxRequest();
+	var scope = this;
+	this.ajaxRequest.onreadystatechange = function()
+	{
+		scope.onJSONLoaded();
+	};
+		
+	this.ajaxRequest.open("GET", this.url, true);
+	if (this.ajaxRequest.overrideMimeType) this.ajaxRequest.overrideMimeType("application/json");
+	this.ajaxRequest.send(null)
+};
+
+/**
+ * Invoke when JSON file is loaded
+ * @private
+ */
+PIXI.SpriteSheetLoader.prototype.onJSONLoaded = function()
+{
+	if (this.ajaxRequest.readyState == 4)
+	{
+		 if (this.ajaxRequest.status == 200 || window.location.href.indexOf("http") == -1)
+	 	{
+			var jsonData = eval("(" + this.ajaxRequest.responseText + ")");
+			var textureUrl = this.baseUrl + jsonData.meta.image;
+
+            var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
+            this.texture = image.texture.baseTexture;
+            var scope = this;
+            image.addEventListener("loaded", function(event) {
+                 scope.onLoaded();
+            });
+
+			var frameData = jsonData.frames;
+			for (var i in frameData)
+			{
+				var rect = frameData[i].frame;
+				if (rect)
+				{
+					PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {x:rect.x, y:rect.y, width:rect.w, height:rect.h});
+					
+					if(frameData[i].trimmed)
+					{
+						//var realSize = frameData[i].spriteSourceSize;
+						PIXI.TextureCache[i].realSize = frameData[i].spriteSourceSize;
+						PIXI.TextureCache[i].trim.x = 0;// (realSize.x / rect.w)
+						// calculate the offset!
+					}
+				}
+   			}
+
+            image.load();
+	 	}
+	}	
+};
+/**
+ * Invoke when all files are loaded (json and texture)
+ * @private
+ */
+PIXI.SpriteSheetLoader.prototype.onLoaded = function()
+{
+    this.dispatchEvent({type: "loaded", content: this});
+};
+
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+/**
+ * The image loader class is responsible for loading images file formats ("jpeg", "jpg", "png" and "gif")
+ * Once the image has been loaded it is stored in the PIXI texture cache and can be accessed though PIXI.Texture.fromFrameId() and PIXI.Sprite.fromFromeId()
+ * When loaded this class will dispatch a 'loaded' event
+ * @class ImageLoader
+ * @extends EventTarget
+ * @constructor
+ * @param {String} url The url of the image
+ * @param {Boolean} crossorigin
+ */
+PIXI.ImageLoader = function(url, crossorigin)
+{
+    PIXI.EventTarget.call(this);
+    this.texture = PIXI.Texture.fromImage(url, crossorigin);
+};
+
+// constructor
+PIXI.ImageLoader.constructor = PIXI.ImageLoader;
+
+/**
+ * Loads image or takes it from cache
+ */
+PIXI.ImageLoader.prototype.load = function()
+{
+    if(!this.texture.baseTexture.hasLoaded)
+    {
+        var scope = this;
+        this.texture.baseTexture.addEventListener("loaded", function()
+        {
+            scope.onLoaded();
+        });
+    }
+    else
+    {
+        this.onLoaded();
+    }
+};
+
+/**
+ * Invoked when image file is loaded or it is already cached and ready to use
+ * @private
+ */
+PIXI.ImageLoader.prototype.onLoaded = function()
+{
+    this.dispatchEvent({type: "loaded", content: this});
+};
+
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+/**
+ * The xml loader is used to load in XML bitmap font data ("xml" or "fnt")
+ * To generate the data you can use http://www.angelcode.com/products/bmfont/
+ * This loader will also load the image file as the data.
+ * When loaded this class will dispatch a "loaded" event
+ * @class BitmapFontLoader
+ * @extends EventTarget
+ * @constructor
+ * @param {String} url the url of the sprite sheet JSON file
+ * @param {Boolean} crossorigin
+ */
+
+PIXI.BitmapFontLoader = function(url, crossorigin)
+{
+    /*
+     * i use texture packer to load the assets..
+     * http://www.codeandweb.com/texturepacker
+     * make sure to set the format as "JSON"
+     */
+    PIXI.EventTarget.call(this);
+    this.url = url;
+    this.baseUrl = url.replace(/[^\/]*$/, "");
+    this.texture = null;
+    this.crossorigin = crossorigin;
+};
+
+// constructor
+PIXI.BitmapFontLoader.constructor = PIXI.BitmapFontLoader;
+
+/**
+ * This will begin loading the JSON file
+ */
+PIXI.BitmapFontLoader.prototype.load = function()
+{
+    this.ajaxRequest = new XMLHttpRequest();
+    var scope = this;
+    this.ajaxRequest.onreadystatechange = function()
+    {
+        scope.onXMLLoaded();
+    };
+
+    this.ajaxRequest.open("GET", this.url, true);
+    if (this.ajaxRequest.overrideMimeType) this.ajaxRequest.overrideMimeType("application/xml");
+    this.ajaxRequest.send(null)
+};
+
+/**
+ * Invoked when XML file is loaded
+ * @private
+ */
+PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
+{
+    if (this.ajaxRequest.readyState == 4)
+    {
+        if (this.ajaxRequest.status == 200 || window.location.href.indexOf("http") == -1)
+        {
+            var textureUrl = this.baseUrl + this.ajaxRequest.responseXML.getElementsByTagName("page")[0].attributes.getNamedItem("file").nodeValue;
+            var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
+            this.texture = image.texture.baseTexture;
+
+            var data = {};
+            var info = this.ajaxRequest.responseXML.getElementsByTagName("info")[0];
+            var common = this.ajaxRequest.responseXML.getElementsByTagName("common")[0];
+            data.font = info.attributes.getNamedItem("face").nodeValue;
+            data.size = parseInt(info.attributes.getNamedItem("size").nodeValue, 10);
+            data.lineHeight = parseInt(common.attributes.getNamedItem("lineHeight").nodeValue, 10);
+            data.chars = {};
+
+            //parse letters
+            var letters = this.ajaxRequest.responseXML.getElementsByTagName("char");
+
+            for (var i = 0; i < letters.length; i++)
+            {
+                var charCode = parseInt(letters[i].attributes.getNamedItem("id").nodeValue, 10);
+
+                var textureRect = {
+                    x: parseInt(letters[i].attributes.getNamedItem("x").nodeValue, 10),
+                    y: parseInt(letters[i].attributes.getNamedItem("y").nodeValue, 10),
+                    width: parseInt(letters[i].attributes.getNamedItem("width").nodeValue, 10),
+                    height: parseInt(letters[i].attributes.getNamedItem("height").nodeValue, 10)
+                };
+                PIXI.TextureCache[charCode] = new PIXI.Texture(this.texture, textureRect);
+
+                data.chars[charCode] = {
+                    xOffset: parseInt(letters[i].attributes.getNamedItem("xoffset").nodeValue, 10),
+                    yOffset: parseInt(letters[i].attributes.getNamedItem("yoffset").nodeValue, 10),
+                    xAdvance: parseInt(letters[i].attributes.getNamedItem("xadvance").nodeValue, 10),
+                    kerning: {}
+                };
+            }
+
+            //parse kernings
+            var kernings = this.ajaxRequest.responseXML.getElementsByTagName("kerning");
+            for (i = 0; i < kernings.length; i++)
+            {
+               var first = parseInt(kernings[i].attributes.getNamedItem("first").nodeValue, 10);
+               var second = parseInt(kernings[i].attributes.getNamedItem("second").nodeValue, 10);
+               var amount = parseInt(kernings[i].attributes.getNamedItem("amount").nodeValue, 10);
+
+                data.chars[second].kerning[first] = amount;
+
+            }
+            PIXI.BitmapText.fonts[data.font] = data;
+
+            var scope = this;
+            image.addEventListener("loaded", function() {
+                scope.onLoaded();
+            });
+            image.load();
+        }
+    }
+};
+
+/**
+ * Invoked when all files are loaded (xml/fnt and texture)
+ * @private
+ */
+PIXI.BitmapFontLoader.prototype.onLoaded = function()
+{
+    this.dispatchEvent({type: "loaded", content: this});
+};
+
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+ if (typeof exports !== 'undefined') {
+    if (typeof module !== 'undefined' && module.exports) {
+      exports = module.exports = PIXI;
+    }
+    exports.PIXI = PIXI;
+  } else {
+    root.PIXI = PIXI;
+  }
+
+
+}).call(this);
 /**
  * @author Vsevolod Strukchinsky (@floatdrop)
  */
@@ -5070,6 +5798,8 @@ PIXI.AssetLoader.prototype.onAssetLoaded = function()
 @module LINK
  */
 var LINK = LINK || {};
+
+LINK.Cache = {};
 /**
  * @author Vsevolod Strukchinsky @floatdrop
  */
@@ -5106,6 +5836,8 @@ LINK.Layers = function () {
 	PIXI.DisplayObjectContainer.call(this);
 
 	this.blockedNames = Object.keys(this);
+
+	this.sort = false;
 
 	for (var argumentIndex in arguments) {
 		var arg = arguments[argumentIndex];
@@ -5156,7 +5888,7 @@ LINK.Layers.prototype.addLayerAt = function (layerName, index) {
  * @param  LayerName {String}
  * @param  LayerName2 {String}
  */
-LINK.DisplayObjectContainer.prototype.swapLayers = function (layerName, layerName2) {
+LINK.Layers.prototype.swapLayers = function (layerName, layerName2) {
 
 	var layer = this[layerName];
 	var layer2 = this[layerName2];
@@ -5170,7 +5902,7 @@ LINK.DisplayObjectContainer.prototype.swapLayers = function (layerName, layerNam
  * @param  layerName {String}
  * @return DisplayObjectContainer
  */
-LINK.DisplayObjectContainer.prototype.getLayer = function (layerName) {
+LINK.Layers.prototype.getLayer = function (layerName) {
 	if (!this[layerName])
 		this.addLayer(layerName);
 	return this[layerName];
@@ -5182,7 +5914,7 @@ LINK.DisplayObjectContainer.prototype.getLayer = function (layerName) {
  * @param  index {Number}
  * @return DisplayObjectContainer
  */
-LINK.DisplayObjectContainer.prototype.getLayerAt = function (index) {
+LINK.Layers.prototype.getLayerAt = function (index) {
 	return this.getChildAt(index);
 };
 
@@ -5196,17 +5928,541 @@ LINK.Layers.prototype.removeLayer = function (layerName) {
 	PIXI.DisplayObjectContainer.prototype.removeChild.call(this, this[layerName]);
 	delete this[layerName];
 };
+/**
+ * @author Vsevolod Strukchinsky @floatdrop
+ */
 
 /**
- * Removes a child from the container.
- * @method removeChild
- * @param  DisplayObject {DisplayObject}
- */
-LINK.Layers.prototype.removeChild = function (child) {
-	if (child.layername && child.layername in this) {
-		delete this[child.layername];
+Keyboard class handles keys.
+
+@example
+	// LINK.Key is a global LINK.Keyboard manager class
+
+	// Bind keys
+	LINK.Key.W.press(moveUpCallback);
+	LINK.Key.S.press(moveDownCallback);
+	LINK.Key.A.press(moveLeftCallback);
+	LINK.Key.D.press(moveRightCallback);
+
+	// Fire all pressed keys
+	Object.keys(LINK.Key.pressed).forEach(function (code) { 
+		LINK.Key.pressed[code].press(); 
+	});
+
+	// Same but shorter
+	LINK.Key.runCallbacks();
+
+@class Keyboard
+@constructor
+**/
+LINK.Keyboard = function () {
+	var self = this;
+	this.pressed = {};
+	this.callbacks = {};
+
+	Object.keys(this.Codes).forEach(function (keyName) {
+		self[keyName] = {
+			press: function (callback) {
+				self.callbacks[keyName] = callback;
+				return self;
+			}
+		};
+		self[keyName].press(function() {});
+		Object.defineProperty(self.pressed, LINK.Keyboard.prototype.Codes[keyName], {
+			configurable: true,
+			get: function () {
+				return {
+					press: function () {
+						if (self.callbacks[keyName]) {
+							self.callbacks[keyName](keyName);
+						}
+					}
+				};
+			}
+		});
+	});
+
+	document.addEventListener('keydown', this.onKeyDown.bind(this), false);
+	document.addEventListener('keyup', this.onKeyUp.bind(this), false);
+};
+
+LINK.Keyboard.constructor = LINK.Keyboard;
+
+LINK.Keyboard.prototype.runCallbacks = function () {
+	var self = this;
+	Object.keys(LINK.Key.pressed).forEach(function (code) {
+		self.pressed[code].press();
+	});
+};
+
+LINK.Keyboard.prototype.onKeyDown = function (e, override) {
+	return this.modifyKey(e, override || e.keyCode || e.which, true);
+};
+
+LINK.Keyboard.prototype.onKeyUp = function (e, override) {
+	return this.modifyKey(e, override || e.keyCode || e.which, false);
+};
+
+LINK.Keyboard.prototype.modifyKey = function (e, key, val) {
+	if (key) {
+		Object.defineProperty(this.pressed, key, {
+			enumerable: val
+		});
 	}
-	PIXI.DisplayObjectContainer.prototype.removeChild.call(this, child);
+	return true;
+};
+
+/**
+ * Maps names of keys to theirs codes
+ * @property Codes
+ */
+LINK.Keyboard.prototype.Codes = {
+	'Backspace': 8,
+	'Tab': 9,
+	'Enter': 13,
+	'Shift': 16,
+	'Ctrl': 17,
+	'Alt': 18,
+	'Pause': 19,
+	'Capslock': 20,
+	'Esc': 27,
+	'Spacebar': 32,
+	'Pageup': 33,
+	'Pagedown': 34,
+	'End': 35,
+	'Home': 36,
+	'Leftarrow': 37,
+	'Uparrow': 38,
+	'Rightarrow': 39,
+	'Downarrow': 40,
+	'Insert': 45,
+	'Delete': 46,
+	'0': 48,
+	'1': 49,
+	'2': 50,
+	'3': 51,
+	'4': 52,
+	'5': 53,
+	'6': 54,
+	'7': 55,
+	'8': 56,
+	'9': 57,
+	'A': 65,
+	'B': 66,
+	'C': 67,
+	'D': 68,
+	'E': 69,
+	'F': 70,
+	'G': 71,
+	'H': 72,
+	'I': 73,
+	'J': 74,
+	'K': 75,
+	'L': 76,
+	'M': 77,
+	'N': 78,
+	'O': 79,
+	'P': 80,
+	'Q': 81,
+	'R': 82,
+	'S': 83,
+	'T': 84,
+	'U': 85,
+	'V': 86,
+	'W': 87,
+	'X': 88,
+	'Y': 89,
+	'Z': 90,
+	'0numpad': 96,
+	'1numpad': 97,
+	'2numpad': 98,
+	'3numpad': 99,
+	'4numpad': 100,
+	'5numpad': 101,
+	'6numpad': 102,
+	'7numpad': 103,
+	'8numpad': 104,
+	'9numpad': 105,
+	'Multiply': 106,
+	'Plus': 107,
+	'Minut': 109,
+	'Dot': 110,
+	'Slash1': 111,
+	'F1': 112,
+	'F2': 113,
+	'F3': 114,
+	'F4': 115,
+	'F5': 116,
+	'F6': 117,
+	'F7': 118,
+	'F8': 119,
+	'F9': 120,
+	'F10': 121,
+	'F11': 122,
+	'F12': 123,
+	'equal': 187,
+	'Coma': 188,
+	'Slash': 191,
+	'Backslash': 220
+};
+
+LINK.Key = new LINK.Keyboard();
+/**
+ * @author Vsevolod Strukchinsky @floatdrop
+ */
+
+/**
+Mouse class handles clicks.
+
+@example
+	var mouse = new LINK.Mouse();
+	mouse.on.click(shootCallback);
+	mouse.on.move(lookCallback);
+
+@class Mouse
+@constructor
+**/
+LINK.Mouse = function (objectToListen) {
+
+	var self = this;
+
+	objectToListen = objectToListen || document;
+
+	/**
+	 * The current position of the mouse
+	 *
+	 * @property position
+	 * @type Point
+	 * @readOnly
+	 */
+	this.position = new PIXI.Point(0, 0);
+	objectToListen.addEventListener('mousemove', this.onMouseMove.bind(this), false);
+
+	this.callbacks = {};
+
+	this.on = {};
+
+	Object.keys(LINK.Mouse.prototype.Events).forEach(function (eventName) {
+		self.on[eventName] = function (callback) {
+			self.callbacks[eventName] = callback;
+		};
+
+		var event = LINK.Mouse.prototype.Events[eventName];
+		if (event === 'mousemove' || event === 'mousewheel') return;
+		objectToListen.addEventListener(event, self.onMouse.bind(self), false);
+
+	});
+
+};
+
+LINK.Mouse.constructor = LINK.Mouse;
+
+LINK.Mouse.prototype.onMouse = function (e) {
+	this.updateCoords(e);
+	var button = e.button || 0;
+	if (this.callbacks[button]) {
+		this.callbacks[button](e);
+	}
+
+	return true;
+};
+
+LINK.Mouse.prototype.onMouseMove = function (e) {
+	this.updateCoords(e);
+	if (this.callbacks.move) {
+		this.callbacks.move(e);
+	}
+	return true;
+};
+
+LINK.Mouse.prototype.updateCoords = function (e) {
+	this.position.x = e.pageX;
+	this.position.y = e.pageY;
+};
+
+LINK.Mouse.prototype.Events = {
+	wheel: 'mousewheel',
+	move: 'mousemove',
+	down: 'mousedown',
+	up: 'mouseup',
+	click: 'click',
+	dbclick: 'dblclick',
+	rclick: 'contextmenu',
+	contextmenu: 'contextmenu'
+};
+/**
+ * @author Vsevolod Strukchinsky @floatdrop
+ */
+
+
+/**
+Camera class represents DisplayObjectContainer, that autotrack one of DisplayObject positions.
+
+@example
+	var stage = new PIXI.Stage();
+	var layers = new LINK.Layers("game","ui");
+	stage.addChild(layers);
+	var camera = new LINK.Camera();
+	camera.follow(player).on(layers.game);
+
+@class Camera
+@extends DisplayObjectContainer
+@constructor
+**/
+LINK.Camera = function (width, height) {
+	PIXI.DisplayObjectContainer.call(this);
+
+	this.width = width;
+	this.height = height;
+	this.halfWidth = (width / 2) | 0;
+	this.halfHeight = (height / 2) | 0;
+
+	/**
+	 * The bounds of that the camera can move to
+	 *
+	 * @property bounds
+	 * @type PIXI.Rectangle
+	 * @readOnly
+	 * @private
+	 */
+	var _bounds = new PIXI.Rectangle(0, 0, 0, 0);
+	Object.defineProperty(this, "bounds", {
+		get: function () {
+			return _bounds;
+		},
+		set: function (n) {
+			if (!(n instanceof PIXI.Rectangle)) throw new Error(n + " bounds must be instance of PIXI.Rectangle");
+			_bounds = n.clone();
+			_bounds.maxX = n.x + n.width - this.width;
+			_bounds.minX = n.x;
+			_bounds.maxY = n.y + n.height - this.height;
+			_bounds.minY = n.y;
+		}
+	});
+
+	/**
+	 * Freezes the camera
+	 * @property freeze
+	 * @type Boolean
+	 */
+	this.freeze = false;
+
+	/**
+	 * Freezes the camera
+	 * @property freeze
+	 * @type Boolean
+	 * @private
+	 */
+	this._linkedObject = null;
+};
+
+LINK.Camera.constructor = LINK.Camera;
+LINK.Camera.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
+
+/**
+ * Wraps DisplayObject to pan him and all his childrens.
+ * @method on
+ * @param object {DisplayObjectContainer}
+ */
+LINK.Camera.prototype.on = function (object) {
+	if (!(object instanceof PIXI.DisplayObjectContainer)) throw new Error(object + " object should be instance of DisplayObjectContainer");
+
+	if (object instanceof PIXI.Stage) {
+		while (object.children[0]) {
+			this.addChild(object.children[0]);
+		}
+		object.addChild(this);
+		return this;
+	}
+
+	if (this.parent) {
+		this.off();
+	}
+
+	var parent = object.parent;
+	if (!parent) {
+		throw new Error("Can't bind Camera on DisplayObjectContainer without parent");
+	}
+	var index = parent.children.indexOf(object);
+	parent.removeChild(object);
+	this.addChild(object);
+	object = this;
+	parent.addChildAt(object, index);
+	return this;
+};
+
+/**
+ * Unwraps DisplayObject that was wrapped by "on" method.
+ * @method off
+ */
+LINK.Camera.prototype.off = function () {
+	var parent = this.parent;
+	if (parent) {
+		var index = parent.children.indexOf(this);
+		parent.removeChild(this);
+		while (this.children[0]) {
+			parent.addChildAt(this.children[0], index++);
+		}
+		return this;
+	}
+	throw new Error("Can't remove Camera without Camera.parent defined");
+};
+
+/**
+ * Starts follow on DisplayObject
+ * @method follow
+ * @param object {DisplayObject}
+ */
+LINK.Camera.prototype.follow = function (object) {
+	this._linkedObject = object;
+	return this;
+};
+
+/**
+@method updateTransform
+@internal
+*/
+LINK.Camera.prototype.updateTransform = function () {
+	if (this._linkedObject && !this.freeze) {
+		var anchor = this._linkedObject.position.clone();
+		anchor.x -= this.halfWidth;
+		anchor.y -= this.halfHeight;
+
+		anchor.x = Math.min(this.bounds.maxX, Math.max(this.bounds.minX, anchor.x));
+		anchor.y = Math.min(this.bounds.maxY, Math.max(this.bounds.minY, anchor.y));
+
+		this.position = new PIXI.Point(-anchor.x, -anchor.y);
+	}
+	PIXI.Sprite.prototype.updateTransform.call(this);
+};
+/**
+ * @author Vsevolod Strukchinsky @floatdrop
+ */
+
+/* global msgpack */
+
+/**
+Network class.
+
+This class represents transport between client link.js and server node-link.
+Network layer is websockets which support binary encoding of messages wisg msgpack.
+
+@example
+	var network = new LINK.Network({binary: true});
+	network.onmessage(function (message) { console.log(message); });
+	network.onerror(function (error) { console.log("Error: " + error); });
+	network.onclose(function (error) { console.log("Closed: " + error); })
+	network.connect("localhost");
+	
+	// some code later
+
+	network.close();
+
+@class Network
+@param config {Object}
+@constructor
+**/
+
+LINK.Network = function (config) {
+	this.config = config;
+};
+
+LINK.Network.constructor = LINK.Network;
+
+/**
+ * Creates new layer with name layerName above others layers.
+ * @method connect
+ * @param  host {String}
+ * @param  port {Number}
+ */
+
+LINK.Network.prototype.connect = function (host, port) {
+	this.socket = new WebSocket("ws://" + host + (port ? ":" + port : ""));
+
+	this.onopen(this.onopen_callback);
+	this.onclose(this.onclose_callback);
+	this.onerror(this.onerror_callback);
+	this.onmessage(this.onmessage_callback);
+};
+
+/**
+@private
+**/
+LINK.Network.prototype.decode = function (event, callback) {
+	if (typeof event.data === "string") {
+		callback(JSON.parse(event.data));
+	} else {
+		var reader = new FileReader();
+		reader.readAsArrayBuffer(event.data);
+		reader.onloadend = function () {
+			var message = msgpack.decode(this.result);
+			callback(message);
+		};
+	}
+};
+
+/**
+ * Creates new layer with name layerName above others layers.
+ * @method onmessage
+ * @param  callback {Function}
+ */
+
+LINK.Network.prototype.onmessage = function (callback) {
+	var self = this;
+	this.onmessage_callback = callback;
+	if (this.socket) this.socket.onmessage = function (e) { self.decode(e, callback); };
+};
+
+/**
+ * Creates new layer with name layerName above others layers.
+ * @method onopen
+ * @param  callback {Function}
+ */
+LINK.Network.prototype.onopen = function (callback) {
+	this.onopen_callback = callback;
+	if (this.socket) this.socket.onopen = callback;
+};
+
+/**
+ * Creates new layer with name layerName above others layers.
+ * @method onerror
+ * @param  callback {Function}
+ */
+LINK.Network.prototype.onerror = function (callback) {
+	this.onerror_callback = callback;
+	if (this.socket) this.socket.onerror = callback;
+};
+
+/**
+ * Creates new layer with name layerName above others layers.
+ * @method onclose
+ * @param  callback {Function}
+ */
+LINK.Network.prototype.onclose = function (callback) {
+	this.onclose_callback = callback;
+	if (this.socket) this.socket.onclose = callback;
+};
+
+/**
+ * Creates new layer with name layerName above others layers.
+ * @method send
+ * @param  message {Object}
+ */
+LINK.Network.prototype.send = function (message) {
+	if (this.socket) {
+		this.socket.send(this.config.binary ? msgpack.encode(message) : JSON.stringify(message));
+	}
+};
+
+/**
+ * Creates new layer with name layerName above others layers.
+ * @method close
+ * @param  layerName {String}
+ */
+LINK.Network.prototype.close = function () {
+	if (this.socket) {
+		this.socket.close();
+	}
 };
 /**
  * @author Vsevolod Strukchinsky @floatdrop
@@ -5247,7 +6503,7 @@ LINK.MovieClipManager = function () {
 };
 
 LINK.MovieClipManager.constructor = LINK.MovieClipManager;
-LINK.MovieClipManager.prototype = Object.create(LINK.DisplayObjectContainer.prototype);
+LINK.MovieClipManager.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
 
 /**
  * Gets movieClip with `name`
@@ -5388,6 +6644,226 @@ LINK.MovieClipManager.prototype.remove = function (name) {
         this._current = undefined;
     }
     delete this._animations[name];
+};
+/**
+ * @author Vsevolod Strukchinsky @floatdrop
+ */
+
+/**
+ * @class JsonLoader
+ * @extends EventTarget
+ * @constructor
+ * @param {String} url the url of the sprite sheet JSON file
+ * @param {Boolean} crossorigin
+ */
+
+var AjaxRequest = function () {
+	var activexmodes = ["Msxml2.XMLHTTP", "Microsoft.XMLHTTP"]; //activeX versions to check for in IE
+
+	if (window.ActiveXObject) { //Test for support for ActiveXObject in IE first (as XMLHttpRequest in IE7 is broken)
+		for (var i = 0; i < activexmodes.length; i++) {
+			try {
+				return new window.ActiveXObject(activexmodes[i]);
+			} catch (e) {
+				//suppress error
+			}
+		}
+	} else if (window.XMLHttpRequest) // if Mozilla, Safari etc
+	{
+		return new window.XMLHttpRequest();
+	} else {
+		return false;
+	}
+};
+
+LINK.JsonLoader = function (url, crossorigin) {
+	PIXI.EventTarget.call(this);
+	this.url = url;
+	this.baseUrl = url.replace(/[^\/]*$/, "");
+	this.json = null;
+	this.crossorigin = crossorigin;
+};
+
+// constructor
+LINK.JsonLoader.constructor = LINK.JsonLoader;
+
+/**
+ * This will begin loading the JSON file
+ */
+LINK.JsonLoader.prototype.load = function () {
+	this.ajaxRequest = new AjaxRequest();
+	var scope = this;
+	this.ajaxRequest.onreadystatechange = function () {
+		scope.onJSONLoaded();
+	};
+
+	this.ajaxRequest.open("GET", this.url, true);
+	if (this.ajaxRequest.overrideMimeType) this.ajaxRequest.overrideMimeType("application/json");
+	this.ajaxRequest.send(null);
+};
+
+/**
+ * Invoke when JSON file is loaded
+ * @private
+ */
+LINK.JsonLoader.prototype.onJSONLoaded = function () {
+	if (this.ajaxRequest.readyState === 4) {
+		if (this.ajaxRequest.status === 200 || window.location.href.indexOf("http") === -1) {
+			this.json = JSON.parse(this.ajaxRequest.responseText);
+			LINK.Cache[this.url] = this.json;
+			this.onLoaded();
+		}
+	}
+};
+/**
+ * Invoke when all files are loaded (json and texture)
+ * @private
+ */
+LINK.JsonLoader.prototype.onLoaded = function () {
+	this.dispatchEvent({
+		type: "loaded",
+		content: this
+	});
+};
+/**
+ * @author Vsevolod Strukchinsky @floatdrop
+ */
+
+/**
+Loader class loads resources into one cache. 
+
+@example
+	var audioFile = LINK.Loader.load('Throttle - Inspire.mp3');
+
+@class Loader
+@constructor
+**/
+LINK.Loader = function (assetURLs) {
+	PIXI.AssetLoader.call(this, assetURLs);
+
+    this.loadersByType.json = LINK.JsonLoader;
+};
+
+LINK.Loader.constructor = LINK.Loader;
+LINK.Loader.prototype = Object.create(PIXI.AssetLoader);
+
+LINK.Loader.prototype.load = function(items)
+{
+	var resources = this.assetURLs;
+	this.assetURLs = items || this.assetURLs;
+	PIXI.AssetLoader.prototype.load.call(this);
+	this.assetURLs = resources;
+};
+/**
+ * @author Vsevolod Strukchinsky @floatdrop
+ */
+
+/**
+TiledMap class loads json file of tiled map. 
+
+@example
+	var stage = new PIXI.Stage();
+	var map = new LINK.TiledMap(mapUri, { layerAsCanvas: true });
+	stage.addChild(map);
+
+
+@class TiledMap
+@constructor
+**/
+LINK.TiledMap = function (mapUrl, config) {
+
+	LINK.Layers.call(this);
+
+	var self = this;
+
+	this.config = config;
+
+	this.tilecache = {};
+
+	var loader = new LINK.JsonLoader(mapUrl, false);
+	loader.addEventListener("loaded", function (jsonLoader) {
+		self.onTiledMapJsonLoaded(jsonLoader);
+	});
+	loader.load();
+};
+
+LINK.TiledMap.constructor = LINK.TiledMap;
+LINK.TiledMap.prototype = Object.create(LINK.Layers.prototype);
+
+LINK.TiledMap.prototype.onTiledMapJsonLoaded = function (jsonLoader) {
+	var map = jsonLoader.content.json;
+
+	this.scale = {
+		x: parseInt(map.properties.scale, 10) || 1,
+		y: parseInt(map.properties.scale, 10) || 1
+	};
+
+	this.tilesize = {
+		width: map.tilewidth,
+		height: map.tileheight
+	};
+
+	this.tilesets = [];
+
+	this.tilecache = {};
+
+	for (var j = 0, jl = map.tilesets.length; j < jl; ++j) {
+		var tsInfo = map.tilesets[j];
+		tsInfo.lastgid = tsInfo.firstgid + (tsInfo.imagewidth / tsInfo.tilewidth) * (tsInfo.imageheight / tsInfo.tileheight);
+		tsInfo.baseTexture = PIXI.Texture.fromImage(tsInfo.image).baseTexture;
+		this.tilesets.push(tsInfo);
+	}
+
+	this.version = map.version;
+
+	for (var i = 0, il = map.layers.length; i < il; ++i) {
+		if (map.layers[i].type === "tilelayer") this.createTileLayer(map.layers[i]);
+	}
+
+};
+
+
+LINK.TiledMap.prototype.createTileLayer = function (layerJson) {
+	var layer = this.addLayer(layerJson.name);
+	layer.alpha = layerJson.opacity;
+	layer.width = layerJson.width;
+	layer.height = layerJson.height;
+	layer.visible = layerJson.visible;
+	layer.position.x = (layerJson.x * this.tilesize.width) | 0;
+	layer.position.y = (layerJson.y * this.tilesize.height) | 0;
+	layer.type = layerJson.type;
+	for (var index in layerJson.data) {
+		var tileIndex = layerJson.data[index];
+		if (tileIndex === 0) { continue; }
+		var tileset = this.getTileSet(tileIndex);
+		var tileTexture = this.getTileTexture(tileIndex, tileset);
+		var tileDisplayObject = new PIXI.Sprite(tileTexture);
+		tileDisplayObject.position = new PIXI.Point(
+		((index % layer.width) | 0) * this.tilesize.width,
+		((index / layer.width) | 0) * this.tilesize.height);
+		layer.addChild(tileDisplayObject);
+	}
+};
+
+LINK.TiledMap.prototype.getTileSet = function (index) {
+	for (var idx in this.tilesets) {
+		var tileset = this.tilesets[idx];
+		if (index >= tileset.firstgid && index < tileset.lastgid) return tileset;
+	}
+	throw new Error("Tileset for index " + index + " not found!");
+};
+
+LINK.TiledMap.prototype.getTileTexture = function (index, tileset) {
+	if (this.tilecache[index]) {
+		return this.tilecache[index];
+	}
+	var i = index - tileset.firstgid;
+	var frame = new PIXI.Rectangle(
+	(((i * tileset.tilewidth) % tileset.imagewidth) | 0), (((i * tileset.tilewidth) / tileset.imagewidth) | 0) * tileset.tileheight,
+	tileset.tilewidth,
+	tileset.tileheight);
+	this.tilecache[index] = new PIXI.Texture(tileset.baseTexture, frame);
+	return this.tilecache[index];
 };
  /**
   * @author Vsevolod Strukchinsky (@floatdrop)

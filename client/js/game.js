@@ -1,38 +1,36 @@
 /* global _ */
 
-define(['entities/player', 'client', 'entityfactory', 'map', 'view', 'entities/debugEntity'],
+define(['entities/player', 'client', 'entityfactory', 'entities/debugEntity'],
 
-function (Player, Client, EntityFactory, Map, View, DebugEntity) {
+function (Player, Client, EntityFactory, DebugEntity) {
 	var Game = Class.extend({
-		map: new Map(),
 
 		init: function (renderer) {
 			this.renderer = renderer;
 
 			/* BIND MOUSE */
 			this.mouse = new LINK.Mouse(this.renderer.view);
-			this.mouse.ondown(this.shoot.bind(this));
-			this.mouse.onmove(this.moveCursor.bind(this));
+			this.mouse.on.down(this.shoot.bind(this));
+			this.mouse.on.move(this.moveCursor.bind(this));
 
 			/* BIND KEYBOARD */
-			this.keyboard = new LINK.Keyboard();
-			this.keyboard.onpress("W", this.moveUp.bind(this));
-			this.keyboard.onpress("A", this.moveDown.bind(this));
-			this.keyboard.onpress("S", this.moveLeft.bind(this));
-			this.keyboard.onpress("D", this.moveRight.bind(this));
+			LINK.Key.W.press(this.moveUp.bind(this));
+			LINK.Key.S.press(this.moveDown.bind(this));
+			LINK.Key.A.press(this.moveLeft.bind(this));
+			LINK.Key.D.press(this.moveRight.bind(this));
 
 			/* CREATE STAGE */
 			this.stage = new PIXI.Stage(0x000000);
 			this.layers = new LINK.Layers({
 				"game": new LINK.Layers({
-					"tiles": new LINK.TiledMap('assets/world/world.tmx'),
-					"objects": (new LINK.Layers()).sort(true)
+					"tiles": new LINK.TiledMap('assets/world/smallworld.json'),
+					"objects": new LINK.Layers()
 				})
 			}, "debug", "ui");
 			this.stage.addChild(this.layers);
 
 			/* DROP CAMERA */
-			this.camera = new LINK.Camera();
+			this.camera = new LINK.Camera(800, 600);
 			this.camera.on(this.layers.game);
 
 			/* DEBUG ELEMENT */
@@ -47,6 +45,7 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 			this.tick();
 		},
 		tick: function () {
+			LINK.Key.runCallbacks();
 			this.renderDebugEntities();
 			this.renderer.render(this.stage);
 			requestAnimFrame(this.tick.bind(this));
@@ -71,7 +70,7 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 				self.playerId = entity_info.id;
 				self.player = EntityFactory.createEntity(entity_info, "PlayerName");
 				self.entities[entity_info.id] = self.player;
-				self.camera.follow(self.player);
+				self.camera.follow(self.player.getDisplayObject());
 			});
 
 			this.client.onEntityList(function (entitieslist) {
@@ -85,8 +84,8 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 			_.each(list, function (info) {
 				var id = info.id;
 				var entity = id in self.entities ? self.entities[id] : entity = EntityFactory.createEntity(info, id);
-				entity.update(info.data);
-				self.layers.game.objects.getLayer(entity.layer).addChild(entity);
+				entity.update(info);
+				self.layers.game.objects.getLayer(entity.layer).addChild(entity.getDisplayObject());
 				self.entities[id] = entity;
 			});
 		},
@@ -100,7 +99,7 @@ function (Player, Client, EntityFactory, Map, View, DebugEntity) {
 			}
 		},
 		getAngle: function (cursor, point) {
-			var offset = this.view.position,
+			var offset = this.camera.position,
 				originalCursor = {
 					x: cursor.x - offset.x,
 					y: cursor.y - offset.y
