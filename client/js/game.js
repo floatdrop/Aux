@@ -32,6 +32,7 @@ function (Player, Client, EntityFactory, DebugEntity) {
 			/* DROP CAMERA */
 			this.camera = new LINK.Camera(800, 600);
 			this.camera.on(this.layers.game);
+			this.camera.bounds = new PIXI.Rectangle(0, 0, 1920, 1472);
 
 			/* DEBUG ELEMENT */
 			this.canvas = document.createElement('canvas');
