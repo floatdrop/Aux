@@ -1,14 +1,807 @@
 /**
  * @license
+ * Link.JS Game Engine - v0.0.1
+ * Copyright (c) 2013, Vsevolod Strukchinsky
+ * hhttps://github.com/floatdrop/link.js
+ *
+ * Compiled: 2013-05-15
+ *
+ * Link.JS Game Engine is licensed under the MIT License.
+ * http://www.opensource.org/licenses/mit-license.php
+ */
+/**
+ * @author mrdoob / http://mrdoob.com/
+ */
+
+var Stats = function () {
+
+	var startTime = Date.now(),
+		prevTime = startTime;
+	var ms = 0,
+		msMin = Infinity,
+		msMax = 0;
+	var fps = 0,
+		fpsMin = Infinity,
+		fpsMax = 0;
+	var frames = 0,
+		mode = 0;
+
+	var container = document.createElement('div');
+	container.id = 'stats';
+	container.addEventListener('mousedown', function (event) {
+		event.preventDefault();
+		setMode(++mode % 2);
+	}, false);
+	container.style.cssText = 'width:80px;opacity:0.9;cursor:pointer';
+
+	var fpsDiv = document.createElement('div');
+	fpsDiv.id = 'fps';
+	fpsDiv.style.cssText = 'padding:0 0 3px 3px;text-align:left;background-color:#002';
+	container.appendChild(fpsDiv);
+
+	var fpsText = document.createElement('div');
+	fpsText.id = 'fpsText';
+	fpsText.style.cssText = 'color:#0ff;font-family:Helvetica,Arial,sans-serif;font-size:9px;font-weight:bold;line-height:15px';
+	fpsText.innerHTML = 'FPS';
+	fpsDiv.appendChild(fpsText);
+
+	var fpsGraph = document.createElement('div');
+	fpsGraph.id = 'fpsGraph';
+	fpsGraph.style.cssText = 'position:relative;width:74px;height:30px;background-color:#0ff';
+	fpsDiv.appendChild(fpsGraph);
+
+	while (fpsGraph.children.length < 74) {
+		var bar = document.createElement('span');
+		bar.style.cssText = 'width:1px;height:30px;float:left;background-color:#113';
+		fpsGraph.appendChild(bar);
+	}
+
+	var msDiv = document.createElement('div');
+	msDiv.id = 'ms';
+	msDiv.style.cssText = 'padding:0 0 3px 3px;text-align:left;background-color:#020;display:none';
+	container.appendChild(msDiv);
+
+	var msText = document.createElement('div');
+	msText.id = 'msText';
+	msText.style.cssText = 'color:#0f0;font-family:Helvetica,Arial,sans-serif;font-size:9px;font-weight:bold;line-height:15px';
+	msText.innerHTML = 'MS';
+	msDiv.appendChild(msText);
+
+	var msGraph = document.createElement('div');
+	msGraph.id = 'msGraph';
+	msGraph.style.cssText = 'position:relative;width:74px;height:30px;background-color:#0f0';
+	msDiv.appendChild(msGraph);
+
+	while (msGraph.children.length < 74) {
+		var foo = document.createElement('span');
+		foo.style.cssText = 'width:1px;height:30px;float:left;background-color:#131';
+		msGraph.appendChild(foo);
+	}
+
+	var setMode = function (value) {
+
+		mode = value;
+
+		switch (mode) {
+
+			case 0:
+				fpsDiv.style.display = 'block';
+				msDiv.style.display = 'none';
+				break;
+			case 1:
+				fpsDiv.style.display = 'none';
+				msDiv.style.display = 'block';
+				break;
+		}
+
+	};
+
+	var updateGraph = function (dom, value) {
+
+		var child = dom.appendChild(dom.firstChild);
+		child.style.height = value + 'px';
+
+	};
+
+	return {
+
+		REVISION: 11,
+
+		domElement: container,
+
+		setMode: setMode,
+
+		begin: function () {
+
+			startTime = Date.now();
+
+		},
+
+		end: function () {
+
+			var time = Date.now();
+
+			ms = time - startTime;
+			msMin = Math.min(msMin, ms);
+			msMax = Math.max(msMax, ms);
+
+			msText.textContent = ms + ' MS (' + msMin + '-' + msMax + ')';
+			updateGraph(msGraph, Math.min(30, 30 - (ms / 200) * 30));
+
+			frames++;
+
+			if (time > prevTime + 1000) {
+
+				fps = Math.round((frames * 1000) / (time - prevTime));
+				fpsMin = Math.min(fpsMin, fps);
+				fpsMax = Math.max(fpsMax, fps);
+
+				fpsText.textContent = fps + ' FPS (' + fpsMin + '-' + fpsMax + ')';
+				updateGraph(fpsGraph, Math.min(30, 30 - (fps / 100) * 30));
+
+				prevTime = time;
+				frames = 0;
+
+			}
+
+			return time;
+
+		},
+
+		update: function () {
+
+			startTime = this.end();
+
+		}
+
+	};
+
+};
+( // Module boilerplate to support browser globals and browserify and AMD.
+  typeof define === "function" ? function (m) { define("msgpack-js", m); } :
+  typeof exports === "object" ? function (m) { module.exports = m(); } :
+  function(m){ this.msgpack = m(); }
+)(function () {
+"use strict";
+
+var exports = {};
+
+exports.inspect = inspect;
+function inspect(buffer) {
+  if (buffer === undefined) return "undefined";
+  var view;
+  var type;
+  if (buffer instanceof ArrayBuffer) {
+    type = "ArrayBuffer";
+    view = new DataView(buffer);
+  }
+  else if (buffer instanceof DataView) {
+    type = "DataView";
+    view = buffer;
+  }
+  if (!view) return JSON.stringify(buffer);
+  var bytes = [];
+  for (var i = 0; i < buffer.byteLength; i++) {
+    if (i > 20) {
+      bytes.push("...");
+      break;
+    }
+    var byte = view.getUint8(i).toString(16);
+    if (byte.length === 1) byte = "0" + byte;
+    bytes.push(byte);
+  }
+  return "<" + type + " " + bytes.join(" ") + ">";
+}
+
+// Encode string as utf8 into dataview at offset
+exports.utf8Write = utf8Write;
+function utf8Write(view, offset, string) {
+  var byteLength = view.byteLength;
+  for(var i = 0, l = string.length; i < l; i++) {
+    var codePoint = string.charCodeAt(i);
+
+    // One byte of UTF-8
+    if (codePoint < 0x80) {
+      view.setUint8(offset++, codePoint >>> 0 & 0x7f | 0x00);
+      continue;
+    }
+
+    // Two bytes of UTF-8
+    if (codePoint < 0x800) {
+      view.setUint8(offset++, codePoint >>> 6 & 0x1f | 0xc0);
+      view.setUint8(offset++, codePoint >>> 0 & 0x3f | 0x80);
+      continue;
+    }
+
+    // Three bytes of UTF-8.  
+    if (codePoint < 0x10000) {
+      view.setUint8(offset++, codePoint >>> 12 & 0x0f | 0xe0);
+      view.setUint8(offset++, codePoint >>> 6  & 0x3f | 0x80);
+      view.setUint8(offset++, codePoint >>> 0  & 0x3f | 0x80);
+      continue;
+    }
+
+    // Four bytes of UTF-8
+    if (codePoint < 0x110000) {
+      view.setUint8(offset++, codePoint >>> 18 & 0x07 | 0xf0);
+      view.setUint8(offset++, codePoint >>> 12 & 0x3f | 0x80);
+      view.setUint8(offset++, codePoint >>> 6  & 0x3f | 0x80);
+      view.setUint8(offset++, codePoint >>> 0  & 0x3f | 0x80);
+      continue;
+    }
+    throw new Error("bad codepoint " + codePoint);
+  }
+}
+
+exports.utf8Read = utf8Read;
+function utf8Read(view, offset, length) {
+  var string = "";
+  for (var i = offset, end = offset + length; i < end; i++) {
+    var byte = view.getUint8(i);
+    // One byte character
+    if ((byte & 0x80) === 0x00) {
+      string += String.fromCharCode(byte);
+      continue;
+    }
+    // Two byte character
+    if ((byte & 0xe0) === 0xc0) {
+      string += String.fromCharCode(
+        ((byte & 0x0f) << 6) | 
+        (view.getUint8(++i) & 0x3f)
+      );
+      continue;
+    }
+    // Three byte character
+    if ((byte & 0xf0) === 0xe0) {
+      string += String.fromCharCode(
+        ((byte & 0x0f) << 12) |
+        ((view.getUint8(++i) & 0x3f) << 6) |
+        ((view.getUint8(++i) & 0x3f) << 0)
+      );
+      continue;
+    }
+    // Four byte character
+    if ((byte & 0xf8) === 0xf0) {
+      string += String.fromCharCode(
+        ((byte & 0x07) << 18) |
+        ((view.getUint8(++i) & 0x3f) << 12) |
+        ((view.getUint8(++i) & 0x3f) << 6) |
+        ((view.getUint8(++i) & 0x3f) << 0)
+      );
+      continue;
+    }
+    throw new Error("Invalid byte " + byte.toString(16));
+  }
+  return string;
+}
+
+exports.utf8ByteCount = utf8ByteCount;
+function utf8ByteCount(string) {
+  var count = 0;
+  for(var i = 0, l = string.length; i < l; i++) {
+    var codePoint = string.charCodeAt(i);
+    if (codePoint < 0x80) {
+      count += 1;
+      continue;
+    }
+    if (codePoint < 0x800) {
+      count += 2;
+      continue;
+    }
+    if (codePoint < 0x10000) {
+      count += 3;
+      continue;
+    }
+    if (codePoint < 0x110000) {
+      count += 4;
+      continue;
+    }
+    throw new Error("bad codepoint " + codePoint);
+  }
+  return count;
+}
+
+exports.encode = function (value) {
+  var buffer = new ArrayBuffer(sizeof(value));
+  var view = new DataView(buffer);
+  encode(value, view, 0);
+  return buffer;
+}
+
+exports.decode = decode;
+
+// http://wiki.msgpack.org/display/MSGPACK/Format+specification
+// I've extended the protocol to have two new types that were previously reserved.
+//   buffer 16  11011000  0xd8
+//   buffer 32  11011001  0xd9
+// These work just like raw16 and raw32 except they are node buffers instead of strings.
+//
+// Also I've added a type for `undefined`
+//   undefined  11000100  0xc4
+
+function Decoder(view, offset) {
+  this.offset = offset || 0;
+  this.view = view;
+}
+Decoder.prototype.map = function (length) {
+  var value = {};
+  for (var i = 0; i < length; i++) {
+    var key = this.parse();
+    value[key] = this.parse();
+  }
+  return value;
+};
+Decoder.prototype.buf = function (length) {
+  var value = new ArrayBuffer(length);
+  (new Uint8Array(value)).set(new Uint8Array(this.view.buffer, this.offset, length), 0);
+  this.offset += length;
+  return value;
+};
+Decoder.prototype.raw = function (length) {
+  var value = utf8Read(this.view, this.offset, length);
+  this.offset += length;
+  return value;
+};
+Decoder.prototype.array = function (length) {
+  var value = new Array(length);
+  for (var i = 0; i < length; i++) {
+    value[i] = this.parse();
+  }
+  return value;
+};
+Decoder.prototype.parse = function () {
+  var type = this.view.getUint8(this.offset);
+  var value, length;
+  // FixRaw
+  if ((type & 0xe0) === 0xa0) {
+    length = type & 0x1f;
+    this.offset++;
+    return this.raw(length);
+  }
+  // FixMap
+  if ((type & 0xf0) === 0x80) {
+    length = type & 0x0f;
+    this.offset++;
+    return this.map(length);
+  }
+  // FixArray
+  if ((type & 0xf0) === 0x90) {
+    length = type & 0x0f;
+    this.offset++;
+    return this.array(length);
+  }
+  // Positive FixNum
+  if ((type & 0x80) === 0x00) {
+    this.offset++;
+    return type;
+  }
+  // Negative Fixnum
+  if ((type & 0xe0) === 0xe0) {
+    value = this.view.getInt8(this.offset);
+    this.offset++;
+    return value;
+  }
+  switch (type) {
+  // raw 16
+  case 0xda:
+    length = this.view.getUint16(this.offset + 1);
+    this.offset += 3;
+    return this.raw(length);
+  // raw 32
+  case 0xdb:
+    length = this.view.getUint32(this.offset + 1);
+    this.offset += 5;
+    return this.raw(length);
+  // nil
+  case 0xc0:
+    this.offset++;
+    return null;
+  // false
+  case 0xc2:
+    this.offset++;
+    return false;
+  // true
+  case 0xc3:
+    this.offset++;
+    return true;
+  // undefined
+  case 0xc4:
+    this.offset++;
+    return undefined;
+  // uint8
+  case 0xcc:
+    value = this.view.getUint8(this.offset + 1);
+    this.offset += 2;
+    return value;
+  // uint 16
+  case 0xcd:
+    value = this.view.getUint16(this.offset + 1);
+    this.offset += 3;
+    return value;
+  // uint 32
+  case 0xce:
+    value = this.view.getUint32(this.offset + 1);
+    this.offset += 5;
+    return value;
+  // int 8
+  case 0xd0:
+    value = this.view.getInt8(this.offset + 1);
+    this.offset += 2;
+    return value;
+  // int 16
+  case 0xd1:
+    value = this.view.getInt16(this.offset + 1);
+    this.offset += 3;
+    return value;
+  // int 32
+  case 0xd2:
+    value = this.view.getInt32(this.offset + 1);
+    this.offset += 5;
+    return value;
+  // map 16
+  case 0xde:
+    length = this.view.getUint16(this.offset + 1);
+    this.offset += 3;
+    return this.map(length);
+  // map 32
+  case 0xdf:
+    length = this.view.getUint32(this.offset + 1);
+    this.offset += 5;
+    return this.map(length);
+  // array 16
+  case 0xdc:
+    length = this.view.getUint16(this.offset + 1);
+    this.offset += 3;
+    return this.array(length);
+  // array 32
+  case 0xdd:
+    length = this.view.getUint32(this.offset + 1);
+    this.offset += 5;
+    return this.array(length);
+  // buffer 16
+  case 0xd8:
+    length = this.view.getUint16(this.offset + 1);
+    this.offset += 3;
+    return this.buf(length);
+  // buffer 32
+  case 0xd9:
+    length = this.view.getUint32(this.offset + 1);
+    this.offset += 5;
+    return this.buf(length);
+  // float
+  case 0xca:
+    value = this.view.getFloat32(this.offset + 1);
+    this.offset += 5;
+    return value;
+  // double
+  case 0xcb:
+    value = this.view.getFloat64(this.offset + 1);
+    this.offset += 9;
+    return value;
+  }
+  throw new Error("Unknown type 0x" + type.toString(16));
+};
+function decode(buffer) {
+  var view = new DataView(buffer);
+  var decoder = new Decoder(view);
+  var value = decoder.parse();
+  if (decoder.offset !== buffer.byteLength) throw new Error((buffer.byteLength - decoder.offset) + " trailing bytes");
+  return value;
+}
+
+function encode(value, view, offset) {
+  var type = typeof value;
+
+  // Strings Bytes
+  if (type === "string") {
+    var length = utf8ByteCount(value);
+    // fix raw
+    if (length < 0x20) {
+      view.setUint8(offset, length | 0xa0);
+      utf8Write(view, offset + 1, value);
+      return 1 + length;
+    }
+    // raw 16
+    if (length < 0x10000) {
+      view.setUint8(offset, 0xda);
+      view.setUint16(offset + 1, length);
+      utf8Write(view, offset + 3, value);
+      return 3 + length;
+    }
+    // raw 32
+    if (length < 0x100000000) {
+      view.setUint8(offset, 0xdb);
+      view.setUint32(offset + 1, length);
+      utf8Write(view, offset + 5, value);
+      return 5 + length;
+    }
+  }
+
+  if (value instanceof ArrayBuffer) {
+    var length = value.byteLength;
+    // buffer 16
+    if (length < 0x10000) {
+      view.setUint8(offset, 0xd8);
+      view.setUint16(offset + 1, length);
+      (new Uint8Array(view.buffer)).set(new Uint8Array(value), offset + 3);
+      return 3 + length;
+    }
+    // buffer 32
+    if (length < 0x100000000) {
+      view.setUint8(offset, 0xd9);
+      view.setUint32(offset + 1, length);
+      (new Uint8Array(view.buffer)).set(new Uint8Array(value), offset + 5);
+      return 5 + length;
+    }
+  }
+  
+  if (type === "number") {
+    // Floating Point
+    if ((value << 0) !== value) {
+      view.setUint8(offset, 0xcb);
+      view.setFloat64(offset + 1, value);
+      return 9;
+    }
+
+    // Integers
+    if (value >=0) {
+      // positive fixnum
+      if (value < 0x80) {
+        view.setUint8(offset, value);
+        return 1;
+      }
+      // uint 8
+      if (value < 0x100) {
+        view.setUint8(offset, 0xcc);
+        view.setUint8(offset + 1, value);
+        return 2;
+      }
+      // uint 16
+      if (value < 0x10000) {
+        view.setUint8(offset, 0xcd);
+        view.setUint16(offset + 1, value);
+        return 3;
+      }
+      // uint 32
+      if (value < 0x100000000) {
+        view.setUint8(offset, 0xce);
+        view.setUint32(offset + 1, value);
+        return 5;
+      }
+      throw new Error("Number too big 0x" + value.toString(16));
+    }
+    // negative fixnum
+    if (value >= -0x20) {
+      view.setInt8(offset, value);
+      return 1;
+    }
+    // int 8
+    if (value >= -0x80) {
+      view.setUint8(offset, 0xd0);
+      view.setInt8(offset + 1, value);
+      return 2;
+    }
+    // int 16
+    if (value >= -0x8000) {
+      view.setUint8(offset, 0xd1);
+      view.setInt16(offset + 1, value);
+      return 3;
+    }
+    // int 32
+    if (value >= -0x80000000) {
+      view.setUint8(offset, 0xd2);
+      view.setInt32(offset + 1, value);
+      return 5;
+    }
+    throw new Error("Number too small -0x" + (-value).toString(16).substr(1));
+  }
+  
+  // undefined
+  if (type === "undefined") {
+    view.setUint8(offset, 0xc4);
+    return 1;
+  }
+  
+  // null
+  if (value === null) {
+    view.setUint8(offset, 0xc0);
+    return 1;
+  }
+
+  // Boolean
+  if (type === "boolean") {
+    view.setUint8(offset, value ? 0xc3 : 0xc2);
+    return 1;
+  }
+  
+  // Container Types
+  if (type === "object") {
+    var length, size = 0;
+    var isArray = Array.isArray(value);
+
+    if (isArray) {
+      length = value.length;
+    }
+    else {
+      var keys = Object.keys(value);
+      length = keys.length;
+    }
+
+    var size;
+    if (length < 0x10) {
+      view.setUint8(offset, length | (isArray ? 0x90 : 0x80));
+      size = 1;
+    }
+    else if (length < 0x10000) {
+      view.setUint8(offset, isArray ? 0xdc : 0xde);
+      view.setUint16(offset + 1, length);
+      size = 3;
+    }
+    else if (length < 0x100000000) {
+      view.setUint8(offset, isArray ? 0xdd : 0xdf);
+      view.setUint32(offset + 1, length);
+      size = 5;
+    }
+
+    if (isArray) {
+      for (var i = 0; i < length; i++) {
+        size += encode(value[i], view, offset + size);
+      }
+    }
+    else {
+      for (var i = 0; i < length; i++) {
+        var key = keys[i];
+        size += encode(key, view, offset + size);
+        size += encode(value[key], view, offset + size);
+      }
+    }
+    
+    return size;
+  }
+  throw new Error("Unknown type " + type);
+}
+
+function sizeof(value) {
+  var type = typeof value;
+
+  // Raw Bytes
+  if (type === "string") {
+    var length = utf8ByteCount(value);
+    if (length < 0x20) {
+      return 1 + length;
+    }
+    if (length < 0x10000) {
+      return 3 + length;
+    }
+    if (length < 0x100000000) {
+      return 5 + length;
+    }
+  }
+  
+  if (value instanceof ArrayBuffer) {
+    var length = value.byteLength;
+    if (length < 0x10000) {
+      return 3 + length;
+    }
+    if (length < 0x100000000) {
+      return 5 + length;
+    }
+  }
+  
+  if (type === "number") {
+    // Floating Point
+    // double
+    if (value << 0 !== value) return 9;
+
+    // Integers
+    if (value >=0) {
+      // positive fixnum
+      if (value < 0x80) return 1;
+      // uint 8
+      if (value < 0x100) return 2;
+      // uint 16
+      if (value < 0x10000) return 3;
+      // uint 32
+      if (value < 0x100000000) return 5;
+      // uint 64
+      if (value < 0x10000000000000000) return 9;
+      throw new Error("Number too big 0x" + value.toString(16));
+    }
+    // negative fixnum
+    if (value >= -0x20) return 1;
+    // int 8
+    if (value >= -0x80) return 2;
+    // int 16
+    if (value >= -0x8000) return 3;
+    // int 32
+    if (value >= -0x80000000) return 5;
+    // int 64
+    if (value >= -0x8000000000000000) return 9;
+    throw new Error("Number too small -0x" + value.toString(16).substr(1));
+  }
+  
+  // Boolean, null, undefined
+  if (type === "boolean" || type === "undefined" || value === null) return 1;
+  
+  // Container Types
+  if (type === "object") {
+    var length, size = 0;
+    if (Array.isArray(value)) {
+      length = value.length;
+      for (var i = 0; i < length; i++) {
+        size += sizeof(value[i]);
+      }
+    }
+    else {
+      var keys = Object.keys(value);
+      length = keys.length;
+      for (var i = 0; i < length; i++) {
+        var key = keys[i];
+        size += sizeof(key) + sizeof(value[key]);
+      }
+    }
+    if (length < 0x10) {
+      return 1 + size;
+    }
+    if (length < 0x10000) {
+      return 3 + size;
+    }
+    if (length < 0x100000000) {
+      return 5 + size;
+    }
+    throw new Error("Array or object too long 0x" + length.toString(16));
+  }
+  throw new Error("Unknown type " + type);
+}
+
+return exports;
+
+});
+(function(o){"function"==typeof define?define(o):"function"==typeof YUI?YUI.add("es5",o):o()})(function(){function o(){}function v(a){a=+a;a!==a?a=0:0!==a&&(a!==1/0&&a!==-(1/0))&&(a=(0<a||-1)*Math.floor(Math.abs(a)));return a}function s(a){var b=typeof a;return null===a||"undefined"===b||"boolean"===b||"number"===b||"string"===b}Function.prototype.bind||(Function.prototype.bind=function(a){var b=this;if("function"!=typeof b)throw new TypeError("Function.prototype.bind called on incompatible "+b);
+var d=q.call(arguments,1),c=function(){if(this instanceof c){var e=b.apply(this,d.concat(q.call(arguments)));return Object(e)===e?e:this}return b.apply(a,d.concat(q.call(arguments)))};b.prototype&&(o.prototype=b.prototype,c.prototype=new o,o.prototype=null);return c});var k=Function.prototype.call,p=Object.prototype,q=Array.prototype.slice,h=k.bind(p.toString),t=k.bind(p.hasOwnProperty);t(p,"__defineGetter__")&&(k.bind(p.__defineGetter__),k.bind(p.__defineSetter__),k.bind(p.__lookupGetter__),k.bind(p.__lookupSetter__));
+if(2!=[1,2].splice(0).length){var y=Array.prototype.splice;Array.prototype.splice=function(a,b){return arguments.length?y.apply(this,[a===void 0?0:a,b===void 0?this.length-a:b].concat(q.call(arguments,2))):[]}}if(1!=[].unshift(0)){var z=Array.prototype.unshift;Array.prototype.unshift=function(){z.apply(this,arguments);return this.length}}Array.isArray||(Array.isArray=function(a){return h(a)=="[object Array]"});var k=Object("a"),l="a"!=k[0]||!(0 in k);Array.prototype.forEach||(Array.prototype.forEach=
+function(a,b){var d=n(this),c=l&&h(this)=="[object String]"?this.split(""):d,e=-1,f=c.length>>>0;if(h(a)!="[object Function]")throw new TypeError;for(;++e<f;)e in c&&a.call(b,c[e],e,d)});Array.prototype.map||(Array.prototype.map=function(a,b){var d=n(this),c=l&&h(this)=="[object String]"?this.split(""):d,e=c.length>>>0,f=Array(e);if(h(a)!="[object Function]")throw new TypeError(a+" is not a function");for(var g=0;g<e;g++)g in c&&(f[g]=a.call(b,c[g],g,d));return f});Array.prototype.filter||(Array.prototype.filter=
+function(a,b){var d=n(this),c=l&&h(this)=="[object String]"?this.split(""):d,e=c.length>>>0,f=[],g;if(h(a)!="[object Function]")throw new TypeError(a+" is not a function");for(var i=0;i<e;i++)if(i in c){g=c[i];a.call(b,g,i,d)&&f.push(g)}return f});Array.prototype.every||(Array.prototype.every=function(a,b){var d=n(this),c=l&&h(this)=="[object String]"?this.split(""):d,e=c.length>>>0;if(h(a)!="[object Function]")throw new TypeError(a+" is not a function");for(var f=0;f<e;f++)if(f in c&&!a.call(b,c[f],
+f,d))return false;return true});Array.prototype.some||(Array.prototype.some=function(a,b){var d=n(this),c=l&&h(this)=="[object String]"?this.split(""):d,e=c.length>>>0;if(h(a)!="[object Function]")throw new TypeError(a+" is not a function");for(var f=0;f<e;f++)if(f in c&&a.call(b,c[f],f,d))return true;return false});Array.prototype.reduce||(Array.prototype.reduce=function(a){var b=n(this),d=l&&h(this)=="[object String]"?this.split(""):b,c=d.length>>>0;if(h(a)!="[object Function]")throw new TypeError(a+
+" is not a function");if(!c&&arguments.length==1)throw new TypeError("reduce of empty array with no initial value");var e=0,f;if(arguments.length>=2)f=arguments[1];else{do{if(e in d){f=d[e++];break}if(++e>=c)throw new TypeError("reduce of empty array with no initial value");}while(1)}for(;e<c;e++)e in d&&(f=a.call(void 0,f,d[e],e,b));return f});Array.prototype.reduceRight||(Array.prototype.reduceRight=function(a){var b=n(this),d=l&&h(this)=="[object String]"?this.split(""):b,c=d.length>>>0;if(h(a)!=
+"[object Function]")throw new TypeError(a+" is not a function");if(!c&&arguments.length==1)throw new TypeError("reduceRight of empty array with no initial value");var e,c=c-1;if(arguments.length>=2)e=arguments[1];else{do{if(c in d){e=d[c--];break}if(--c<0)throw new TypeError("reduceRight of empty array with no initial value");}while(1)}do c in this&&(e=a.call(void 0,e,d[c],c,b));while(c--);return e});if(!Array.prototype.indexOf||-1!=[0,1].indexOf(1,2))Array.prototype.indexOf=function(a){var b=l&&
+h(this)=="[object String]"?this.split(""):n(this),d=b.length>>>0;if(!d)return-1;var c=0;arguments.length>1&&(c=v(arguments[1]));for(c=c>=0?c:Math.max(0,d+c);c<d;c++)if(c in b&&b[c]===a)return c;return-1};if(!Array.prototype.lastIndexOf||-1!=[0,1].lastIndexOf(0,-3))Array.prototype.lastIndexOf=function(a){var b=l&&h(this)=="[object String]"?this.split(""):n(this),d=b.length>>>0;if(!d)return-1;var c=d-1;arguments.length>1&&(c=Math.min(c,v(arguments[1])));for(c=c>=0?c:d-Math.abs(c);c>=0;c--)if(c in b&&
+a===b[c])return c;return-1};if(!Object.keys){var w=!0,x="toString toLocaleString valueOf hasOwnProperty isPrototypeOf propertyIsEnumerable constructor".split(" "),A=x.length,r;for(r in{toString:null})w=!1;Object.keys=function(a){if(typeof a!="object"&&typeof a!="function"||a===null)throw new TypeError("Object.keys called on a non-object");var b=[],d;for(d in a)t(a,d)&&b.push(d);if(w)for(d=0;d<A;d++){var c=x[d];t(a,c)&&b.push(c)}return b}}if(!Date.prototype.toISOString||-1===(new Date(-621987552E5)).toISOString().indexOf("-000001"))Date.prototype.toISOString=
+function(){var a,b,d,c;if(!isFinite(this))throw new RangeError("Date.prototype.toISOString called on non-finite value.");c=this.getUTCFullYear();a=this.getUTCMonth();c=c+Math.floor(a/12);a=[(a%12+12)%12+1,this.getUTCDate(),this.getUTCHours(),this.getUTCMinutes(),this.getUTCSeconds()];c=(c<0?"-":c>9999?"+":"")+("00000"+Math.abs(c)).slice(0<=c&&c<=9999?-4:-6);for(b=a.length;b--;){d=a[b];d<10&&(a[b]="0"+d)}return c+"-"+a.slice(0,2).join("-")+"T"+a.slice(2).join(":")+"."+("000"+this.getUTCMilliseconds()).slice(-3)+
+"Z"};r=!1;try{r=Date.prototype.toJSON&&null===(new Date(NaN)).toJSON()&&-1!==(new Date(-621987552E5)).toJSON().indexOf("-000001")&&Date.prototype.toJSON.call({toISOString:function(){return true}})}catch(H){}r||(Date.prototype.toJSON=function(){var a=Object(this),b;a:if(s(a))b=a;else{b=a.valueOf;if(typeof b==="function"){b=b.call(a);if(s(b))break a}b=a.toString;if(typeof b==="function"){b=b.call(a);if(s(b))break a}throw new TypeError;}if(typeof b==="number"&&!isFinite(b))return null;b=a.toISOString;
+if(typeof b!="function")throw new TypeError("toISOString property is not callable");return b.call(a)});var g=Date,m=function(a,b,d,c,e,f,h){var i=arguments.length;if(this instanceof g){i=i==1&&String(a)===a?new g(m.parse(a)):i>=7?new g(a,b,d,c,e,f,h):i>=6?new g(a,b,d,c,e,f):i>=5?new g(a,b,d,c,e):i>=4?new g(a,b,d,c):i>=3?new g(a,b,d):i>=2?new g(a,b):i>=1?new g(a):new g;i.constructor=m;return i}return g.apply(this,arguments)},u=function(a,b){var d=b>1?1:0;return B[b]+Math.floor((a-1969+d)/4)-Math.floor((a-
+1901+d)/100)+Math.floor((a-1601+d)/400)+365*(a-1970)},C=RegExp("^(\\d{4}|[+-]\\d{6})(?:-(\\d{2})(?:-(\\d{2})(?:T(\\d{2}):(\\d{2})(?::(\\d{2})(?:\\.(\\d{3}))?)?(Z|(?:([-+])(\\d{2}):(\\d{2})))?)?)?)?$"),B=[0,31,59,90,120,151,181,212,243,273,304,334,365],j;for(j in g)m[j]=g[j];m.now=g.now;m.UTC=g.UTC;m.prototype=g.prototype;m.prototype.constructor=m;m.parse=function(a){var b=C.exec(a);if(b){var d=Number(b[1]),c=Number(b[2]||1)-1,e=Number(b[3]||1)-1,f=Number(b[4]||0),h=Number(b[5]||0),i=Number(b[6]||
+0),j=Number(b[7]||0),m=!b[4]||b[8]?0:Number(new g(1970,0)),k=b[9]==="-"?1:-1,l=Number(b[10]||0),b=Number(b[11]||0);if(f<(h>0||i>0||j>0?24:25)&&h<60&&i<60&&j<1E3&&c>-1&&c<12&&l<24&&b<60&&e>-1&&e<u(d,c+1)-u(d,c)){d=((u(d,c)+e)*24+f+l*k)*60;d=((d+h+b*k)*60+i)*1E3+j+m;if(-864E13<=d&&d<=864E13)return d}return NaN}return g.parse.apply(this,arguments)};Date=m;Date.now||(Date.now=function(){return(new Date).getTime()});if("0".split(void 0,0).length){var D=String.prototype.split;String.prototype.split=function(a,
+b){return a===void 0&&b===0?[]:D.apply(this,arguments)}}if("".substr&&"b"!=="0b".substr(-1)){var E=String.prototype.substr;String.prototype.substr=function(a,b){return E.call(this,a<0?(a=this.length+a)<0?0:a:a,b)}}j="\t\n\x0B\f\r \u00a0\u1680\u180e\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u202f\u205f\u3000\u2028\u2029\ufeff";if(!String.prototype.trim||j.trim()){j="["+j+"]";var F=RegExp("^"+j+j+"*"),G=RegExp(j+j+"*$");String.prototype.trim=function(){if(this===void 0||this===
+null)throw new TypeError("can't convert "+this+" to object");return String(this).replace(F,"").replace(G,"")}}var n=function(a){if(a==null)throw new TypeError("can't convert "+a+" to object");return Object(a)}});
+
+(function(f){"function"==typeof define?define(f):"function"==typeof YUI?YUI.add("es5-sham",f):f()})(function(){function f(a){try{return Object.defineProperty(a,"sentinel",{}),"sentinel"in a}catch(c){}}var b=Function.prototype.call,g=Object.prototype,h=b.bind(g.hasOwnProperty),p,q,k,l,i;if(i=h(g,"__defineGetter__"))p=b.bind(g.__defineGetter__),q=b.bind(g.__defineSetter__),k=b.bind(g.__lookupGetter__),l=b.bind(g.__lookupSetter__);Object.getPrototypeOf||(Object.getPrototypeOf=function(a){return a.__proto__||
+(a.constructor?a.constructor.prototype:g)});Object.getOwnPropertyDescriptor||(Object.getOwnPropertyDescriptor=function(a,c){if(typeof a!="object"&&typeof a!="function"||a===null)throw new TypeError("Object.getOwnPropertyDescriptor called on a non-object: "+a);if(h(a,c)){var d={enumerable:true,configurable:true};if(i){var b=a.__proto__;a.__proto__=g;var e=k(a,c),f=l(a,c);a.__proto__=b;if(e||f){if(e)d.get=e;if(f)d.set=f;return d}}d.value=a[c];return d}});Object.getOwnPropertyNames||(Object.getOwnPropertyNames=
+function(a){return Object.keys(a)});if(!Object.create){var m;if(null===Object.prototype.__proto__||"undefined"==typeof document)m=function(){return{__proto__:null}};else{var r=function(){},b=document.createElement("iframe"),j=document.body||document.documentElement;b.style.display="none";j.appendChild(b);b.src="javascript:";var e=b.contentWindow.Object.prototype;j.removeChild(b);b=null;delete e.constructor;delete e.hasOwnProperty;delete e.propertyIsEnumerable;delete e.isPrototypeOf;delete e.toLocaleString;
+delete e.toString;delete e.valueOf;e.__proto__=null;r.prototype=e;m=function(){return new r}}Object.create=function(a,c){function d(){}var b;if(a===null)b=m();else{if(typeof a!=="object"&&typeof a!=="function")throw new TypeError("Object prototype may only be an Object or null");d.prototype=a;b=new d;b.__proto__=a}c!==void 0&&Object.defineProperties(b,c);return b}}if(Object.defineProperty&&(b=f({}),j="undefined"==typeof document||f(document.createElement("div")),!b||!j))var n=Object.defineProperty,
+o=Object.defineProperties;if(!Object.defineProperty||n)Object.defineProperty=function(a,c,d){if(typeof a!="object"&&typeof a!="function"||a===null)throw new TypeError("Object.defineProperty called on non-object: "+a);if(typeof d!="object"&&typeof d!="function"||d===null)throw new TypeError("Property description must be an object: "+d);if(n)try{return n.call(Object,a,c,d)}catch(b){}if(h(d,"value"))if(i&&(k(a,c)||l(a,c))){var e=a.__proto__;a.__proto__=g;delete a[c];a[c]=d.value;a.__proto__=e}else a[c]=
+d.value;else{if(!i)throw new TypeError("getters & setters can not be defined on this javascript engine");h(d,"get")&&p(a,c,d.get);h(d,"set")&&q(a,c,d.set)}return a};if(!Object.defineProperties||o)Object.defineProperties=function(a,c){if(o)try{return o.call(Object,a,c)}catch(d){}for(var b in c)h(c,b)&&b!="__proto__"&&Object.defineProperty(a,b,c[b]);return a};Object.seal||(Object.seal=function(a){return a});Object.freeze||(Object.freeze=function(a){return a});try{Object.freeze(function(){})}catch(t){var s=
+Object.freeze;Object.freeze=function(a){return typeof a=="function"?a:s(a)}}Object.preventExtensions||(Object.preventExtensions=function(a){return a});Object.isSealed||(Object.isSealed=function(){return false});Object.isFrozen||(Object.isFrozen=function(){return false});Object.isExtensible||(Object.isExtensible=function(a){if(Object(a)!==a)throw new TypeError;for(var c="";h(a,c);)c=c+"?";a[c]=true;var b=h(a,c);delete a[c];return b})});
+
+/**
+ * @license
  * Pixi.JS - v1.0.0
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-05-04
+ * Compiled: 2013-05-12
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
  */
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+(function(){
+
+	var root = this;
+
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -50,7 +843,7 @@ PIXI.Point = function(x, y)
  * @method clone
  * @return a copy of the point
  */
-PIXI.Point.clone = function()
+PIXI.Point.prototype.clone = function()
 {
 	return new PIXI.Point(this.x, this.y);
 }
@@ -107,7 +900,7 @@ PIXI.Rectangle = function(x, y, width, height)
  * @method clone
  * @return a copy of the rectangle
  */
-PIXI.Rectangle.clone = function()
+PIXI.Rectangle.prototype.clone = function()
 {
 	return new PIXI.Rectangle(this.x, this.y, this.width, this.height);
 }
@@ -839,120 +1632,167 @@ PIXI.MovieClip.prototype.updateTransform = function()
  */
 
 /**
- * A Text Object will create a line of text
+ * A Text Object will create a line(s) of text. To split a line you can use "\n", "\r" or "\r\n"
  * @class Text
  * @extends Sprite
  * @constructor
- * @param text {String} The copy that you would like the text to display
- * @param fontStyle {String} the style and size of the font eg "bold 20px Arial"
- * @param fillStyle {Object} a canvas fillstyle that will be used on the text eg "red", "#00FF00" can also be null
- * @param strokeStyle {String} a canvas fillstyle that will be used on the text stroke eg "blue", "#FCFF00" can also be null
- * @param strokeThickness {Number} A number that represents the thicknes of the stroke. default is 0 (no stroke)
+ * @param {String} text The copy that you would like the text to display
+ * @param {Object} [style] The style parameters
+ * @param {String} [style.font] default "bold 20pt Arial" The style and size of the font
+ * @param {Object} [style.fill="black"] A canvas fillstyle that will be used on the text eg "red", "#00FF00"
+ * @param {String} [style.align="left"] An alignment of the multiline text ("left", "center" or "right")
+ * @param {String} [style.stroke] A canvas fillstyle that will be used on the text stroke eg "blue", "#FCFF00"
+ * @param {Number} [style.strokeThickness=0] A number that represents the thickness of the stroke. Default is 0 (no stroke)
  */
-PIXI.Text = function(text, fontStyle, fillStyle, strokeStyle, strokeThickness)
+PIXI.Text = function(text, style)
 {
-	this.canvas = document.createElement("canvas");
-	
-	this.context = this.canvas.getContext("2d");
-	//document.body.appendChild(this.canvas);
-	this.setText(text);
-	this.setStyle(fontStyle, fillStyle, strokeStyle, strokeThickness);
-	
-	this.updateText();
-	
-	PIXI.Sprite.call( this, PIXI.Texture.fromCanvas(this.canvas));
-	
-	// need to store a canvas that can
-}
+    this.canvas = document.createElement("canvas");
+    this.context = this.canvas.getContext("2d");
+    PIXI.Sprite.call(this, PIXI.Texture.fromCanvas(this.canvas));
+
+    this.setText(text);
+    this.setStyle(style);
+    this.updateText();
+    this.dirty = false;
+};
 
 // constructor
 PIXI.Text.constructor = PIXI.Text;
-PIXI.Text.prototype = Object.create( PIXI.Sprite.prototype );
-
-/**
- * Set the copy for the text object
- * @methos setText
- * @param text {String} The copy that you would like the text to display
- */
-PIXI.Text.prototype.setText = function(text)
-{
-	this.text = text || " ";
-	this.dirty = true;
-}
+PIXI.Text.prototype = Object.create(PIXI.Sprite.prototype);
 
 /**
  * Set the style of the text
  * @method setStyle
- * @constructor
- * @param fontStyle {String} the style and size of the font eg "bold 20px Arial"
- * @param fillStyle {Object} a canvas fillstyle that will be used on the text eg "red", "#00FF00" can also be null
- * @param strokeStyle {String} a canvas fillstyle that will be used on the text stroke eg "blue", "#FCFF00" can also be null
- * @param strokeThickness {Number} A number that represents the thicknes of the stroke. default is 0 (no stroke)
+ * @param {Object} [style] The style parameters
+ * @param {String} [style.font="bold 20pt Arial"] The style and size of the font
+ * @param {Object} [style.fill="black"] A canvas fillstyle that will be used on the text eg "red", "#00FF00"
+ * @param {String} [style.align="left"] An alignment of the multiline text ("left", "center" or "right")
+ * @param {String} [style.stroke] A canvas fillstyle that will be used on the text stroke eg "blue", "#FCFF00"
+ * @param {Number} [style.strokeThickness=0] A number that represents the thickness of the stroke. Default is 0 (no stroke)
  */
-PIXI.Text.prototype.setStyle = function(fontStyle, fillStyle, strokeStyle, strokeThickness)
+PIXI.Text.prototype.setStyle = function(style)
 {
-	this.fontStyle = fontStyle || "bold 20pt Arial";
-	this.fillStyle = fillStyle;
-	this.strokeStyle = strokeStyle;
-	this.strokeThickness = strokeThickness || 0;
-	
-	this.dirty = true;
-}
+    style = style || {};
+    style.font = style.font || "bold 20pt Arial";
+    style.fill = style.fill || "black";
+    style.align = style.align || "left";
+    style.strokeThickness = style.strokeThickness || 0;
+    this.style = style;
+    this.dirty = true;
+};
 
 /**
+ * Set the copy for the text object. To split a line you can use "\n"
+ * @method setText
+ * @param {String} text The copy that you would like the text to display
+ */
+PIXI.Sprite.prototype.setText = function(text)
+{
+    this.text = text || " ";
+    this.dirty = true;
+};
+
+/**
+ * Renders text
  * @private
  */
 PIXI.Text.prototype.updateText = function()
 {
-//	console.log(this.text);
-	this.context.font = this.fontStyle;
-		
-	this.canvas.width = this.context.measureText(this.text).width + this.strokeThickness//textDimensions.width;
-	this.canvas.height = this.determineFontHeight("font: " + this.fontStyle  + ";")+ this.strokeThickness;// textDimensions.height;
+	this.context.font = this.style.font;
 
-	this.context.fillStyle = this.fillStyle;
-	this.context.font = this.fontStyle;
+	//split text into lines
+	var lines = this.text.split(/(?:\r\n|\r|\n)/);
+
+	//calculate text width
+	var lineWidths = [];
+	var maxLineWidth = 0;
+	for (var i = 0; i < lines.length; i++)
+	{
+		var lineWidth = this.context.measureText(lines[i]).width;
+		lineWidths[i] = lineWidth;
+		maxLineWidth = Math.max(maxLineWidth, lineWidth);
+	}
+	this.canvas.width = maxLineWidth + this.style.strokeThickness;
 	
-    this.context.strokeStyle = this.strokeStyle;
-	this.context.lineWidth = this.strokeThickness;
+	//calculate text height
+	var lineHeight = this.determineFontHeight("font: " + this.style.font  + ";") + this.style.strokeThickness;
+	this.canvas.height = lineHeight * lines.length;
 
-	this.context.textBaseline="top"; 
-
-    if(this.strokeStyle && this.strokeThickness)this.context.strokeText(this.text,  this.strokeThickness/2, this.strokeThickness/2);
-	if(this.fillStyle)this.context.fillText(this.text,  this.strokeThickness/2, this.strokeThickness/2);
+	//set canvas text styles
+	this.context.fillStyle = this.style.fill;
+	this.context.font = this.style.font;
 	
-	
-//	console.log("//")
-}
+	this.context.strokeStyle = this.style.stroke;
+	this.context.lineWidth = this.style.strokeThickness;
 
+	this.context.textBaseline = "top";
+
+	//draw lines line by line
+	for (i = 0; i < lines.length; i++)
+	{
+		var linePosition = new PIXI.Point(this.style.strokeThickness / 2, this.style.strokeThickness / 2 + i * lineHeight);
+	
+		if(this.style.align == "right")
+		{
+			linePosition.x += maxLineWidth - lineWidths[i];
+		}
+		else if(this.style.align == "center")
+		{
+			linePosition.x += (maxLineWidth - lineWidths[i]) / 2;
+		}
+
+		if(this.style.stroke && this.style.strokeThickness)
+		{
+			this.context.strokeText(lines[i], linePosition.x, linePosition.y);
+		}
+
+		if(this.style.fill)
+		{
+			this.context.fillText(lines[i], linePosition.x, linePosition.y);
+		}
+	}
+	
+    this.updateTexture();
+};
+
+/**
+ * Updates texture size based on canvas size
+ * @private
+ */
+PIXI.Text.prototype.updateTexture = function()
+{
+
+    this.texture.baseTexture.width = this.canvas.width;
+    this.texture.baseTexture.height = this.canvas.height;
+    this.texture.frame.width = this.canvas.width;
+    this.texture.frame.height = this.canvas.height;
+    PIXI.texturesToUpdate.push(this.texture.baseTexture);
+};
+
+/**
+ * @private
+ */
 PIXI.Text.prototype.updateTransform = function()
 {
 	if(this.dirty)
 	{
 		this.updateText();	
-		
-		// update the texture..
-		this.texture.baseTexture.width = this.canvas.width;
-		this.texture.baseTexture.height = this.canvas.height;
-		this.texture.frame.width = this.canvas.width;
-		this.texture.frame.height = this.canvas.height;
-		
-		PIXI.texturesToUpdate.push(this.texture.baseTexture);
 		this.dirty = false;
 	}
 	
-	PIXI.Sprite.prototype.updateTransform.call( this );
-}
+	PIXI.Sprite.prototype.updateTransform.call(this);
+};
 
-/*
+/**
  * http://stackoverflow.com/users/34441/ellisbben
  * great solution to the problem!
+ * @private
  */
 PIXI.Text.prototype.determineFontHeight = function(fontStyle) 
 {
-	// build a little refference dictionary so if the font style has been used return a
+	// build a little reference dictionary so if the font style has been used return a
 	// cached version...
-	var result = PIXI.Text.heightCache[fontStyle]
+	var result = PIXI.Text.heightCache[fontStyle];
 	
 	if(!result)
 	{
@@ -964,7 +1804,7 @@ PIXI.Text.prototype.determineFontHeight = function(fontStyle)
 		body.appendChild(dummy);
 		
 		result = dummy.offsetHeight;
-		PIXI.Text.heightCache[fontStyle] = result
+		PIXI.Text.heightCache[fontStyle] = result;
 		
 		body.removeChild(dummy);
 	}
@@ -979,10 +1819,166 @@ PIXI.Text.prototype.destroy = function(destroyTexture)
 		this.texture.destroy();
 	}
 		
-}
+};
 
 PIXI.Text.heightCache = {};
 
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+/**
+ * A Text Object will create a line(s) of text using bitmap font. To split a line you can use "\n", "\r" or "\r\n"
+ * You can generate the fnt files using 
+ * http://www.angelcode.com/products/bmfont/ for windows or
+ * http://www.bmglyph.com/ for mac.
+ * @class BitmapText
+ * @extends DisplayObjectContainer
+ * @constructor
+ * @param {String} text The copy that you would like the text to display
+ * @param {Object} style The style parameters
+ * @param {String} style.font The size (optional) and bitmap font id (required) eq "Arial" or "20px Arial" (must have loaded previously)
+ * @param {String} [style.align="left"] An alignment of the multiline text ("left", "center" or "right")
+ */
+PIXI.BitmapText = function(text, style)
+{
+    PIXI.DisplayObjectContainer.call(this);
+
+    this.setText(text);
+    this.setStyle(style);
+    this.updateText();
+    this.dirty = false
+
+};
+
+// constructor
+PIXI.BitmapText.constructor = PIXI.BitmapText;
+PIXI.BitmapText.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
+
+/**
+ * Set the copy for the text object
+ * @method setText
+ * @param {String} text The copy that you would like the text to display
+ */
+PIXI.BitmapText.prototype.setText = function(text)
+{
+    this.text = text || " ";
+    this.dirty = true;
+};
+
+/**
+ * Set the style of the text
+ * @method setStyle
+ * @param {Object} style The style parameters
+ * @param {String} style.font The size (optional) and bitmap font id (required) eq "Arial" or "20px Arial" (must have loaded previously)
+ * @param {String} [style.align="left"] An alignment of the multiline text ("left", "center" or "right")
+ */
+PIXI.BitmapText.prototype.setStyle = function(style)
+{
+    style = style || {};
+    style.align = style.align || "left";
+    this.style = style;
+
+    var font = style.font.split(" ");
+    this.fontName = font[font.length - 1];
+    this.fontSize = font.length >= 2 ? parseInt(font[font.length - 2], 10) : PIXI.BitmapText.fonts[this.fontName].size;
+
+    this.dirty = true;
+};
+
+/**
+ * Renders text
+ * @private
+ */
+PIXI.BitmapText.prototype.updateText = function()
+{
+    var data = PIXI.BitmapText.fonts[this.fontName];
+    var pos = new PIXI.Point();
+    var prevCharCode = null;
+    var chars = [];
+    var maxLineWidth = 0;
+    var lineWidths = [];
+    var line = 0;
+    var scale = this.fontSize / data.size;
+    for(var i = 0; i < this.text.length; i++)
+    {
+        var charCode = this.text.charCodeAt(i);
+        if(/(?:\r\n|\r|\n)/.test(this.text.charAt(i)))
+        {
+            lineWidths.push(pos.x);
+            maxLineWidth = Math.max(maxLineWidth, pos.x);
+            line++;
+
+            pos.x = 0;
+            pos.y += data.lineHeight;
+            prevCharCode = null;
+            continue;
+        }
+        
+        var charData = data.chars[charCode];
+        if(!charData) continue;
+
+        if(prevCharCode && charData[prevCharCode])
+        {
+           pos.x += charData.kerning[prevCharCode];
+        }
+        chars.push({line: line, charCode: charCode, position: new PIXI.Point(pos.x + charData.xOffset, pos.y + charData.yOffset)});
+        pos.x += charData.xAdvance;
+
+        prevCharCode = charCode;
+    }
+
+    lineWidths.push(pos.x);
+    maxLineWidth = Math.max(maxLineWidth, pos.x);
+
+    var lineAlignOffsets = [];
+    for(i = 0; i <= line; i++)
+    {
+        var alignOffset = 0;
+        if(this.style.align == "right")
+        {
+            alignOffset = maxLineWidth - lineWidths[i];
+        }
+        else if(this.style.align == "center")
+        {
+            alignOffset = (maxLineWidth - lineWidths[i]) / 2;
+        }
+        lineAlignOffsets.push(alignOffset);
+    }
+
+    for(i = 0; i < chars.length; i++)
+    {
+        var char = PIXI.Sprite.fromFrame(chars[i].charCode);
+        char.position.x = (chars[i].position.x + lineAlignOffsets[chars[i].line]) * scale;
+        char.position.y = chars[i].position.y * scale;
+        char.scale.x = char.scale.y = scale;
+        this.addChild(char);
+    }
+
+    this.width = pos.x * scale;
+    this.height = (pos.y + data.lineHeight) * scale;
+};
+
+/**
+ * @private
+ */
+PIXI.BitmapText.prototype.updateTransform = function()
+{
+	if(this.dirty)
+	{
+        while(this.children.length > 0)
+        {
+            this.removeChild(this.getChildAt(0));
+        }
+        this.updateText();
+
+        this.dirty = false;
+	}
+	
+	PIXI.DisplayObjectContainer.prototype.updateTransform.call(this);
+};
+
+PIXI.BitmapText.fonts = {};
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -2016,180 +3012,6 @@ PIXI.mat4.multiply = function (mat, mat2, dest)
 
     return dest;
 }
-
-/**
- * @author Vsevolod Strukchinsky @floatdrop
- */
-
-
-/**
- * A class MovieClipManager contains and manages MovieClips
- * @class MovieClipManager
- * @extends DisplayObjectContainer
- * @constructor
- */
-PIXI.MovieClipManager = function () {
-    PIXI.DisplayObjectContainer.call(this);
-
-    /**
-     * [read-only] The map of name to MovieClip objects.
-     * @property _animations {Object}
-     */
-    this._animations = {};
-
-    /**
-     * [read-only] The current displaying animation.
-     * @property children {MovieClip}
-     */
-    this._current = undefined;
-
-    for (var argumentIndex in arguments) {
-        var arg = arguments[argumentIndex];
-        this.addLayer(arg.name, arg.clip);
-    }
-
-};
-
-PIXI.MovieClipManager.constructor = PIXI.MovieClipManager;
-PIXI.MovieClipManager.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
-
-/**
- * Gets movieClip with `name`
- * @method get
- * @param  name {String}
- * @return MovieClip
- */
-PIXI.MovieClipManager.prototype.get = function (name) {
-    return this._animations[name];
-};
-
-
-/**
- * Changes movieClip to another
- * @method set
- * @param  name {String}
- * @return DisplayObject
- */
-PIXI.MovieClipManager.prototype.set = function (name) {
-    if (this._current) {
-        this._current.stop();
-        this.removeChild(this._current);
-    }
-    this._current = this._animations[name];
-    if (this._current) {
-        this.addChild(this._current);
-    }
-    return this;
-};
-
-/**
- * Plays movieClip
- * @method play
- * @param  name {String} (set as undefined to play current MovieClip)
- * @return DisplayObject
- */
-PIXI.MovieClipManager.prototype.play = function (name) {
-    if (name) {
-        this.set(name);
-    }
-    if (this._current) {
-        this._current.play();
-    }
-    return this;
-};
-
-/**
- * Stops the current MovieClip and goes to a specific frame
- * @method gotoAndStop
- * @param frameNumber {Number} frame index to stop at
- */
-PIXI.MovieClipManager.prototype.gotoAndStop = function (frameNumber) {
-    this._current.gotoAndStop(frameNumber);
-    return this;
-};
-
-/**
- * Goes to a specific frame and begins playing the current MovieClip
- * @method gotoAndPlay
- * @param frameNumber {Number} frame index to start at
- */
-PIXI.MovieClipManager.prototype.gotoAndPlay = function(frameNumber)
-{
-    this._current.gotoAndPlay(frameNumber);
-    return this;
-};
-
-/**
- * Sets animationSpeed property on current MovieClip
- * @method animationSpeed
- * @param speed {Number}
- */
-PIXI.MovieClipManager.prototype.animationSpeed = function(speed)
-{
-    this._current.animationSpeed = speed;
-    return this;
-};
-
-
-/**
- * Sets loop property on current MovieClip
- * @method loop
- * @param isLooped {Boolean}
- */
-PIXI.MovieClipManager.prototype.loop = function(isLooped)
-{
-    this._current.loop = isLooped;
-    return this;
-};
-
-/**
- * Sets onComplete callback on current MovieClip
- * @method onComplete
- * @param frameNumber {Number} frame index to start at
- */
-PIXI.MovieClipManager.prototype.onComplete = function(callback)
-{
-    this._current.onComplete = callback;
-    return this;
-};
-
-
-/**
- * Stops current MovieClip
- * @method stop
- */
-PIXI.MovieClipManager.prototype.stop = function () {
-    if (this._current) {
-        this._current.stop();
-    }
-    return this;
-};
-
-/**
- * Creates new animation with name `name`.
- * @method add
- * @param  name {String}
- * @param  movieClip {MovieClip}
- * @return DisplayObject
- */
-PIXI.MovieClipManager.prototype.add = function (name, movieClip) {
-    this._animations[name] = movieClip;
-    return this;
-};
-
-
-/**
- * Removes a animation from the container.
- * @method remove
- * @param name {String}
- */
-PIXI.MovieClipManager.prototype.remove = function (name) {
-    if (this._animations[name] === this._current) {
-        this.removeChild(this._current);
-        this._current = undefined;
-    }
-    delete this._animations[name];
-};
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
@@ -4369,7 +5191,7 @@ PIXI.TilingSprite = function(texture, width, height)
 	 * @property tileScale
 	 * @type Point
 	 */	
-	this.tileScale = new PIXI.Point(2,1);
+	this.tileScale = new PIXI.Point(1,1);
 	/**
 	 * The offset position of the image that is being tiled
 	 * @property tileScale
@@ -4721,123 +5543,17 @@ PIXI.Texture.frameUpdates = [];
  */
 
 /**
- * The sprite sheet loader is used to load in JSON sprite sheet data
- * To generate the data you can use http://www.codeandweb.com/texturepacker and publish the "JSON" format
- * There is a free version so thats nice, although the paid version is great value for money.
- * It is highly recommended to use Sprite sheets (also know as texture atlas') as it means sprite's can be batched and drawn together for highly increased rendering speed.
- * Once the data has been loaded the frames are stored in the PIXI texture cache and can be accessed though PIXI.Texture.fromFrameId() and PIXI.Sprite.fromFromeId()
- * This loader will also load the image file that the Spritesheet points to as well as the data.
- * When loaded this class will dispatch a 'loaded' event
- * @class SpriteSheetLoader
- * @extends EventTarget
- * @constructor
- * @param url {String} the url of the sprite sheet JSON file
- */
-
-PIXI.SpriteSheetLoader = function(url)
-{
-	/*
-	 * i use texture packer to load the assets..
-	 * http://www.codeandweb.com/texturepacker
-	 * make sure to set the format as "JSON"
-	 */
-	PIXI.EventTarget.call( this );
-	this.url = url;
-	this.baseUrl = url.replace(/[^\/]*$/, '');
-	this.texture;
-	this.frames = {};
-	this.crossorigin = false;
-}
-
-// constructor
-PIXI.SpriteSheetLoader.constructor = PIXI.SpriteSheetLoader;
-
-/**
- * This will begin loading the JSON file
- */
-PIXI.SpriteSheetLoader.prototype.load = function()
-{
-	this.ajaxRequest = new AjaxRequest();
-	var scope = this;
-	this.ajaxRequest.onreadystatechange=function()
-	{
-		scope.onLoaded();
-	}
-		
-	this.ajaxRequest.open("GET", this.url, true)
-	if (this.ajaxRequest.overrideMimeType) this.ajaxRequest.overrideMimeType("application/json");
-	this.ajaxRequest.send(null)
-}
-
-PIXI.SpriteSheetLoader.prototype.onLoaded = function()
-{
-	if (this.ajaxRequest.readyState==4)
-	{
-		 if (this.ajaxRequest.status==200 || window.location.href.indexOf("http")==-1)
-	 	{
-			var jsondata = eval("("+this.ajaxRequest.responseText+")");
-			
-			var textureUrl = this.baseUrl + jsondata.meta.image;
-			
-			this.texture = PIXI.Texture.fromImage(textureUrl, this.crossorigin).baseTexture;
-			
-		//	if(!this.texture)this.texture = new PIXI.Texture(textureUrl);
-			
-			var frameData = jsondata.frames;
-			for (var i in frameData) 
-			{
-				var rect = frameData[i].frame;
-				if (rect)
-				{
-					PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {x:rect.x, y:rect.y, width:rect.w, height:rect.h});
-					
-					if(frameData[i].trimmed)
-					{
-						//var realSize = frameData[i].spriteSourceSize;
-						PIXI.TextureCache[i].realSize = frameData[i].spriteSourceSize;
-						PIXI.TextureCache[i].trim.x = 0// (realSize.x / rect.w)
-						// calculate the offset!
-					}
-	//				this.frames[i] = ;
-				}
-   			}
-			
-			if(this.texture.hasLoaded)
-			{
-				this.dispatchEvent( { type: 'loaded', content: this } );
-			}
-			else
-			{
-				var scope = this;
-				// wait for the texture to load..
-				this.texture.addEventListener('loaded', function(){
-					
-					scope.dispatchEvent( { type: 'loaded', content: scope } );
-					
-				});
-			}
-	 	}
-	}
-	
-}
-
-
-/**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- */
-
-/**
- * A Class that loads a bunch of images / sprite sheet files. Once the assets have been loaded they are added to the PIXI Texture cache and can be accessed easily through PIXI.Texture.fromFrame(), PIXI.Texture.fromImage() and PIXI.Sprite.fromImage(), PIXI.Sprite.fromFromeId()
- * When all items have been loaded this class will dispatch a 'loaded' event
- * As each individual item is loaded this class will dispatch a 'progress' event
+ * A Class that loads a bunch of images / sprite sheet / bitmap font files. Once the assets have been loaded they are added to the PIXI Texture cache and can be accessed easily through PIXI.Texture.fromImage() and PIXI.Sprite.fromImage()
+ * When all items have been loaded this class will dispatch a "onLoaded" event
+ * As each individual item is loaded this class will dispatch a "onProgress" event
  * @class AssetLoader
  * @constructor
  * @extends EventTarget
- * @param assetURLs {Array} an array of image/sprite sheet urls that you would like loaded supported. Supported image formats include "jpeg", "jpg", "png", "gif". Supported sprite sheet data formats only include "JSON" at this time
+ * @param {Array} assetURLs an array of image/sprite sheet urls that you would like loaded supported. Supported image formats include "jpeg", "jpg", "png", "gif". Supported sprite sheet data formats only include "JSON" at this time. Supported bitmap font data formats include "xml" and "fnt".
  */
 PIXI.AssetLoader = function(assetURLs)
 {
-	PIXI.EventTarget.call( this );
+	PIXI.EventTarget.call(this);
 	
 	/**
 	 * The array of asset URLs that are going to be loaded
@@ -4845,11 +5561,19 @@ PIXI.AssetLoader = function(assetURLs)
 	 * @type Array
 	 */
 	this.assetURLs = assetURLs;
-	
-	this.assets = [];
 
 	this.crossorigin = false;
-}
+
+    this.loadersByType = {
+        "jpg":  PIXI.ImageLoader,
+        "jpeg": PIXI.ImageLoader,
+        "png":  PIXI.ImageLoader,
+        "gif":  PIXI.ImageLoader,
+        "json": PIXI.SpriteSheetLoader,
+        "xml":  PIXI.BitmapFontLoader,
+        "fnt":  PIXI.BitmapFontLoader
+    };
+};
 
 /**
 Fired when an item has loaded
@@ -4869,103 +5593,1488 @@ PIXI.AssetLoader.constructor = PIXI.AssetLoader;
  */
 PIXI.AssetLoader.prototype.load = function()
 {
-	this.loadCount = this.assetURLs.length;
-	var imageTypes = ["jpeg", "jpg", "png", "gif"];
-	
-	var spriteSheetTypes = ["json"];
-	
-	for (var i=0; i < this.assetURLs.length; i++) 
-	{
-		var filename = this.assetURLs[i];
-		var fileType = filename.split('.').pop().toLowerCase();
-		// what are we loading?
-		var type = null;
-		
-		for (var j=0; j < imageTypes.length; j++) 
-		{
-			if(fileType == imageTypes[j])
-			{
-				type = "img";
-				break;
-			}
-		}
-		
-		if(type != "img")
-		{
-			for (var j=0; j < spriteSheetTypes.length; j++) 
-			{
-				if(fileType == spriteSheetTypes[j])
-				{
-					type = "atlas";
-					break;
-				}
-			}
-		}
-		
-		if(type == "img")
-		{
-			
-			var texture = PIXI.Texture.fromImage(filename, this.crossorigin);
-			if(!texture.baseTexture.hasLoaded)
-			{
-				
-				var scope = this;
-				texture.baseTexture.addEventListener( 'loaded', function ( event ) 
-				{
-					scope.onAssetLoaded();
-				});
-	
-				this.assets.push(texture);
-			}
-			else
-			{
-				
-				// already loaded!
-				this.loadCount--;
-				// if this hits zero here.. then everything was cached!
-				if(this.loadCount == 0)
-				{
-					this.dispatchEvent( { type: 'onComplete', content: this } );
-					if(this.onComplete)this.onComplete();
-				}
-			}
-			
-		}
-		else if(type == "atlas")
-		{
-			var spriteSheetLoader = new PIXI.SpriteSheetLoader(filename);
-			spriteSheetLoader.crossorigin = this.crossorigin;
-			this.assets.push(spriteSheetLoader);
-			
-			var scope = this;
-			spriteSheetLoader.addEventListener( 'loaded', function ( event ) 
-			{
-				scope.onAssetLoaded();
-			});
-			
-			spriteSheetLoader.load();
-		}
-		else
-		{
-			// dont know what the file is! :/
-			//this.loadCount--;
-			throw new Error(filename + " is an unsupported file type " + this);
-		}
-		
-		//this.assets[i].load();
-	};
-}
+    var scope = this;
 
+	this.loadCount = this.assetURLs.length;
+
+    for (var i=0; i < this.assetURLs.length; i++)
+	{
+		var fileName = this.assetURLs[i];
+		var fileType = fileName.split(".").pop().toLowerCase();
+
+        var loaderClass = this.loadersByType[fileType];
+        if(!loaderClass)
+            throw new Error(fileType + " is an unsupported file type");
+
+        var loader = new loaderClass(fileName, this.crossorigin);
+
+        loader.addEventListener("loaded", function()
+        {
+            scope.onAssetLoaded();
+        });
+        loader.load();
+	}
+};
+
+/**
+ * Invoked after each file is loaded
+ * @private
+ */
 PIXI.AssetLoader.prototype.onAssetLoaded = function()
 {
-	this.loadCount--;
-	this.dispatchEvent( { type: 'onProgress', content: this } );
-	if(this.onProgress)this.onProgress();
+    this.loadCount--;
+	this.dispatchEvent({type: "onProgress", content: this});
+	if(this.onProgress) this.onProgress();
 	
 	if(this.loadCount == 0)
 	{
-		this.dispatchEvent( { type: 'onComplete', content: this } );
-		if(this.onComplete)this.onComplete();
+		this.dispatchEvent({type: "onComplete", content: this});
+		if(this.onComplete) this.onComplete();
 	}
-}
+};
 
+
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+/**
+ * The sprite sheet loader is used to load in JSON sprite sheet data
+ * To generate the data you can use http://www.codeandweb.com/texturepacker and publish the "JSON" format
+ * There is a free version so thats nice, although the paid version is great value for money.
+ * It is highly recommended to use Sprite sheets (also know as texture atlas") as it means sprite"s can be batched and drawn together for highly increased rendering speed.
+ * Once the data has been loaded the frames are stored in the PIXI texture cache and can be accessed though PIXI.Texture.fromFrameId() and PIXI.Sprite.fromFromeId()
+ * This loader will also load the image file that the Spritesheet points to as well as the data.
+ * When loaded this class will dispatch a "loaded" event
+ * @class SpriteSheetLoader
+ * @extends EventTarget
+ * @constructor
+ * @param {String} url the url of the sprite sheet JSON file
+ * @param {Boolean} crossorigin
+ */
+
+PIXI.SpriteSheetLoader = function(url, crossorigin)
+{
+	/*
+	 * i use texture packer to load the assets..
+	 * http://www.codeandweb.com/texturepacker
+	 * make sure to set the format as "JSON"
+	 */
+	PIXI.EventTarget.call(this);
+	this.url = url;
+	this.baseUrl = url.replace(/[^\/]*$/, "");
+	this.texture = null;
+	this.frames = {};
+	this.crossorigin = crossorigin;
+};
+
+// constructor
+PIXI.SpriteSheetLoader.constructor = PIXI.SpriteSheetLoader;
+
+/**
+ * This will begin loading the JSON file
+ */
+PIXI.SpriteSheetLoader.prototype.load = function()
+{
+	this.ajaxRequest = new AjaxRequest();
+	var scope = this;
+	this.ajaxRequest.onreadystatechange = function()
+	{
+		scope.onJSONLoaded();
+	};
+		
+	this.ajaxRequest.open("GET", this.url, true);
+	if (this.ajaxRequest.overrideMimeType) this.ajaxRequest.overrideMimeType("application/json");
+	this.ajaxRequest.send(null)
+};
+
+/**
+ * Invoke when JSON file is loaded
+ * @private
+ */
+PIXI.SpriteSheetLoader.prototype.onJSONLoaded = function()
+{
+	if (this.ajaxRequest.readyState == 4)
+	{
+		 if (this.ajaxRequest.status == 200 || window.location.href.indexOf("http") == -1)
+	 	{
+			var jsonData = eval("(" + this.ajaxRequest.responseText + ")");
+			var textureUrl = this.baseUrl + jsonData.meta.image;
+
+            var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
+            this.texture = image.texture.baseTexture;
+            var scope = this;
+            image.addEventListener("loaded", function(event) {
+                 scope.onLoaded();
+            });
+
+			var frameData = jsonData.frames;
+			for (var i in frameData)
+			{
+				var rect = frameData[i].frame;
+				if (rect)
+				{
+					PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {x:rect.x, y:rect.y, width:rect.w, height:rect.h});
+					
+					if(frameData[i].trimmed)
+					{
+						//var realSize = frameData[i].spriteSourceSize;
+						PIXI.TextureCache[i].realSize = frameData[i].spriteSourceSize;
+						PIXI.TextureCache[i].trim.x = 0;// (realSize.x / rect.w)
+						// calculate the offset!
+					}
+				}
+   			}
+
+            image.load();
+	 	}
+	}	
+};
+/**
+ * Invoke when all files are loaded (json and texture)
+ * @private
+ */
+PIXI.SpriteSheetLoader.prototype.onLoaded = function()
+{
+    this.dispatchEvent({type: "loaded", content: this});
+};
+
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+/**
+ * The image loader class is responsible for loading images file formats ("jpeg", "jpg", "png" and "gif")
+ * Once the image has been loaded it is stored in the PIXI texture cache and can be accessed though PIXI.Texture.fromFrameId() and PIXI.Sprite.fromFromeId()
+ * When loaded this class will dispatch a 'loaded' event
+ * @class ImageLoader
+ * @extends EventTarget
+ * @constructor
+ * @param {String} url The url of the image
+ * @param {Boolean} crossorigin
+ */
+PIXI.ImageLoader = function(url, crossorigin)
+{
+    PIXI.EventTarget.call(this);
+    this.texture = PIXI.Texture.fromImage(url, crossorigin);
+};
+
+// constructor
+PIXI.ImageLoader.constructor = PIXI.ImageLoader;
+
+/**
+ * Loads image or takes it from cache
+ */
+PIXI.ImageLoader.prototype.load = function()
+{
+    if(!this.texture.baseTexture.hasLoaded)
+    {
+        var scope = this;
+        this.texture.baseTexture.addEventListener("loaded", function()
+        {
+            scope.onLoaded();
+        });
+    }
+    else
+    {
+        this.onLoaded();
+    }
+};
+
+/**
+ * Invoked when image file is loaded or it is already cached and ready to use
+ * @private
+ */
+PIXI.ImageLoader.prototype.onLoaded = function()
+{
+    this.dispatchEvent({type: "loaded", content: this});
+};
+
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+/**
+ * The xml loader is used to load in XML bitmap font data ("xml" or "fnt")
+ * To generate the data you can use http://www.angelcode.com/products/bmfont/
+ * This loader will also load the image file as the data.
+ * When loaded this class will dispatch a "loaded" event
+ * @class BitmapFontLoader
+ * @extends EventTarget
+ * @constructor
+ * @param {String} url the url of the sprite sheet JSON file
+ * @param {Boolean} crossorigin
+ */
+
+PIXI.BitmapFontLoader = function(url, crossorigin)
+{
+    /*
+     * i use texture packer to load the assets..
+     * http://www.codeandweb.com/texturepacker
+     * make sure to set the format as "JSON"
+     */
+    PIXI.EventTarget.call(this);
+    this.url = url;
+    this.baseUrl = url.replace(/[^\/]*$/, "");
+    this.texture = null;
+    this.crossorigin = crossorigin;
+};
+
+// constructor
+PIXI.BitmapFontLoader.constructor = PIXI.BitmapFontLoader;
+
+/**
+ * This will begin loading the JSON file
+ */
+PIXI.BitmapFontLoader.prototype.load = function()
+{
+    this.ajaxRequest = new XMLHttpRequest();
+    var scope = this;
+    this.ajaxRequest.onreadystatechange = function()
+    {
+        scope.onXMLLoaded();
+    };
+
+    this.ajaxRequest.open("GET", this.url, true);
+    if (this.ajaxRequest.overrideMimeType) this.ajaxRequest.overrideMimeType("application/xml");
+    this.ajaxRequest.send(null)
+};
+
+/**
+ * Invoked when XML file is loaded
+ * @private
+ */
+PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
+{
+    if (this.ajaxRequest.readyState == 4)
+    {
+        if (this.ajaxRequest.status == 200 || window.location.href.indexOf("http") == -1)
+        {
+            var textureUrl = this.baseUrl + this.ajaxRequest.responseXML.getElementsByTagName("page")[0].attributes.getNamedItem("file").nodeValue;
+            var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
+            this.texture = image.texture.baseTexture;
+
+            var data = {};
+            var info = this.ajaxRequest.responseXML.getElementsByTagName("info")[0];
+            var common = this.ajaxRequest.responseXML.getElementsByTagName("common")[0];
+            data.font = info.attributes.getNamedItem("face").nodeValue;
+            data.size = parseInt(info.attributes.getNamedItem("size").nodeValue, 10);
+            data.lineHeight = parseInt(common.attributes.getNamedItem("lineHeight").nodeValue, 10);
+            data.chars = {};
+
+            //parse letters
+            var letters = this.ajaxRequest.responseXML.getElementsByTagName("char");
+
+            for (var i = 0; i < letters.length; i++)
+            {
+                var charCode = parseInt(letters[i].attributes.getNamedItem("id").nodeValue, 10);
+
+                var textureRect = {
+                    x: parseInt(letters[i].attributes.getNamedItem("x").nodeValue, 10),
+                    y: parseInt(letters[i].attributes.getNamedItem("y").nodeValue, 10),
+                    width: parseInt(letters[i].attributes.getNamedItem("width").nodeValue, 10),
+                    height: parseInt(letters[i].attributes.getNamedItem("height").nodeValue, 10)
+                };
+                PIXI.TextureCache[charCode] = new PIXI.Texture(this.texture, textureRect);
+
+                data.chars[charCode] = {
+                    xOffset: parseInt(letters[i].attributes.getNamedItem("xoffset").nodeValue, 10),
+                    yOffset: parseInt(letters[i].attributes.getNamedItem("yoffset").nodeValue, 10),
+                    xAdvance: parseInt(letters[i].attributes.getNamedItem("xadvance").nodeValue, 10),
+                    kerning: {}
+                };
+            }
+
+            //parse kernings
+            var kernings = this.ajaxRequest.responseXML.getElementsByTagName("kerning");
+            for (i = 0; i < kernings.length; i++)
+            {
+               var first = parseInt(kernings[i].attributes.getNamedItem("first").nodeValue, 10);
+               var second = parseInt(kernings[i].attributes.getNamedItem("second").nodeValue, 10);
+               var amount = parseInt(kernings[i].attributes.getNamedItem("amount").nodeValue, 10);
+
+                data.chars[second].kerning[first] = amount;
+
+            }
+            PIXI.BitmapText.fonts[data.font] = data;
+
+            var scope = this;
+            image.addEventListener("loaded", function() {
+                scope.onLoaded();
+            });
+            image.load();
+        }
+    }
+};
+
+/**
+ * Invoked when all files are loaded (xml/fnt and texture)
+ * @private
+ */
+PIXI.BitmapFontLoader.prototype.onLoaded = function()
+{
+    this.dispatchEvent({type: "loaded", content: this});
+};
+
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+ if (typeof exports !== 'undefined') {
+    if (typeof module !== 'undefined' && module.exports) {
+      exports = module.exports = PIXI;
+    }
+    exports.PIXI = PIXI;
+  } else {
+    root.PIXI = PIXI;
+  }
+
+
+}).call(this);
+/**
+ * @author Vsevolod Strukchinsky (@floatdrop)
+ */
+
+(function () {
+
+	var root = this;
+/**
+ * @author Vsevolod Strukchinsky (@floatdrop)
+ */
+
+/**
+@module LINK
+ */
+var LINK = LINK || {};
+
+LINK.Cache = {};
+/**
+ * @author Vsevolod Strukchinsky @floatdrop
+ */
+
+
+/**
+A class Layers represents a named collection of display objects container (layers). It is the base class of all display objects that act as a container for other objects.
+
+Single level layers inheritance: 
+
+@example 
+	// Create three layers, that can be getted by layers.top, layers.middle, layers.bottom
+	var layers = new LINK.Layers("bottom", "middle", "top");
+	layers.top.addChild(...);
+	layers.bottom.addChild(...);
+
+Multi level layers inheritance (be careful with swapping between different levels of layers):
+
+@example
+	var layers = new LINK.Layers({
+			"ground": new LINK.Layers("earth",{"grass": new LINK.Layers("leafs", "flowers")), 
+			"sky": new LINK.Layers("birds", "clouds")
+		}, "ui");
+	layers.ground.earth.addChild(...);
+	layers.ground.grass.flowers.addChild(...);
+	layers.sky.clouds.addChild(...);
+	layers.ui.addChild(...);
+
+@class Layers
+@extends DisplayObjectContainer
+@constructor
+**/
+LINK.Layers = function () {
+	PIXI.DisplayObjectContainer.call(this);
+
+	this.blockedNames = Object.keys(this);
+
+	this.sort = false;
+
+	for (var argumentIndex in arguments) {
+		var arg = arguments[argumentIndex];
+		if (typeof arg === "string") {
+			this.addLayer(arg);
+		} else if (arg instanceof Object) {
+			for (var layersGroupName in arg) {
+				this[layersGroupName] = arg[layersGroupName];
+				this.addChild(arg[layersGroupName]);
+			}
+		}
+	}
+};
+
+LINK.Layers.constructor = LINK.Layers;
+LINK.Layers.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
+
+/**
+ * Creates new layer with name layerName above others layers.
+ * @method addLayer
+ * @param  layerName {String}
+ * @return DisplayObject
+ */
+LINK.Layers.prototype.addLayer = function (layerName) {
+	return this.addLayerAt(layerName, this.children.length);
+};
+
+/**
+ * Creates new layer with name layerName at specified index.
+ * @method addLayerAt
+ * @param Layer {DisplayObject}
+ * @param index {Number}
+ */
+LINK.Layers.prototype.addLayerAt = function (layerName, index) {
+	if (layerName in this) {
+		throw new Error(layerName + " Suplied name already used by " + this[layerName]);
+	}
+	var layer = new PIXI.DisplayObjectContainer();
+	layer.layername = layerName;
+	this.addChildAt(layer, index);
+	this[layerName] = layer;
+	return layer;
+};
+
+/**
+ * Swaps 2 Layers
+ * @method swapChildren
+ * @param  LayerName {String}
+ * @param  LayerName2 {String}
+ */
+LINK.Layers.prototype.swapLayers = function (layerName, layerName2) {
+
+	var layer = this[layerName];
+	var layer2 = this[layerName2];
+
+	this.swapChildren(layer, layer2);
+};
+
+/**
+ * Returns the Layer with specified name or creates it
+ * @method getLayer
+ * @param  layerName {String}
+ * @return DisplayObjectContainer
+ */
+LINK.Layers.prototype.getLayer = function (layerName) {
+	if (!this[layerName])
+		this.addLayer(layerName);
+	return this[layerName];
+};
+
+/**
+ * Returns the Layer at the specified index
+ * @method getLayerAt
+ * @param  index {Number}
+ * @return DisplayObjectContainer
+ */
+LINK.Layers.prototype.getLayerAt = function (index) {
+	return this.getChildAt(index);
+};
+
+/**
+ * Removes a layer from the container.
+ * @method removeLayer
+ * @param String {LayerName}
+ */
+LINK.Layers.prototype.removeLayer = function (layerName) {
+	if (!(layerName in this) || (layerName in this.blockedNames)) return;
+	PIXI.DisplayObjectContainer.prototype.removeChild.call(this, this[layerName]);
+	delete this[layerName];
+};
+/**
+ * @author Vsevolod Strukchinsky @floatdrop
+ */
+
+/**
+Keyboard class handles keys.
+
+@example
+	// LINK.Key is a global LINK.Keyboard manager class
+
+	// Bind keys
+	LINK.Key.W.press(moveUpCallback);
+	LINK.Key.S.press(moveDownCallback);
+	LINK.Key.A.press(moveLeftCallback);
+	LINK.Key.D.press(moveRightCallback);
+
+	// Fire all pressed keys
+	Object.keys(LINK.Key.pressed).forEach(function (code) { 
+		LINK.Key.pressed[code].press(); 
+	});
+
+	// Same but shorter
+	LINK.Key.runCallbacks();
+
+@class Keyboard
+@constructor
+**/
+LINK.Keyboard = function () {
+	var self = this;
+	this.pressed = {};
+	this.callbacks = {};
+
+	Object.keys(this.Codes).forEach(function (keyName) {
+		self[keyName] = {
+			press: function (callback) {
+				self.callbacks[keyName] = callback;
+				return self;
+			}
+		};
+		self[keyName].press(function() {});
+		Object.defineProperty(self.pressed, LINK.Keyboard.prototype.Codes[keyName], {
+			configurable: true,
+			get: function () {
+				return {
+					press: function () {
+						if (self.callbacks[keyName]) {
+							self.callbacks[keyName](keyName);
+						}
+					}
+				};
+			}
+		});
+	});
+
+	document.addEventListener('keydown', this.onKeyDown.bind(this), false);
+	document.addEventListener('keyup', this.onKeyUp.bind(this), false);
+};
+
+LINK.Keyboard.constructor = LINK.Keyboard;
+
+LINK.Keyboard.prototype.runCallbacks = function () {
+	var self = this;
+	Object.keys(LINK.Key.pressed).forEach(function (code) {
+		self.pressed[code].press();
+	});
+};
+
+LINK.Keyboard.prototype.onKeyDown = function (e, override) {
+	return this.modifyKey(e, override || e.keyCode || e.which, true);
+};
+
+LINK.Keyboard.prototype.onKeyUp = function (e, override) {
+	return this.modifyKey(e, override || e.keyCode || e.which, false);
+};
+
+LINK.Keyboard.prototype.modifyKey = function (e, key, val) {
+	if (key) {
+		Object.defineProperty(this.pressed, key, {
+			enumerable: val
+		});
+	}
+	return true;
+};
+
+/**
+ * Maps names of keys to theirs codes
+ * @property Codes
+ */
+LINK.Keyboard.prototype.Codes = {
+	'Backspace': 8,
+	'Tab': 9,
+	'Enter': 13,
+	'Shift': 16,
+	'Ctrl': 17,
+	'Alt': 18,
+	'Pause': 19,
+	'Capslock': 20,
+	'Esc': 27,
+	'Spacebar': 32,
+	'Pageup': 33,
+	'Pagedown': 34,
+	'End': 35,
+	'Home': 36,
+	'Leftarrow': 37,
+	'Uparrow': 38,
+	'Rightarrow': 39,
+	'Downarrow': 40,
+	'Insert': 45,
+	'Delete': 46,
+	'0': 48,
+	'1': 49,
+	'2': 50,
+	'3': 51,
+	'4': 52,
+	'5': 53,
+	'6': 54,
+	'7': 55,
+	'8': 56,
+	'9': 57,
+	'A': 65,
+	'B': 66,
+	'C': 67,
+	'D': 68,
+	'E': 69,
+	'F': 70,
+	'G': 71,
+	'H': 72,
+	'I': 73,
+	'J': 74,
+	'K': 75,
+	'L': 76,
+	'M': 77,
+	'N': 78,
+	'O': 79,
+	'P': 80,
+	'Q': 81,
+	'R': 82,
+	'S': 83,
+	'T': 84,
+	'U': 85,
+	'V': 86,
+	'W': 87,
+	'X': 88,
+	'Y': 89,
+	'Z': 90,
+	'0numpad': 96,
+	'1numpad': 97,
+	'2numpad': 98,
+	'3numpad': 99,
+	'4numpad': 100,
+	'5numpad': 101,
+	'6numpad': 102,
+	'7numpad': 103,
+	'8numpad': 104,
+	'9numpad': 105,
+	'Multiply': 106,
+	'Plus': 107,
+	'Minut': 109,
+	'Dot': 110,
+	'Slash1': 111,
+	'F1': 112,
+	'F2': 113,
+	'F3': 114,
+	'F4': 115,
+	'F5': 116,
+	'F6': 117,
+	'F7': 118,
+	'F8': 119,
+	'F9': 120,
+	'F10': 121,
+	'F11': 122,
+	'F12': 123,
+	'equal': 187,
+	'Coma': 188,
+	'Slash': 191,
+	'Backslash': 220
+};
+
+LINK.Key = new LINK.Keyboard();
+/**
+ * @author Vsevolod Strukchinsky @floatdrop
+ */
+
+/**
+Mouse class handles clicks.
+
+@example
+	var mouse = new LINK.Mouse();
+	mouse.on.click(shootCallback);
+	mouse.on.move(lookCallback);
+
+@class Mouse
+@constructor
+**/
+LINK.Mouse = function (objectToListen) {
+
+	var self = this;
+
+	objectToListen = objectToListen || document;
+
+	/**
+	 * The current position of the mouse
+	 *
+	 * @property position
+	 * @type Point
+	 * @readOnly
+	 */
+	this.position = new PIXI.Point(0, 0);
+	objectToListen.addEventListener('mousemove', this.onMouseMove.bind(this), false);
+
+	this.callbacks = {};
+
+	this.on = {};
+
+	Object.keys(LINK.Mouse.prototype.Events).forEach(function (eventName) {
+		self.on[eventName] = function (callback) {
+			self.callbacks[eventName] = callback;
+		};
+
+		var event = LINK.Mouse.prototype.Events[eventName];
+		if (event === 'mousemove' || event === 'mousewheel') return;
+		objectToListen.addEventListener(event, self.onMouse.bind(self), false);
+
+	});
+
+};
+
+LINK.Mouse.constructor = LINK.Mouse;
+
+LINK.Mouse.prototype.onMouse = function (e) {
+	this.updateCoords(e);
+	var button = e.button || 0;
+	if (this.callbacks[button]) {
+		this.callbacks[button](e);
+	}
+
+	return true;
+};
+
+LINK.Mouse.prototype.onMouseMove = function (e) {
+	this.updateCoords(e);
+	if (this.callbacks.move) {
+		this.callbacks.move(e);
+	}
+	return true;
+};
+
+LINK.Mouse.prototype.updateCoords = function (e) {
+	this.position.x = e.pageX;
+	this.position.y = e.pageY;
+};
+
+LINK.Mouse.prototype.Events = {
+	wheel: 'mousewheel',
+	move: 'mousemove',
+	down: 'mousedown',
+	up: 'mouseup',
+	click: 'click',
+	dbclick: 'dblclick',
+	rclick: 'contextmenu',
+	contextmenu: 'contextmenu'
+};
+/**
+ * @author Vsevolod Strukchinsky @floatdrop
+ */
+
+
+/**
+Camera class represents DisplayObjectContainer, that autotrack one of DisplayObject positions.
+
+@example
+	var stage = new PIXI.Stage();
+	var layers = new LINK.Layers("game","ui");
+	stage.addChild(layers);
+	var camera = new LINK.Camera();
+	camera.follow(player).on(layers.game);
+
+@class Camera
+@extends DisplayObjectContainer
+@constructor
+**/
+LINK.Camera = function (width, height) {
+	PIXI.DisplayObjectContainer.call(this);
+
+	this.width = width;
+	this.height = height;
+	this.halfWidth = (width / 2) | 0;
+	this.halfHeight = (height / 2) | 0;
+
+	/**
+	 * The bounds of that the camera can move to
+	 *
+	 * @property bounds
+	 * @type PIXI.Rectangle
+	 * @readOnly
+	 * @private
+	 */
+	var _bounds = new PIXI.Rectangle(0, 0, 0, 0);
+	Object.defineProperty(this, "bounds", {
+		get: function () {
+			return _bounds;
+		},
+		set: function (n) {
+			if (!(n instanceof PIXI.Rectangle)) throw new Error(n + " bounds must be instance of PIXI.Rectangle");
+			_bounds = n.clone();
+			_bounds.maxX = n.x + n.width - this.width;
+			_bounds.minX = n.x;
+			_bounds.maxY = n.y + n.height - this.height;
+			_bounds.minY = n.y;
+		}
+	});
+
+	/**
+	 * Freezes the camera
+	 * @property freeze
+	 * @type Boolean
+	 */
+	this.freeze = false;
+
+	/**
+	 * Freezes the camera
+	 * @property freeze
+	 * @type Boolean
+	 * @private
+	 */
+	this._linkedObject = null;
+};
+
+LINK.Camera.constructor = LINK.Camera;
+LINK.Camera.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
+
+/**
+ * Wraps DisplayObject to pan him and all his childrens.
+ * @method on
+ * @param object {DisplayObjectContainer}
+ */
+LINK.Camera.prototype.on = function (object) {
+	if (!(object instanceof PIXI.DisplayObjectContainer)) throw new Error(object + " object should be instance of DisplayObjectContainer");
+
+	if (object instanceof PIXI.Stage) {
+		while (object.children[0]) {
+			this.addChild(object.children[0]);
+		}
+		object.addChild(this);
+		return this;
+	}
+
+	if (this.parent) {
+		this.off();
+	}
+
+	var parent = object.parent;
+	if (!parent) {
+		throw new Error("Can't bind Camera on DisplayObjectContainer without parent");
+	}
+	var index = parent.children.indexOf(object);
+	parent.removeChild(object);
+	this.addChild(object);
+	object = this;
+	parent.addChildAt(object, index);
+	return this;
+};
+
+/**
+ * Unwraps DisplayObject that was wrapped by "on" method.
+ * @method off
+ */
+LINK.Camera.prototype.off = function () {
+	var parent = this.parent;
+	if (parent) {
+		var index = parent.children.indexOf(this);
+		parent.removeChild(this);
+		while (this.children[0]) {
+			parent.addChildAt(this.children[0], index++);
+		}
+		return this;
+	}
+	throw new Error("Can't remove Camera without Camera.parent defined");
+};
+
+/**
+ * Starts follow on DisplayObject
+ * @method follow
+ * @param object {DisplayObject}
+ */
+LINK.Camera.prototype.follow = function (object) {
+	this._linkedObject = object;
+	return this;
+};
+
+/**
+@method updateTransform
+@internal
+*/
+LINK.Camera.prototype.updateTransform = function () {
+	if (this._linkedObject && !this.freeze) {
+		var anchor = this._linkedObject.position.clone();
+		anchor.x -= this.halfWidth;
+		anchor.y -= this.halfHeight;
+
+		anchor.x = Math.min(this.bounds.maxX, Math.max(this.bounds.minX, anchor.x));
+		anchor.y = Math.min(this.bounds.maxY, Math.max(this.bounds.minY, anchor.y));
+
+		this.position = new PIXI.Point(-anchor.x, -anchor.y);
+	}
+	PIXI.Sprite.prototype.updateTransform.call(this);
+};
+/**
+ * @author Vsevolod Strukchinsky @floatdrop
+ */
+
+/* global msgpack */
+
+/**
+Network class.
+
+This class represents transport between client link.js and server node-link.
+Network layer is websockets which support binary encoding of messages wisg msgpack.
+
+@example
+	var network = new LINK.Network({binary: true});
+	network.onmessage(function (message) { console.log(message); });
+	network.onerror(function (error) { console.log("Error: " + error); });
+	network.onclose(function (error) { console.log("Closed: " + error); })
+	network.connect("localhost");
+	
+	// some code later
+
+	network.close();
+
+@class Network
+@param config {Object}
+@constructor
+**/
+
+LINK.Network = function (config) {
+	this.config = config;
+};
+
+LINK.Network.constructor = LINK.Network;
+
+/**
+ * Creates new layer with name layerName above others layers.
+ * @method connect
+ * @param  host {String}
+ * @param  port {Number}
+ */
+
+LINK.Network.prototype.connect = function (host, port) {
+	this.socket = new WebSocket("ws://" + host + (port ? ":" + port : ""));
+
+	this.onopen(this.onopen_callback);
+	this.onclose(this.onclose_callback);
+	this.onerror(this.onerror_callback);
+	this.onmessage(this.onmessage_callback);
+};
+
+/**
+@private
+**/
+LINK.Network.prototype.decode = function (event, callback) {
+	if (typeof event.data === "string") {
+		callback(JSON.parse(event.data));
+	} else {
+		var reader = new FileReader();
+		reader.readAsArrayBuffer(event.data);
+		reader.onloadend = function () {
+			var message = msgpack.decode(this.result);
+			callback(message);
+		};
+	}
+};
+
+/**
+ * Creates new layer with name layerName above others layers.
+ * @method onmessage
+ * @param  callback {Function}
+ */
+
+LINK.Network.prototype.onmessage = function (callback) {
+	var self = this;
+	this.onmessage_callback = callback;
+	if (this.socket) this.socket.onmessage = function (e) { self.decode(e, callback); };
+};
+
+/**
+ * Creates new layer with name layerName above others layers.
+ * @method onopen
+ * @param  callback {Function}
+ */
+LINK.Network.prototype.onopen = function (callback) {
+	this.onopen_callback = callback;
+	if (this.socket) this.socket.onopen = callback;
+};
+
+/**
+ * Creates new layer with name layerName above others layers.
+ * @method onerror
+ * @param  callback {Function}
+ */
+LINK.Network.prototype.onerror = function (callback) {
+	this.onerror_callback = callback;
+	if (this.socket) this.socket.onerror = callback;
+};
+
+/**
+ * Creates new layer with name layerName above others layers.
+ * @method onclose
+ * @param  callback {Function}
+ */
+LINK.Network.prototype.onclose = function (callback) {
+	this.onclose_callback = callback;
+	if (this.socket) this.socket.onclose = callback;
+};
+
+/**
+ * Creates new layer with name layerName above others layers.
+ * @method send
+ * @param  message {Object}
+ */
+LINK.Network.prototype.send = function (message) {
+	if (this.socket) {
+		this.socket.send(this.config.binary ? msgpack.encode(message) : JSON.stringify(message));
+	}
+};
+
+/**
+ * Creates new layer with name layerName above others layers.
+ * @method close
+ * @param  layerName {String}
+ */
+LINK.Network.prototype.close = function () {
+	if (this.socket) {
+		this.socket.close();
+	}
+};
+/* global Stats */
+
+/**
+ * @author Vsevolod Strukchinsky @floatdrop
+ */
+
+/**
+
+Shows frames per second for each pixi draw round (measuring updateTransform calls).
+
+@example
+	var stage = new PIXI.Stage();
+
+	LINK.Stats.on(stage);
+
+@class Stats
+@constructor
+**/
+LINK.Stats = function () {
+	PIXI.DisplayObjectContainer.call(this);
+
+	this._fpsCounter = new Stats();
+
+	this._fpsCounter.domElement.style.position = 'absolute';
+	this._fpsCounter.domElement.style.left = LINK.Stats.left + 'px';
+	this._fpsCounter.domElement.style.top = '0px';
+	this._fpsCounter.domElement.style.zIndex = '10000';
+
+	document.body.appendChild(this._fpsCounter.domElement);
+	LINK.Stats.left += 80;
+};
+
+LINK.Stats.left = 0;
+
+LINK.Stats.constructor = LINK.Stats;
+LINK.Stats.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
+
+LINK.Stats.on = function(doc) {
+	doc.addChild(new LINK.Stats());
+};
+
+/**
+@method updateTransform
+@internal
+*/
+LINK.Stats.prototype.updateTransform = function () {
+	this._fpsCounter.update();
+	PIXI.DisplayObjectContainer.prototype.updateTransform.call(this);
+};
+/**
+ * @author Vsevolod Strukchinsky @floatdrop
+ */
+
+
+/**
+A class MovieClipManager contains and manages MovieClips.
+
+@example
+    var mcn = new PIXI.MovieClipManager();
+    mcn.add("walk", new PIXI.MovieClip([texture1, texture2, ...], 0.23));
+    mcn.set("walk").animationSpeed(0.22).loop(false).play();
+@class MovieClipManager
+@extends DisplayObjectContainer
+@constructor
+**/
+LINK.MovieClipManager = function () {
+    PIXI.DisplayObjectContainer.call(this);
+
+    /**
+     * [read-only] The map of name to MovieClip objects.
+     * @property _animations {Object}
+     */
+    this._animations = {};
+
+    /**
+     * [read-only] The current displaying animation.
+     * @property children {MovieClip}
+     */
+    this._current = undefined;
+
+    for (var argumentIndex in arguments) {
+        var arg = arguments[argumentIndex];
+        this.add(arg.name, arg.clip);
+    }
+
+};
+
+LINK.MovieClipManager.constructor = LINK.MovieClipManager;
+LINK.MovieClipManager.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
+
+/**
+ * Gets movieClip with `name`
+ * @method get
+ * @param  name {String}
+ * @return MovieClip
+ */
+LINK.MovieClipManager.prototype.get = function (name) {
+    return this._animations[name];
+};
+
+
+/**
+ * Changes movieClip to another
+ * @method set
+ * @param  name {String}
+ * @return DisplayObject
+ */
+LINK.MovieClipManager.prototype.set = function (name) {
+    if (this._current) {
+        this._current.stop();
+        this._current.visible = false;
+    }
+    this._current = this._animations[name];
+    if (this._current) {
+        this._current.visible = true;
+    }
+    return this;
+};
+
+/**
+ * Plays movieClip
+ * @method play
+ * @param  name {String} (set as undefined to play current MovieClip)
+ * @return DisplayObject
+ */
+LINK.MovieClipManager.prototype.play = function (name) {
+    if (name) {
+        this.set(name);
+    }
+    if (this._current) {
+        this._current.play();
+    }
+    return this;
+};
+
+/**
+ * Stops the current MovieClip and goes to a specific frame
+ * @method gotoAndStop
+ * @param frameNumber {Number} frame index to stop at
+ */
+LINK.MovieClipManager.prototype.gotoAndStop = function (frameNumber) {
+    this._current.gotoAndStop(frameNumber);
+    return this;
+};
+
+/**
+ * Goes to a specific frame and begins playing the current MovieClip
+ * @method gotoAndPlay
+ * @param frameNumber {Number} frame index to start at
+ */
+LINK.MovieClipManager.prototype.gotoAndPlay = function(frameNumber)
+{
+    this._current.gotoAndPlay(frameNumber);
+    return this;
+};
+
+/**
+ * Sets animationSpeed property on current MovieClip
+ * @method animationSpeed
+ * @param speed {Number}
+ */
+LINK.MovieClipManager.prototype.animationSpeed = function(speed)
+{
+    this._current.animationSpeed = speed;
+    return this;
+};
+
+
+/**
+ * Sets loop property on current MovieClip
+ * @method loop
+ * @param isLooped {Boolean}
+ */
+LINK.MovieClipManager.prototype.loop = function(isLooped)
+{
+    this._current.loop = isLooped;
+    return this;
+};
+
+/**
+ * Sets onComplete callback on current MovieClip
+ * @method onComplete
+ * @param frameNumber {Number} frame index to start at
+ */
+LINK.MovieClipManager.prototype.onComplete = function(callback)
+{
+    this._current.onComplete = callback;
+    return this;
+};
+
+
+/**
+ * Stops current MovieClip
+ * @method stop
+ */
+LINK.MovieClipManager.prototype.stop = function () {
+    if (this._current) {
+        this._current.stop();
+    }
+    return this;
+};
+
+/**
+ * Creates new animation with name `name`.
+ * @method add
+ * @param  name {String}
+ * @param  movieClip {MovieClip}
+ * @return DisplayObject
+ */
+LINK.MovieClipManager.prototype.add = function (name, movieClip, speed) {
+    this._animations[name] = movieClip;
+    movieClip.animationSpeed = speed || movieClip.animationSpeed;
+    this.addChild(movieClip);
+    movieClip.visible = false;
+    return this;
+};
+
+
+/**
+ * Removes a animation from the container.
+ * @method remove
+ * @param name {String}
+ */
+LINK.MovieClipManager.prototype.remove = function (name) {
+    if (this._animations[name] === this._current) {
+        this._current.visible = false;
+        this._current = undefined;
+    }
+    delete this._animations[name];
+};
+/**
+ * @author Vsevolod Strukchinsky @floatdrop
+ */
+
+/**
+ * @class JsonLoader
+ * @extends EventTarget
+ * @constructor
+ * @param {String} url the url of the sprite sheet JSON file
+ * @param {Boolean} crossorigin
+ */
+
+var AjaxRequest = function () {
+	var activexmodes = ["Msxml2.XMLHTTP", "Microsoft.XMLHTTP"]; //activeX versions to check for in IE
+
+	if (window.ActiveXObject) { //Test for support for ActiveXObject in IE first (as XMLHttpRequest in IE7 is broken)
+		for (var i = 0; i < activexmodes.length; i++) {
+			try {
+				return new window.ActiveXObject(activexmodes[i]);
+			} catch (e) {
+				//suppress error
+			}
+		}
+	} else if (window.XMLHttpRequest) // if Mozilla, Safari etc
+	{
+		return new window.XMLHttpRequest();
+	} else {
+		return false;
+	}
+};
+
+LINK.JsonLoader = function (url, crossorigin) {
+	PIXI.EventTarget.call(this);
+	this.url = url;
+	this.baseUrl = url.replace(/[^\/]*$/, "");
+	this.json = null;
+	this.crossorigin = crossorigin;
+};
+
+// constructor
+LINK.JsonLoader.constructor = LINK.JsonLoader;
+
+/**
+ * This will begin loading the JSON file
+ */
+LINK.JsonLoader.prototype.load = function () {
+	this.ajaxRequest = new AjaxRequest();
+	var scope = this;
+	this.ajaxRequest.onreadystatechange = function () {
+		scope.onJSONLoaded();
+	};
+
+	this.ajaxRequest.open("GET", this.url, true);
+	if (this.ajaxRequest.overrideMimeType) this.ajaxRequest.overrideMimeType("application/json");
+	this.ajaxRequest.send(null);
+};
+
+/**
+ * Invoke when JSON file is loaded
+ * @private
+ */
+LINK.JsonLoader.prototype.onJSONLoaded = function () {
+	if (this.ajaxRequest.readyState === 4) {
+		if (this.ajaxRequest.status === 200 || window.location.href.indexOf("http") === -1) {
+			this.json = JSON.parse(this.ajaxRequest.responseText);
+			LINK.Cache[this.url] = this.json;
+			this.onLoaded();
+		}
+	}
+};
+/**
+ * Invoke when all files are loaded (json and texture)
+ * @private
+ */
+LINK.JsonLoader.prototype.onLoaded = function () {
+	this.dispatchEvent({
+		type: "loaded",
+		content: this
+	});
+};
+/**
+ * @author Vsevolod Strukchinsky @floatdrop
+ */
+
+/**
+Loader class loads resources into one cache. 
+
+@example
+	var audioFile = LINK.Loader.load('Throttle - Inspire.mp3');
+
+@class Loader
+@constructor
+**/
+LINK.Loader = function (assetURLs) {
+	PIXI.AssetLoader.call(this, assetURLs);
+
+    this.loadersByType.json = LINK.JsonLoader;
+};
+
+LINK.Loader.constructor = LINK.Loader;
+LINK.Loader.prototype = Object.create(PIXI.AssetLoader);
+
+LINK.Loader.prototype.load = function(items)
+{
+	var resources = this.assetURLs;
+	this.assetURLs = items || this.assetURLs;
+	PIXI.AssetLoader.prototype.load.call(this);
+	this.assetURLs = resources;
+};
+/**
+ * @author Vsevolod Strukchinsky @floatdrop
+ */
+
+/**
+TiledMap class loads json file of tiled map. 
+
+@example
+	var stage = new PIXI.Stage();
+	var map = new LINK.TiledMap(mapUri, { layerAsCanvas: true });
+	stage.addChild(map);
+
+
+@class TiledMap
+@constructor
+**/
+LINK.TiledMap = function (mapUrl, config) {
+
+	LINK.Layers.call(this);
+
+	var self = this;
+
+	this.config = config;
+
+	this.tilecache = {};
+
+	var loader = new LINK.JsonLoader(mapUrl, false);
+	loader.addEventListener("loaded", function (jsonLoader) {
+		self.onTiledMapJsonLoaded(jsonLoader);
+	});
+	loader.load();
+};
+
+LINK.TiledMap.constructor = LINK.TiledMap;
+LINK.TiledMap.prototype = Object.create(LINK.Layers.prototype);
+
+LINK.TiledMap.prototype.onTiledMapJsonLoaded = function (jsonLoader) {
+	var map = jsonLoader.content.json;
+
+	this.scale = {
+		x: parseInt(map.properties.scale, 10) || 1,
+		y: parseInt(map.properties.scale, 10) || 1
+	};
+
+	this.tilesize = {
+		width: map.tilewidth,
+		height: map.tileheight
+	};
+
+	this.tilesets = [];
+
+	this.tilecache = {};
+
+	for (var j = 0, jl = map.tilesets.length; j < jl; ++j) {
+		var tsInfo = map.tilesets[j];
+		tsInfo.lastgid = tsInfo.firstgid + (tsInfo.imagewidth / tsInfo.tilewidth) * (tsInfo.imageheight / tsInfo.tileheight);
+		tsInfo.baseTexture = PIXI.Texture.fromImage(tsInfo.image).baseTexture;
+		this.tilesets.push(tsInfo);
+	}
+
+	this.version = map.version;
+
+	for (var i = 0, il = map.layers.length; i < il; ++i) {
+		if (map.layers[i].type === "tilelayer") { this.createTileLayer(map.layers[i]); }
+		if (map.layers[i].type === "objectgroup") { this.addLayer(map.layers[i].name); }
+	}
+
+};
+
+
+LINK.TiledMap.prototype.createTileLayer = function (layerJson) {
+	var layer = this.addLayer(layerJson.name);
+	layer.alpha = layerJson.opacity;
+	layer.width = layerJson.width;
+	layer.height = layerJson.height;
+	layer.visible = layerJson.visible;
+	layer.position.x = (layerJson.x * this.tilesize.width) | 0;
+	layer.position.y = (layerJson.y * this.tilesize.height) | 0;
+	layer.type = layerJson.type;
+	for (var index in layerJson.data) {
+		var tileIndex = layerJson.data[index];
+		if (tileIndex === 0) { continue; }
+		var tileset = this.getTileSet(tileIndex);
+		var tileTexture = this.getTileTexture(tileIndex, tileset);
+		var tileDisplayObject = new PIXI.Sprite(tileTexture);
+		tileDisplayObject.position = new PIXI.Point(
+		((index % layer.width) | 0) * this.tilesize.width,
+		((index / layer.width) | 0) * this.tilesize.height);
+		layer.addChild(tileDisplayObject);
+	}
+};
+
+LINK.TiledMap.prototype.getTileSet = function (index) {
+	for (var idx in this.tilesets) {
+		var tileset = this.tilesets[idx];
+		if (index >= tileset.firstgid && index < tileset.lastgid) return tileset;
+	}
+	throw new Error("Tileset for index " + index + " not found!");
+};
+
+LINK.TiledMap.prototype.getTileTexture = function (index, tileset) {
+	if (this.tilecache[index]) {
+		return this.tilecache[index];
+	}
+	var i = index - tileset.firstgid;
+	var frame = new PIXI.Rectangle(
+	(((i * tileset.tilewidth) % tileset.imagewidth) | 0), (((i * tileset.tilewidth) / tileset.imagewidth) | 0) * tileset.tileheight,
+	tileset.tilewidth,
+	tileset.tileheight);
+	this.tilecache[index] = new PIXI.Texture(tileset.baseTexture, frame);
+	return this.tilecache[index];
+};
+ /**
+  * @author Vsevolod Strukchinsky (@floatdrop)
+  */
+
+ if (typeof exports !== 'undefined') {
+ 	if (typeof module !== 'undefined' && module.exports) {
+ 		exports = module.exports = LINK;
+ 	}
+ 	exports.LINK = LINK;
+ } else {
+ 	root.LINK = LINK;
+ }
+
+
+ }).call(this);

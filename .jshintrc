@@ -7,7 +7,8 @@
         "define": false,
         "requestAnimFrame": false,
         "msgpack": true,
-        "PIXI": false
+        "PIXI": false,
+        "LINK": false
     },
     "maxparams": 10,
     "maxdepth": 5,

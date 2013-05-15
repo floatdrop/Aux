@@ -30,9 +30,6 @@ module.exports = cls.Class.extend({
 			self.disconnect_callback(player.id);
 		});
 
-		log.info("Send Map to player " + player.id);
-		player.sendMap(this.map);
-
 		log.info("Send Welcome to player " + player.id);
 		player.send(Constants.Types.Messages.Welcome, player.getBaseState());
 
