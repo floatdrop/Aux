@@ -86,7 +86,7 @@ function (Player, Client, EntityFactory, DebugEntity) {
 				var id = info.id;
 				var entity = id in self.entities ? self.entities[id] : entity = EntityFactory.createEntity(info, id);
 				entity.update(info);
-				self.layers.game.objects.getLayer(entity.layer).addChild(entity.getDisplayObject());
+				self.layers.game.tiles.objects.addChild(entity.getDisplayObject());
 				self.entities[id] = entity;
 			});
 		},
