@@ -45,7 +45,11 @@ var Bullet = module.exports = Entity.extend({
 			this.player.id === contactBody.id) {
 			return false;
 		}
-		console.log("kill " + contactBody.type);
+		contactBody.m_userData.health -= 1;
+		if (contactBody.m_userData.health <= 0)
+		{
+			contactBody.m_userData.bullets = 0;
+		}
 		return true;
 	}
 });

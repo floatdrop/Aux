@@ -34,13 +34,16 @@ module.exports = cls.Class.extend({
 		player.send(Constants.Types.Messages.Welcome, player.getBaseState());
 
 		player.onShoot(function () {
-			var bullet = EntityFactory.createBullet(player);
-			self.engine.addEntity(bullet);
-			bullet.onRemove(self.engine.removeEntity.bind(self.engine));
-			var angle = player.getAngle() * Math.PI / 180,
-				x = Math.cos(angle) * Bullet.SpeedRatio,
-				y = -Math.sin(angle) * Bullet.SpeedRatio;
-			bullet.body.ApplyImpulse(new b2Vec2(x, y), new b2Vec2(0, 0));
+			if (player.bullets > 0) {
+				var bullet = EntityFactory.createBullet(player);
+				self.engine.addEntity(bullet);
+				bullet.onRemove(self.engine.removeEntity.bind(self.engine));
+				var angle = player.getAngle() * Math.PI / 180,
+					x = Math.cos(angle) * Bullet.SpeedRatio,
+					y = -Math.sin(angle) * Bullet.SpeedRatio;
+				bullet.body.ApplyImpulse(new b2Vec2(x, y), new b2Vec2(0, 0));
+				player.bullets -= 1;
+			}
 		});
 
 		this.engine.addEntity(player);

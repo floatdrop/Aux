@@ -92,7 +92,7 @@ var Player = module.exports = Entity.extend({
 	move: function (impulse) {
 		var self = this;
 		this.body.ApplyImpulse(impulse, new b2Vec2(0, 0));
-		this.animationType = "walk";
+		this.animationType = this.health <= 0 ? "ghostwalk" : "walk";
 		this.scheduleAction(function () {
 			self.animationType = "idle";
 		}, 250, this.id);
