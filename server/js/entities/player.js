@@ -24,24 +24,31 @@ var Player = module.exports = Entity.extend({
 		this.setAnimation();
 		this.entities_ids = [];
 		this.layer = "objects";
+		this.health = 5;
+		this.bullets = 10;
 
 		this.connection.listen(function (message) {
 			self.callbacks[message.t](message.d);
 		});
-
+		this.bindCallbacks();
+		this.createBody();
+	},
+	bindCallbacks: function () {
+		var self = this;
 		this.callbacks = {};
 		this.callbacks[Constants.Types.Messages.Action] = this.onAction.bind(this);
 		this.callbacks[Constants.Types.Messages.Angle] = this.onAngle.bind(this);
 		this.callbacks[Constants.Types.Messages.Shoot] = function (data) { self.shoot_callback(data); };
+	},
+	createBody: function () {
 		this.bodyDef = new b2BodyDef();
 		this.bodyDef.type = b2Body.b2_dynamicBody;
-		this.bodyDef.linearDamping = 4;
+		this.bodyDef.linearDamping = 6;
 
 		this.fixtureDef = new b2FixtureDef();
 		this.fixtureDef.density = 5;
 		this.fixtureDef.friction = 0.01;
 		this.fixtureDef.restitution = 1;
-
 		var circleShape = new b2CircleShape();
 		circleShape.m_radius = 0.05;
 		this.fixtureDef.shape = circleShape;
@@ -114,6 +121,18 @@ var Player = module.exports = Entity.extend({
 	},
 	onShoot: function (callback) {
 		this.shoot_callback = callback;
+	},
+	getBaseState: function () {
+		return {
+			id: this.id,
+			kind: this.kind,
+			position: this.getPosition(),
+			angle: this.getAngle(),
+			animation: this.animation,
+			layer: this.layer,
+			health: this.health,
+			bullets: this.bullets
+		};
 	}
 });
 
