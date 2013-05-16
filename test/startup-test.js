@@ -13,7 +13,7 @@ vows.describe('Aux')
 			return new Server({
 				port: 8081,
 				debug_level: "debug",
-				map_filepath: "maps/world_server.json",
+				map_filepath: "./client/assets/world/smallworld.json",
 			});
 		},
 		'started': {

@@ -54,7 +54,6 @@ var Player = module.exports = Entity.extend({
 	},
 	sendEntities: function (entities) {
 		var ids = _.pluck(entities, 'id');
-		var remove_ids = _.without.apply(_, [this.entities_ids].concat(ids));
 		this.entities_ids = ids;
 		if (!this.debug) {
 			entities = _.union(entities, _.map(_.filter(entities, function (entity) {
@@ -63,22 +62,9 @@ var Player = module.exports = Entity.extend({
 				return EntityFactory.getShapeByEntity(entity);
 			}));
 		}
-		this.send(Constants.Types.Messages.RemoveList, remove_ids);
 		this.send(Constants.Types.Messages.EntityList, _.map(entities, function (entity) {
 			return entity.getBaseState();
 		}));
-	},
-	sendMap: function (map) {
-		this.send(Constants.Types.Messages.Map, {
-			tilesets: map.json.tilesets,
-			layers: _.where(map.json.layers, {
-				type: "tilelayer"
-			}),
-			width: map.json.width,
-			height: map.json.height,
-			tilewidth: map.json.tilewidth,
-			tileheight: map.json.tileheight
-		});
 	},
 	update: function () {
 		var curAngle = this.getAngle(),
