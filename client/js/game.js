@@ -34,6 +34,8 @@ function (Player, Client, EntityFactory, DebugEntity) {
 			this.camera.on(this.layers.game);
 			this.camera.bounds = new PIXI.Rectangle(0, 0, 1920, 1472);
 
+			LINK.Stats.on(this.stage);
+
 			/* DEBUG ELEMENT */
 			this.canvas = document.createElement('canvas');
 			this.canvas.width = this.renderer.width;

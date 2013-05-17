@@ -21,7 +21,7 @@ var Bullet = module.exports = Entity.extend({
 		this.fixtureDef = new b2FixtureDef();
 
 		var circleShape = new b2CircleShape();
-		circleShape.m_radius = 0.03;
+		circleShape.m_radius = 0.3;
 		this.fixtureDef.shape = circleShape;
 	},
 	update: function () {
@@ -47,7 +47,7 @@ var Bullet = module.exports = Entity.extend({
 			this.player.id === contactBody.id) {
 			return false;
 		}
-		if (contactBody.m_userData instanceof Player) {
+		if (contactBody.m_userData && contactBody.m_userData instanceof Player) {
 			var victim = contactBody.m_userData;
 			victim.shot();
 		}

@@ -69,12 +69,19 @@ module.exports = cls.Class.extend({
 		});
 	},
 	run: function () {
+		var ticks = 0;
+		var start = new Date() / 1000;
 		var self = this;
 		this.worldUpdater = setInterval(function () {
+			ticks += 1;
 			self.engine.tick(1000.0 / self.ups);
 			self.updateWorld();
 			self.updatePlayers();
 		}, 1000 / this.ups);
+		setInterval(function () {
+			var now = new Date() / 1000;
+			log.debug("Ticks per second: " + ticks / (now - start));
+		}, 5000);
 		setTimeout(function () {
 			self.ready_callback();
 		}, 1000 / this.ups);
