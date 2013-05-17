@@ -1,9 +1,19 @@
 {
 	"id": "bullet",
-	"width": 74,
-	"height": 47,
+	"width": 70,
+	"height": 70,
 	"image": "img/1/bullet.png",
-	"animations": { "default": {} },
+	"animations": {
+		"bullet": {
+			"length": 3,
+			"speed": 0.25
+		},
+		"blowing": {
+			"length": 17,
+			"y": 70,
+			"speed": 0.25
+		}
+	},
 	"offset_x": 0,
 	"offset_y": 0
 }

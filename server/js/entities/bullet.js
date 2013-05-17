@@ -2,6 +2,7 @@ var Entity = require('../entity'),
 	Player = require('./player'),
 	Box2D = require('../lib/box2d'),
 	b2FixtureDef = Box2D.Dynamics.b2FixtureDef,
+	b2Vec2 = Box2D.Common.Math.b2Vec2,
 	b2BodyDef = Box2D.Dynamics.b2BodyDef,
 	b2Body = Box2D.Dynamics.b2Body,
 	b2CircleShape = Box2D.Collision.Shapes.b2CircleShape;
@@ -12,6 +13,7 @@ var Bullet = module.exports = Entity.extend({
 	init: function (id, player) {
 		this._super(id, "bullet " + player.id, Constants.Types.Entities.Bullet);
 		this.player = player;
+		this.animation = "bullet";
 		this.ttl = Bullet.TimeToLife;
 
 		this.bodyDef = new b2BodyDef();
@@ -21,7 +23,7 @@ var Bullet = module.exports = Entity.extend({
 		this.fixtureDef = new b2FixtureDef();
 
 		var circleShape = new b2CircleShape();
-		circleShape.m_radius = 0.3;
+		circleShape.m_radius = 0.1;
 		this.fixtureDef.shape = circleShape;
 	},
 	update: function () {
@@ -35,7 +37,8 @@ var Bullet = module.exports = Entity.extend({
 			kind: this.kind,
 			position: this.getPosition(),
 			layer: this.layer,
-			angle: -this.getAngle()
+			angle: this.animation === "blowing" ? 0 : -this.getAngle(),
+			animation: this.animation
 		};
 	},
 	onRemove: function (callback) {
@@ -51,6 +54,10 @@ var Bullet = module.exports = Entity.extend({
 			var victim = contactBody.m_userData;
 			victim.shot();
 		}
+		this.animation = "blowing";
+		this.body.SetLinearVelocity(new b2Vec2(0, 0));
+		this.body.SetAngularVelocity(0);
+		this.setAngle(0);
 		return true;
 	}
 });
