@@ -45,6 +45,7 @@ define(['entities/player', 'entities/commonEntity', 'entities/circleEntity', 'en
 
 	EntityFactory.builders[Constants.Types.Entities.Bullet] = function (entity_info) {
 		var entity = new Bullet(entity_info.id);
+		entity.setAngle(entity_info.angle || 0);
 		entity.layer = entity_info.layer || "default";
 		return entity;
 	};

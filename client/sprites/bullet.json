@@ -1,7 +1,7 @@
 {
 	"id": "bullet",
-	"width": 8,
-	"height": 7,
+	"width": 74,
+	"height": 47,
 	"image": "img/1/bullet.png",
 	"animations": { "default": {} },
 	"offset_x": 0,

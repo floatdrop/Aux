@@ -33,6 +33,12 @@ var Player = module.exports = Entity.extend({
 		this.bindCallbacks();
 		this.createBody();
 	},
+	shot: function () {
+		this.health -= 1;
+		if (this.health <= 0) {
+			this.bullets = 0;
+		}
+	},
 	bindCallbacks: function () {
 		var self = this;
 		this.callbacks = {};
@@ -43,7 +49,7 @@ var Player = module.exports = Entity.extend({
 	createBody: function () {
 		this.bodyDef = new b2BodyDef();
 		this.bodyDef.type = b2Body.b2_dynamicBody;
-		this.bodyDef.linearDamping = 6;
+		this.bodyDef.linearDamping = 4.5;
 
 		this.fixtureDef = new b2FixtureDef();
 		this.fixtureDef.density = 5;
@@ -127,7 +133,7 @@ var Player = module.exports = Entity.extend({
 			id: this.id,
 			kind: this.kind,
 			position: this.getPosition(),
-			angle: this.getAngle(),
+			//angle: this.getAngle(),
 			animation: this.animation,
 			layer: this.layer,
 			health: this.health,

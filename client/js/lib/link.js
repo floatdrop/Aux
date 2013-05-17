@@ -4,7 +4,7 @@
  * Copyright (c) 2013, Vsevolod Strukchinsky
  * hhttps://github.com/floatdrop/link.js
  *
- * Compiled: 2013-05-15
+ * Compiled: 2013-05-17
  *
  * Link.JS Game Engine is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -6292,7 +6292,7 @@ LINK.Mouse = function (objectToListen) {
 
 	Object.keys(LINK.Mouse.prototype.Events).forEach(function (eventName) {
 		self.on[eventName] = function (callback) {
-			self.callbacks[eventName] = callback;
+			self.callbacks[self.Events[eventName]] = callback;
 		};
 
 		var event = LINK.Mouse.prototype.Events[eventName];
@@ -6307,18 +6307,16 @@ LINK.Mouse.constructor = LINK.Mouse;
 
 LINK.Mouse.prototype.onMouse = function (e) {
 	this.updateCoords(e);
-	var button = e.button || 0;
-	if (this.callbacks[button]) {
-		this.callbacks[button](e);
+	if (e.type && this.callbacks[e.type]) {
+		this.callbacks[e.type](e);
 	}
-
 	return true;
 };
 
 LINK.Mouse.prototype.onMouseMove = function (e) {
 	this.updateCoords(e);
-	if (this.callbacks.move) {
-		this.callbacks.move(e);
+	if (this.callbacks.mousemove) {
+		this.callbacks.mousemove(e);
 	}
 	return true;
 };

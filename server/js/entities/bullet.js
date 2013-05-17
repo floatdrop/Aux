@@ -1,4 +1,5 @@
 var Entity = require('../entity'),
+	Player = require('./player'),
 	Box2D = require('../lib/box2d'),
 	b2FixtureDef = Box2D.Dynamics.b2FixtureDef,
 	b2BodyDef = Box2D.Dynamics.b2BodyDef,
@@ -33,7 +34,8 @@ var Bullet = module.exports = Entity.extend({
 			id: this.id,
 			kind: this.kind,
 			position: this.getPosition(),
-			layer: this.layer
+			layer: this.layer,
+			angle: -this.getAngle()
 		};
 	},
 	onRemove: function (callback) {
@@ -45,10 +47,9 @@ var Bullet = module.exports = Entity.extend({
 			this.player.id === contactBody.id) {
 			return false;
 		}
-		contactBody.m_userData.health -= 1;
-		if (contactBody.m_userData.health <= 0)
-		{
-			contactBody.m_userData.bullets = 0;
+		if (contactBody.m_userData instanceof Player) {
+			var victim = contactBody.m_userData;
+			victim.shot();
 		}
 		return true;
 	}

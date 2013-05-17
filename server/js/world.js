@@ -41,6 +41,7 @@ module.exports = cls.Class.extend({
 				var angle = player.getAngle() * Math.PI / 180,
 					x = Math.cos(angle) * Bullet.SpeedRatio,
 					y = -Math.sin(angle) * Bullet.SpeedRatio;
+				bullet.body.SetAngle(angle);
 				bullet.body.ApplyImpulse(new b2Vec2(x, y), new b2Vec2(0, 0));
 				player.bullets -= 1;
 			}

@@ -22,8 +22,8 @@ define(['sprites'], function (Sprites) {
 		getAngle: function () {
 			return this.animation.rotation;
 		},
-		setAngle: function () {
-			// this.movieclip.rotation = a;
+		setAngle: function (angle) {
+			this.animation.rotation = angle;
 		},
 		loadAnimations: function (sprite) {
 			var self = this;
