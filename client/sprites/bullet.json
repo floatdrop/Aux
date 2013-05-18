@@ -11,6 +11,7 @@
 		"blowing": {
 			"length": 17,
 			"y": 70,
+			"loop": false,
 			"speed": 0.25
 		}
 	},

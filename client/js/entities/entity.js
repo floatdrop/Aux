@@ -34,6 +34,7 @@ define(['sprites'], function (Sprites) {
 				movieclip.animationSpeed = adef.speed;
 				movieclip.scale = adef.scale;
 				movieclip.anchor = def.anchor;
+				movieclip.loop = adef.loop;
 				self.animation.add(name, movieclip).play();
 			});
 		},

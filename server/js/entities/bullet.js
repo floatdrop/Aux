@@ -14,6 +14,7 @@ var Bullet = module.exports = Entity.extend({
 		this._super(id, "bullet " + player.id, Constants.Types.Entities.Bullet);
 		this.player = player;
 		this.animation = "bullet";
+		this.ttf = Bullet.TimeToFly;
 		this.ttl = Bullet.TimeToLife;
 
 		this.bodyDef = new b2BodyDef();
@@ -27,9 +28,17 @@ var Bullet = module.exports = Entity.extend({
 		this.fixtureDef.shape = circleShape;
 	},
 	update: function () {
-		if (this.ttl-- <= 0) {
+		if (this.ttl <= 0) {
 			this.remove_callback(this.id);
 		}
+		if (this.ttf <= 0) {
+			this.animation = "blowing";
+			this.body.SetLinearVelocity(new b2Vec2(0, 0));
+			this.body.SetAngularVelocity(0);
+			this.setAngle(0);
+		}
+		this.ttl -= 1;
+		this.ttf -= 1;
 	},
 	getBaseState: function () {
 		return {
@@ -54,15 +63,13 @@ var Bullet = module.exports = Entity.extend({
 			var victim = contactBody.m_userData;
 			victim.shot();
 		}
-		this.animation = "blowing";
-		this.body.SetLinearVelocity(new b2Vec2(0, 0));
-		this.body.SetAngularVelocity(0);
-		this.setAngle(0);
+		this.ttf = 0;
 		return true;
 	}
 });
 
-Bullet.TimeToLife = 150;
+Bullet.TimeToLife = 120;
+Bullet.TimeToFly = 50;
 Bullet.DontHurtShootingPlayerTime = 10;
 Bullet.SpeedRatio = 3;
 

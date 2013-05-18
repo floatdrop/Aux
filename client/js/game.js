@@ -84,13 +84,18 @@ function (Player, Client, EntityFactory, DebugEntity) {
 		},
 		entityList: function (list) {
 			var self = this;
+			var entities = {};
 			_.each(list, function (info) {
 				var id = info.id;
 				var entity = id in self.entities ? self.entities[id] : entity = EntityFactory.createEntity(info, id);
 				entity.update(info);
 				self.layers.game.tiles.objects.addChild(entity.getDisplayObject());
-				self.entities[id] = entity;
+				entities[id] = entity;
 			});
+			_.each(_.difference(Object.keys(self.entities), Object.keys(entities)), function (id) {
+				self.layers.game.tiles.objects.removeChild(self.entities[id].getDisplayObject());
+			});
+			self.entities = entities;
 		},
 		moveCursor: function (event) {
 			if (this.player) {

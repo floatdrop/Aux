@@ -32,6 +32,7 @@ define(['./lib/json!../sprites/player.json',
 				length: animation.length,
 				x: animation.x || 0,
 				y: animation.y || 0,
+				loop: animation.loop === undefined ? true : animation.loop,
 				scale: new PIXI.Point(animation.scale_x || 1, animation.scale_y || 1),
 				speed: animation.speed || 0,
 				textures: []
