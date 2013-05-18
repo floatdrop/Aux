@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="60" height="46" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" name="tileset" tilewidth="32" tileheight="32">
+  <image source="tileset.png" width="1088" height="1888"/>
+ </tileset>
+ <layer name="1 shore (берег)" width="60" height="46">
+  <data encoding="base64" compression="zlib">
+   eJzVmk1y20YQhQlUkTmH40WSc5BckLxhvLHu4ZV8j2Sh+BwOUMErffjcoEVxKDFTNQUQfzNvuvv1z3Dbr1Z/dqvVr8Px49Bf074P7++Hd3dTH89XQ99Ox910zmd2uJ9nVnom36jOM47v/wzLeP+1OIl3p3lzfludrzRvr0dwZ92Cgf1T9zzGXjifhvN/iv5t6N2VWMf2YRp/pzkbP2Wy7ed6wGt7vDP2ao7jGmft9tMzwfl16Ifh93Hop+k49scGsuX4xJN5U9f2ur/FPcuZ8q7wfpC8RxxrYDuh59qhEdaMHxkbI3XUNr3CPdtCnnupDq4nTIcJ52bq+d0SbzDHtoiRR8qP+nhOvy/FG3luCnnfolnXyDHWVeoCeYpcfwne4CRW9rds0XnKj/xNjqJ+fxne+Uv9767GG709FthvJd9zjTpvGUefI9e91oT2/6XAHH2O7gbnAbjfq1W2vgM+2vFeWLMu1vPfht8P3ZyriH3EXenFW7boOHmL9k2+s11XMh59L+01/ihybxFvXNsSO5i/HIs5Hq30+qF7tttgjWw3C2v01s14HV/Zl1u3icE+iXHWob+M72/VGH8zVg6XVzImv++AmZzFY3Avcd1bNvprxrfkNGOl34q8R7kFL3V45o/6y2K292gVp1HXd8J76uc6TLyxi/eW8c9acmzmkOTu5LWU70nnx34ex9y7jKsYlXbwNOWCjDVO/Tzmoo44brtneVdtLXuNDbMzViP3G///Afu6wMqY8tTPfXdVf7Ls7xV3dJk6TPnmOjn+XP0h61HlKvegA8kFzVX0SQfYr+OavdbCdbTq2ffkO8cZ5ufEW5Sh/ZrrD9Rx1xi3d4T32P9ou9Rn8xVlmqNjVsc4Leq61+KNTM1Rlf3ahpfwMW7N9WBdqvum9nvLxtzXMiVXVzmJ6w2ulxIzsX7t5rFcxh37Y4H/qfE6rIXRdbsNsJKfHLe5psQ4rhNW+naOs9H1x+mdXxragOuxzAmj664fLdW8nX+zppIYnfUTxnEHjblBf2wo49iwfS7zJetqtb91bp8neL13wV7FOZR9K8zMjVxzp/+t9ursf7wWtF3WfZd8vtfZNeIWes3ahmt2OVpH6ZtcI/MztF3OvZIndfrQzzm0BV7Ow7kR7WxpH6DisSVd5ne5psbI+llrvGvNocK7VH9O/cy+h5xmXc73Pnf/+UHm2K4lMX/Je63wOv87aR7n8Hp/I+f2ueSq+Bn7I2Kt4r5r8Hoe5GfrXNW8f21fRLtdqmuTq81RtOHTpBN/XIG3qllVHHFu/8j7PI4d18JBrrLNEh/1/NgAK/F6TPaX7ndX++iOpyq9dZxh35D1bsXLXm/7hkv3u5kLEGulP8Z5LO7fgqfod5znn7Pfpe/SFire4dHjOK7NXFrylOO2Kr65FK/Xz/lltQdp7K302XbrPdCKKy/9tvM8+3fjjT8ej7/38/7wyvyI/zuqeMOcSPm8Zi0dt/i/Axy7Zb4XrJWvrWKqKqa7BK/luaRHrfOApXnQthw3VnnJS/n5CTGTx+IYzrNb+BvOwTps/27+9P3xvMo7XYdyHOU4uIqTM2YrvOQPy9CY7Ycp338BFC2gcw==
+  </data>
+ </layer>
+ <layer name="1 Water (очевидно)" width="60" height="46">
+  <data encoding="base64" compression="zlib">
+   eJztmt2NwyAQhLE7wFeKL6UATd61ciklvg7CShlphHhyvBCzHgkR5QV/Xtg/7Nz5tc7O/U7OxTwvefzl3/9T76fSFZhTnsOLeRucu7RzMGBrYf4m7mSAWQRbi52F+2vu/UT64jNtgVfkZ3u8wRjvYoT3kc/ufbJjX09x2Aqv+KqfbOObEV4rthVhP1vIr0TYz9EIM+dXsPPo4popGjnHXDNZ0mrEvpcuXRpDDwN9S9Z9slMPi6KxGmIxUB/izMqQPGt0VvR0Rs+fmTW8aiSNNbbC59f+0xZYE9XAR/NijYXqzY3WbdVrqNlVw77on8RiBiuGdixAXwO8ieaj1wkFWzla3F1xHycW7EeKewmwaSjeQYvY54kV62ucXxH3jHhfh4Zxnvvscdb1zyLun4CzZZz3hV2jMq+IfXXrXHWld414pHF+IWbtdfda9mLhU/aI84faYNaeuTl/05De4OX4VvPB8FOfUIeUzHvE8Q2+qDZ6s0J8nveI49tZ6mb47D3iPXKWeyg8817hfeHu7Qw9MP/GXuTcEf7q020tvE/AIYBa
+  </data>
+ </layer>
+ <layer name="1 Water objects (лёд, дрань, мразь)" width="60" height="46">
+  <data encoding="base64" compression="zlib">
+   eJztwQENAAAAwqD3T20PBxQAAAAAAAAAAAAA/BgrIAAB
+  </data>
+ </layer>
+ <layer name="1 Base (земля)" width="60" height="46">
+  <data encoding="base64" compression="zlib">
+   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
+  </data>
+ </layer>
+ <layer name="1 Land objects (дороги\трава)" width="60" height="46">
+  <data encoding="base64" compression="zlib">
+   eJztmAtugzAMhlN2Eror9AbTLtA9LrJHqx1lO8hoYb0J21ForMbC8hIJaB48/Em/qAIS+WvHcVBq/pSr1DMQBEEQBEEQBIGyuUk9AyEEex3XjwXE9tl4rPT1tAC/NmxruNZn71+iv5mfxfNMqbXRl/ZaLcQ3kBPfqyz1bOLRmDhfE+N6QjmSk9weMmfw+jOxHMnZeu66ptHrp9bthPwCrlrm8j9lrxzq3VXTmpl4tdEwv1Ncs11BbzS/55LHNjBv1yzH5+gV4LkcirHs4bH8xnrPWOaxRL/X9rVDqVktjuX3PosfY9o3xazFuaOvCUnoHpH2pzbZconmmu9cD90j8j2c96wq+9+301zzOa/UPaKtZw/hExlb/x96XxjL/of4ng//Vjm2885Qv9yXrQ64zvgpv9sO9cvrgOuM43ou1ffLPn4ftbZET0R8bGsRjj/0fK9P+rz3XeuoVRrttA5ahbmW5gr6Ns/i84UZA72pS9xj1ux6QD15Ua2/nblWqvVembFCtf8J3gMdzb29TyMdgbjeZf32RvCLMQNv4OFVXWJ2IPfwv8DfGGsaX5+cAczvqww=
+  </data>
+ </layer>
+ <layer name="1 More land objexts (переходы из дорого в дороги)" width="60" height="46">
+  <data encoding="base64" compression="zlib">
+   eJztwQENAAAAwqD3T20PBxQAAAAAAAAAAAAA/BgrIAAB
+  </data>
+ </layer>
+ <objectgroup name="objects" width="60" height="46">
+  <object x="47" y="92"/>
+  <object x="210" y="190"/>
+  <object x="112" y="156"/>
+  <object x="48" y="222"/>
+  <object x="402" y="88"/>
+  <object x="529" y="123"/>
+  <object x="622" y="185"/>
+  <object x="783" y="249"/>
+  <object x="912" y="215"/>
+  <object x="1039" y="183"/>
+  <object x="1168" y="122"/>
+  <object x="1360" y="184"/>
+  <object x="1392" y="90"/>
+  <object x="1489" y="91"/>
+  <object x="1456" y="248"/>
+  <object x="1488" y="120"/>
+  <object x="1521" y="154"/>
+  <object x="1584" y="119"/>
+  <object x="402" y="282"/>
+  <object x="271" y="314"/>
+  <object x="147" y="344"/>
+  <object x="178" y="409"/>
+  <object x="83" y="410"/>
+  <object x="79" y="505"/>
+  <object x="338" y="378"/>
+  <object x="370" y="475"/>
+  <object x="464" y="474"/>
+  <object x="593" y="379"/>
+  <object x="721" y="347"/>
+  <object x="881" y="347"/>
+  <object x="913" y="345"/>
+  <object x="944" y="442"/>
+  <object x="656" y="455"/>
+  <object x="622" y="437"/>
+  <object x="606" y="424"/>
+  <object x="627" y="415"/>
+  <object x="572" y="491"/>
+  <object x="595" y="474"/>
+  <object x="591" y="502"/>
+  <object x="625" y="487"/>
+  <object x="775" y="973" width="1"/>
+  <object x="780" y="973"/>
+  <object x="792" y="974"/>
+  <object x="777" y="985"/>
+  <object x="790" y="984"/>
+  <object x="209" y="571"/>
+  <object x="110" y="602"/>
+  <object x="688" y="955"/>
+  <object x="559" y="956" width="1"/>
+  <object x="624" y="828"/>
+  <object x="562" y="956"/>
+  <object x="464" y="954"/>
+  <object x="337" y="857"/>
+  <object x="495" y="793"/>
+  <object x="209" y="732"/>
+  <object x="305" y="666"/>
+  <object x="1072" y="474"/>
+  <object x="1168" y="568"/>
+  <object x="1196" y="474"/>
+  <object x="1331" y="442"/>
+  <object x="1648" y="219"/>
+  <object x="1680" y="314"/>
+  <object x="1647" y="411"/>
+  <object x="1682" y="505"/>
+  <object x="1649" y="603"/>
+  <object x="1776" y="569"/>
+  <object x="1554" y="665"/>
+  <object x="1458" y="695"/>
+  <object x="1397" y="600"/>
+  <object x="1357" y="600"/>
+  <object x="1297" y="699"/>
+  <object x="1809" y="667"/>
+  <object x="1712" y="699"/>
+  <object x="1682" y="794"/>
+  <object x="1776" y="794"/>
+  <object x="1714" y="888"/>
+  <object x="1905" y="698"/>
+  <object x="1615" y="923"/>
+  <object x="1423" y="985"/>
+  <object x="1586" y="1030"/>
+  <object x="1586" y="1113"/>
+  <object x="1168" y="1015"/>
+  <object x="1297" y="886"/>
+  <object x="1073" y="984"/>
+  <object x="1039" y="886"/>
+  <object x="880" y="952"/>
+  <object x="977" y="759"/>
+  <object x="816" y="827"/>
+  <object x="817" y="692"/>
+  <object x="720" y="757"/>
+  <object x="592" y="694" height="1"/>
+  <object x="497" y="630"/>
+  <object x="849" y="565"/>
+  <object x="849" y="476"/>
+  <object x="336" y="764"/>
+  <object x="239" y="921"/>
+  <object x="175" y="1020"/>
+  <object x="335" y="1020"/>
+  <object x="402" y="1113"/>
+  <object x="498" y="1083"/>
+  <object x="594" y="1212"/>
+  <object x="690" y="1206"/>
+  <object x="912" y="1145"/>
+  <object x="1040" y="1207"/>
+  <object x="1264" y="1242"/>
+  <object x="1456" y="1209"/>
+  <object x="1553" y="1206"/>
+  <object x="1520" y="1303"/>
+  <object x="1648" y="922"/>
+  <object x="1714" y="1401"/>
+  <object x="174" y="367"/>
+  <object x="239" y="367"/>
+  <object x="143" y="367"/>
+  <object x="111" y="304"/>
+  <object x="144" y="175"/>
+  <object x="143" y="431"/>
+  <object x="273" y="430"/>
+  <object x="240" y="466"/>
+  <object x="1586" y="211"/>
+  <object x="1520" y="174"/>
+  <object x="1522" y="112"/>
+  <object x="1489" y="146"/>
+  <object x="1420" y="76"/>
+  <object x="1423" y="241"/>
+  <object x="1328" y="563"/>
+  <object x="1360" y="563"/>
+  <object x="1615" y="400"/>
+  <object x="1843" y="654"/>
+  <object x="1520" y="1073"/>
+  <object x="1423" y="1199"/>
+  <object x="655" y="1167"/>
+  <object x="625" y="976"/>
+  <object x="592" y="943"/>
+  <object x="911" y="344"/>
+  <object x="944" y="212"/>
+ </objectgroup>
+ <layer name="2 Land objects (камни, стога, кусты, вещи, мосты)" width="60" height="46">
+  <data encoding="base64" compression="zlib">
+   eJztl1sOgjAQRTUxsCLcAUb9cBsY9cPN+NyID9yIz7V4SSRBA1hKoTNtTzJfBTKnUzptp+Nw0CHydWegh9Cv7x4ymrvEVUW+nNYLl1xV58nFWwaT3ZrGxrlreo+m1gOiTF+zpd4yNRjinZHG+ZGtze97ot+Z4bk5Ysx4TYi6prUdIBaMfUVJazu1wNWhnmzPsAVqfVsVu67uDPhj279gCrFb+9bAdZ/jmrfDUZV/+3GbZ7Cinj6pkQP1fznPeenONtrp93Rn0B7Bx5WjM+d7AKWzsMraU7+3BxVdOa8xWZqsYXY+21orHPc2ylA/Vzm+2XqoGWLv5Y9T6kUqOMMzRlwKfBNWGFsjNiXPcOEBhyfiVeJywNgRcTLAV4QrPG+IOwFfk/rPG2LxJ+I=
+  </data>
+ </layer>
+ <layer name="3 Base walls (стволы, горы, стены)" width="60" height="46">
+  <data encoding="base64" compression="zlib">
+   eJzVWlmOFDEMbamn+4MdLgEf7HAOGNb7sJ1kZtivwQz7OdjhCDiiIj1ZtuOXqu5pnmTVlFJJvNtJz/ZyZuL7Yjb7IfRzYY+3vmXmrwK3RK7bQndAvuPy9zPh53mSp1Py/WmhM46OVgncu/L8gtTlJZn7Tua8F/qQmHtVvr8mdH2Q96XMeSX0eiIbRuvh3sgzw0OxOeN3d+X7e0L3B3k/ypxPQp8nkjdaD/dGnqfgIeu3v2SP30J/SD1XaL/E9RC78r4n9NRY25vjweJT+20GGT1r+bKxtC/jB0JvibUZPrXfZvKCpeeWfNlY+iLjX4W+LXy5srpj/IH12V75mDUrsmtHvGtdsrlhFTU4WjPj0xHvWpeeL+h9rPwyde3K8Gsh8mPU5VGJ5WNO/tLyWvll6trV4jdCS/fnRc4LQhcdebVeMb9UsHWDBeM/Ld3fEDlvCm1P0GuzveCYOuMho3vcl43F0qefEDpp9K9ant4azfhPzS8RcF82FkufflnoitG/annG1LCsL2T6F9yXjUXrbGata70zyPqCzi/of1Mgq3erjjGxjrpqxRyOo/95YGK4t09mzn1aV62Yw/HI/yoYeXv6ZD2vxb/WVSvmonFLLtx/Hb2Tx1/tg6ya33MP4uk1e/btvXspqOdwBO5l9UG4nxUPFnDNTC6OfI25L9KwzuG4l9UH4X5WPGT4LzorfuPZSOsEdWzFbtbm+hxu7aXh5Yo6L8O/ZaPIh1s2HWPzbOyMySmWzrQP4Pr4vWXLMT1FNnbGnMcsXWkf8NaPbNljg8ifx/SAiIyuvPUjWzI9UBa99QDvZFd1dmV6oAheDWIQ3clif61t4NnE0vuYHgjh1SAGVi2owP5a24CNY8ZnPV8dk/+s3xY0T9hfaxuwcYz6ObKM78nYuphBq6eZGqif1j1Zpi6yyPY0U5+RC1r3ZBbYXPpo/u/5QJ4P5/57Ad77ZM7I6wBbf/YGeXbkuTv33wvwjJk5I68DbP05GOR5I8/9uf9eYJ0xDxu9ubn6ryb0Zw+9sdzTC+Gcnv+vqHI+HvxX05OEzL2x3NNb45ye36l3HDkZmXtjOfJFr87gnKgn8pCRV+etdaBVZ3r7DM+Pe/x6nejtMzKyHpaNI/Se2ZZbsYxnZfzc1ubJ66GV81v+XGS0eo9NRav/KHIswIaWvFbvsalo9R9VDi9P/w82ZfAXQZWSHQ==
+  </data>
+ </layer>
+ <layer name="3+ доп деревья" width="60" height="46">
+  <data encoding="base64" compression="zlib">
+   eJztwQENAAAAwqD3T20PBxQAAAAAAAAAAAAA/BgrIAAB
+  </data>
+ </layer>
+ <layer name="3 End walls (кроны, плато, края стен)" width="60" height="46">
+  <data encoding="base64" compression="zlib">
+   eJzdWsdyFDEQ3ap1eQ4m3YCPMOkG3LCLK/ETbPCVnOEAOJGxyflABhNtcj6Qc/wFg+EGXHkqz1S12y2ppdk1C6/qlXbHGkndkl63tO6qLhQugBdBH46jzgnwZFp3M8ot4FbFuxo0o50WsFVo7xKeXQavgOvBDeBGsA1sBzcpxlCTFApvUO8t+E5R/zHqPAGfpnW7AnylwSm0cxo8I7T3Hs8+gB+rB/r9LHgOPK8YQ22Sb3whvpKwDP0vB1ek43iGdp6DLzztUb+/BF+Br3P4fBve3Q7uCGiDrjEt9sHO/eCBnH4P6Z/72IDuFS343pbA/XgLfd4G7wTYuwB1F4KL2Dua/g0kH9O9ogXf2wa9+PwV/JY+i/EjRwfG2QnuYvZK/Utw+Zjrb+iaNXo4DByeth3jR45utNUDXhPGq9FqSfszcP21rRlpTxgYPRwHjk9KH7skaLRa0v4MXH9ta0ajO6WOXRI0Wu3Tfg00upM3dvngylU4QnKUvAjtayfqdYCdnvquXIVDs+778Lfv4I/q8DEvxrwvAZcmYfmQwVXU6wZ7PPW1uYqBZt2PwFhHgqMixrwb7+wB9yaD++LxlMewTyg/g1+GeJ1OwHgmgpOEMftwHe/cAG8K+5vHUx7DQhA6DxmkfHI2+p8Dzo0Yh0tLeDylMSwUdB5seZg0Jk0eFBJPQ7SEgq5PqgEa2PIwaUyaPCgknoZoCQVdn1QDNHDlYa4x2dZiueOpAV2fkgZwbeOI0a/YtZinzwySjtC4KGkbjdd0fWTPfdCsRVv+bBCrmQaSjtC4KGkbjdd0fWTPJYSeg3j+vBLlKnC1JXa5/EMh6QiNizPAmeAs0o4tXmfPJWjOznRf8/z5IMpD4GGLPXnuNVxxkfo5JJ/WnJ35vu5LS7Ov7qK/e+B9iz0x9xoZXHZQP+fRHakPvq9tuuTS0Jg7L5cd1M+xMdDXRwabLrnyQ9++kXzosyPGhwZU1zW+suXUrvzQt2+02k7jlvbejkN7DuNaa9tfMX7Xnkto3NLe23G4zmFrYNtacF0yWGtta9/m95C82Jazl+Ie0IUjGNtR8FgyWGtta9/m95C8WMrZQ+KOBCmH+4nPv8Df6bMHGNtD8FFEPOFwnY05pJw9b74r5XCjMZYx4FgyppjfXMqB0LhTX+wvp6GsKw7cC+a7+ftk2DkFnErsLcVvBaVA6L32vNTeBpSNRft3jnJrhBah99qtqT3NKFuK9u+ViqE4h5cKMdpK3/HdUUmoK7pZr5jfWO1yaastH6fv+O6oJDQW3ZyusDlWu1zaassl6Tu+OyoJPns1NpdDu3y5ZOw9kcZel07/LcTeE2nt1azroUTs/6n47GwC51foHEvwncM069iXe1QSfOdfPoeSvf9K7mHgO//2pnY0OOz9n1BT1V9mc5jNc1OFzWnsvRRHbdXA722pve0VYmeG2Hspjj9VOArZ
+  </data>
+ </layer>
+ <layer name="4 вещи на плато" width="60" height="46">
+  <data encoding="base64" compression="zlib">
+   eJztmGsOwUAUhWd0HYjXPhqPhXhG16HKLqzFNghqH4QzmSsaqfgjobfnS06uzvzx5Uw9agwhhPwPW/vrd0DI9+G51ssmp1v2rYMy9lhGZ0IIKSJ5vz8IIYQQQggpO3yuQYheqri/G0hN0rTP9ey1GuCTIGskRC7Ge14xl5h9Zb4t+LQlHWQl7m6esH8zxer503ObAfZTzDNSEedYnNfyOlTUc2C9ZyDeEeZCPN05P2Btb/T4psjc+kTSpfO1yA57M8yJ9VMDkXhNMY/G99oT50en7rO6rsQ3yXh15QzHL76a+h1lXIbW9+zi1scFdyzzfwft7u++h+8AiCt/
+  </data>
+ </layer>
+ <layer name="4 Дома и лепнина" width="60" height="46">
+  <data encoding="base64" compression="zlib">
+   eJztwQENAAAAwqD3T20PBxQAAAAAAAAAAAAA/BgrIAAB
+  </data>
+ </layer>
+</map>
