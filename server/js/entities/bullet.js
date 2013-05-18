@@ -24,7 +24,7 @@ var Bullet = module.exports = Entity.extend({
 		this.fixtureDef = new b2FixtureDef();
 
 		var circleShape = new b2CircleShape();
-		circleShape.m_radius = 0.1;
+		circleShape.m_radius = 0.01;
 		this.fixtureDef.shape = circleShape;
 	},
 	update: function () {
@@ -54,20 +54,20 @@ var Bullet = module.exports = Entity.extend({
 		this.remove_callback = callback;
 	},
 	onCollision: function (contactBody) {
-		if (contactBody.kind !== Constants.Types.Entities.PLAYER) return true;
-		if (Bullet.TimeToLife - this.ttl < Bullet.DontHurtShootingPlayerTime &&
-			this.player.id === contactBody.id) {
-			return false;
+		if (contactBody.kind == Constants.Types.Entities.PLAYER) {
+			if (this.player.id == contactBody.id) {
+				return false;
+			}
+			contactBody.shot();
 		}
-		contactBody.shot();
 		this.ttf = 0;
 		return true;
 	}
 });
 
-Bullet.TimeToLife = 120;
+Bullet.TimeToLife = 100;
 Bullet.TimeToFly = 40;
-Bullet.DontHurtShootingPlayerTime = 10;
+Bullet.DontHurtShootingPlayerTime = 40;
 Bullet.SpeedRatio = 3;
 
 return Bullet;

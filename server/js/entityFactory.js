@@ -17,7 +17,7 @@ EntityFactory.createEntity = function (entity_info) {
 	if (entity_info.points) {
 		entity.setBodyDefAsPoly(Engine.getPoints(entity_info.points));
 	} else {
-		entity.setBodyDefAsPoly(Engine.getBoxPoints(entity_info.width, entity_info.height));
+		entity.setBodyDefAsPoly(Engine.getBoxPoints(entity_info.width || 16, entity_info.height || 16));
 	}
 	entity.setPosition(entity_info.x, entity_info.y);
 	return entity;

@@ -2,9 +2,9 @@
 	"c9io": false,
 	"host": "0.0.0.0",
 	"port": 8000,
-	"ups": 50,
+	"ups": 30,
 	"debug_level": "debug",
-	"maximum_players": 50,
+	"maximum_players": 10,
 	"map_filepath": "./client/assets/world/smallworld.json",
 	"debug": true
 }

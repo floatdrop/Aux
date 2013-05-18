@@ -16,12 +16,12 @@
 		},
 		"ghost_right": {
 			"length": 4,
-			"y": 354,
+			"y": 352,
 			"speed": 0.25
 		},
 		"ghost_up": {
 			"length": 4,
-			"y": 386,
+			"y": 384,
 			"speed": 0.25
 		},
 		"atk_left": {
