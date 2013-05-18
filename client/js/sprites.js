@@ -1,19 +1,6 @@
 /* global _ */
 
 define(['./lib/json!../sprites/player.json',
-	'./lib/json!../sprites/tree.json',
-	'./lib/json!../sprites/stone.json',
-	'./lib/json!../sprites/stone2.json',
-	'./lib/json!../sprites/stone3.json',
-	'./lib/json!../sprites/stone4.json',
-	'./lib/json!../sprites/stump.json',
-	'./lib/json!../sprites/empty.json',
-	'./lib/json!../sprites/pillar.json',
-	'./lib/json!../sprites/pillar2.json',
-	'./lib/json!../sprites/signpost.json',
-	'./lib/json!../sprites/stone5.json',
-	'./lib/json!../sprites/stone6.json',
-	'./lib/json!../sprites/well.json',
 	'./lib/json!../sprites/bullet.json'], function () {
 
 	var Sprites = { definitions: {} };

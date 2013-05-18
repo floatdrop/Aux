@@ -1,15 +1,16 @@
-* { margin: 0; padding: 0; }
-        
+* { paddin: 0; margin: 0; }
+
 html, body {
     height: 100%;         /* required */
     font-family: "Arial";
+    background-color: black;
 }
 
-div#content {
+#content {
     width: 800px;
     height: 600px;
     position: absolute;
-    margin: -300px 0px 0px -400px;
+    margin: -300px 0 0 -400px;
     top: 50%;
     left: 50%;
 }

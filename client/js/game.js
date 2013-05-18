@@ -97,11 +97,11 @@ function (Player, Client, EntityFactory, DebugEntity) {
 			});
 			self.entities = entities;
 		},
-		moveCursor: function (event) {
+		moveCursor: function () {
 			if (this.player) {
 				var angle = this.getAngle({
-					x: event.x,
-					y: event.y
+					x: this.mouse.position.x,
+					y: this.mouse.position.y
 				}, this.player.getPosition());
 				this.client.sendAngle(parseInt(angle, 10));
 			}

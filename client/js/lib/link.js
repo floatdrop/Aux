@@ -4,7 +4,7 @@
  * Copyright (c) 2013, Vsevolod Strukchinsky
  * hhttps://github.com/floatdrop/link.js
  *
- * Compiled: 2013-05-17
+ * Compiled: 2013-05-18
  *
  * Link.JS Game Engine is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -5948,6 +5948,21 @@ PIXI.BitmapFontLoader.prototype.onLoaded = function()
 var LINK = LINK || {};
 
 LINK.Cache = {};
+LINK.Utils = {};
+
+LINK.Utils.getOffset = function (el) {
+	var _x = 0;
+	var _y = 0;
+	while (el && !isNaN(el.offsetLeft) && !isNaN(el.offsetTop)) {
+		_x += el.offsetLeft - el.scrollLeft;
+		_y += el.offsetTop - el.scrollTop;
+		el = el.offsetParent;
+	}
+	return {
+		top: _y,
+		left: _x
+	};
+};
 /**
  * @author Vsevolod Strukchinsky @floatdrop
  */
@@ -6276,6 +6291,8 @@ LINK.Mouse = function (objectToListen) {
 
 	objectToListen = objectToListen || document;
 
+	this.offset = LINK.Utils.getOffset(objectToListen);
+
 	/**
 	 * The current position of the mouse
 	 *
@@ -6322,8 +6339,8 @@ LINK.Mouse.prototype.onMouseMove = function (e) {
 };
 
 LINK.Mouse.prototype.updateCoords = function (e) {
-	this.position.x = e.pageX;
-	this.position.y = e.pageY;
+	this.position.x = e.pageX - this.offset.left;
+	this.position.y = e.pageY - this.offset.top;
 };
 
 LINK.Mouse.prototype.Events = {
