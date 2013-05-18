@@ -9,10 +9,10 @@
 			"speed": 0.25
 		},
 		"blowing": {
-			"length": 17,
+			"length": 18,
 			"y": 70,
 			"loop": false,
-			"speed": 0.25
+			"speed": 0.3
 		}
 	},
 	"offset_x": 0,
