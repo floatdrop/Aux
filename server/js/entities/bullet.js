@@ -59,10 +59,7 @@ var Bullet = module.exports = Entity.extend({
 			this.player.id === contactBody.id) {
 			return false;
 		}
-		if (contactBody.m_userData && contactBody.m_userData instanceof Player) {
-			var victim = contactBody.m_userData;
-			victim.shot();
-		}
+		contactBody.shot();
 		this.ttf = 0;
 		return true;
 	}

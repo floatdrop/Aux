@@ -4,6 +4,26 @@
 	"height": 32,
 	"image": "img/1/player.png",
 	"animations": {
+		"ghost_down": {
+			"length": 4,
+			"y": 288,
+			"speed": 0.25
+		},
+		"ghost_left": {
+			"length": 4,
+			"y": 320,
+			"speed": 0.25
+		},
+		"ghost_right": {
+			"length": 4,
+			"y": 354,
+			"speed": 0.25
+		},
+		"ghost_up": {
+			"length": 4,
+			"y": 386,
+			"speed": 0.25
+		},
 		"atk_left": {
 			"length": 5,
 			"scale_x": -1,

@@ -20,12 +20,12 @@ var Player = module.exports = Entity.extend({
 		this.heading = 0;
 		this.angleEps = 90;
 		this.debug = debug;
-		this.animationType = "idle";
 		this.setAnimation();
 		this.entities_ids = [];
 		this.layer = "objects";
-		this.health = 5;
+		this.health = 1;
 		this.bullets = 10;
+		this.animationType = this.health <= 0 ? "ghost" : "idle";
 
 		this.connection.listen(function (message) {
 			self.callbacks[message.t](message.d);
@@ -36,6 +36,7 @@ var Player = module.exports = Entity.extend({
 	shot: function () {
 		this.health -= 1;
 		if (this.health <= 0) {
+			this.animationType = "ghost";
 			this.bullets = 0;
 		}
 	},
@@ -98,9 +99,9 @@ var Player = module.exports = Entity.extend({
 	move: function (impulse) {
 		var self = this;
 		this.body.ApplyImpulse(impulse, new b2Vec2(0, 0));
-		this.animationType = this.health <= 0 ? "ghostwalk" : "walk";
+		this.animationType = this.health <= 0 ? "ghost" : "walk";
 		this.scheduleAction(function () {
-			self.animationType = "idle";
+			self.animationType = self.health <= 0 ? "ghost" : "idle";
 		}, 250, this.id);
 	},
 	onAction: function (data) {
