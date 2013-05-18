@@ -1,7 +1,0 @@
-{
-	"id": "pillar",
-	"width": 28,
-	"image": "img/1/pillar.png",
-	"height": 64,
-	"animations": { "default": {} }
-}

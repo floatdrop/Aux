@@ -1,9 +1,0 @@
-{
-	"id": "tree",
-	"width": 172,
-	"height": 210,
-	"image": "img/1/tree.png",
-	"animations": { "default": {} },
-	"offset_x": 0,
-	"offset_y": -90
-}

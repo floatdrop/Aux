@@ -1,9 +1,0 @@
-{
-	"id": "well",
-	"width": 121,
-	"height": 107,
-	"image": "img/1/well.png",
-	"animations": { "default": {} },
-	"offset_x": 0,
-	"offset_y": 0
-}

@@ -19,7 +19,7 @@ var Bullet = module.exports = Entity.extend({
 
 		this.bodyDef = new b2BodyDef();
 		this.bodyDef.type = b2Body.b2_dynamicBody;
-		this.bodyDef.linearDamping = 0.5;
+		this.bodyDef.linearDamping = 0.2;
 
 		this.fixtureDef = new b2FixtureDef();
 
@@ -66,7 +66,7 @@ var Bullet = module.exports = Entity.extend({
 });
 
 Bullet.TimeToLife = 120;
-Bullet.TimeToFly = 50;
+Bullet.TimeToFly = 40;
 Bullet.DontHurtShootingPlayerTime = 10;
 Bullet.SpeedRatio = 3;
 
