@@ -1,7 +1,7 @@
 {
 	"c9io": false,
 	"host": "0.0.0.0",
-	"port": 8000,
+	"default_port": 8000,
 	"ups": 30,
 	"debug_level": "debug",
 	"maximum_players": 10,

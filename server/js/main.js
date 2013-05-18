@@ -10,11 +10,8 @@ var Server = module.exports = cls.Class.extend({
 		this.started = false;
 
 		this.config = config;
-
-		if (this.config.c9io === true) {
-			this.config.port = Number(process.env.PORT);
-			this.config.host = process.env.IP;
-		}
+		this.config.port = Number(process.env.PORT) || this.config.default_port;
+		this.config.host = this.config.host || process.env.IP;
 
 		if (config.debug_level === "error") {
 			this.loglevel = 0;
