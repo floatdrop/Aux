@@ -2,7 +2,7 @@
 	"id": "bullet",
 	"width": 70,
 	"height": 70,
-	"image": "img/1/bullet.png",
+	"image": "assets/sprites/bullet.png",
 	"animations": {
 		"bullet": {
 			"length": 3,

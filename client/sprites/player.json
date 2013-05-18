@@ -2,7 +2,7 @@
 	"id": "player",
 	"width": 32,
 	"height": 32,
-	"image": "img/1/player.png",
+	"image": "assets/sprites/player.png",
 	"animations": {
 		"ghost_down": {
 			"length": 4,

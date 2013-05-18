@@ -39,6 +39,8 @@ define(['entities/player', 'entities/commonEntity', 'entities/circleEntity', 'en
 	EntityFactory.builders[Constants.Types.Entities.PLAYER] = function (entity_info) {
 		var entity = new Player(entity_info.id);
 		entity.animation.set(entity_info.animation);
+		entity.health = entity_info.health;
+		entity.bullets = entity_info.bullets;
 		entity.layer = entity_info.layer || "default";
 		return entity;
 	};

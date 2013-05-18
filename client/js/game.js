@@ -43,6 +43,8 @@ function (Player, Client, EntityFactory, DebugEntity) {
 			this.context = this.canvas.getContext('2d');
 			this.debugSprite = new PIXI.Sprite(PIXI.Texture.fromCanvas(this.canvas));
 			this.layers.debug.addChild(this.debugSprite);
+
+			/* SOME UI */
 		},
 		run: function () {
 			this.tick();
