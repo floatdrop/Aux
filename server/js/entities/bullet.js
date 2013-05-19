@@ -1,5 +1,4 @@
 var Entity = require('../entity'),
-	Player = require('./player'),
 	Box2D = require('../lib/box2d'),
 	b2FixtureDef = Box2D.Dynamics.b2FixtureDef,
 	b2Vec2 = Box2D.Common.Math.b2Vec2,
@@ -54,8 +53,8 @@ var Bullet = module.exports = Entity.extend({
 		this.remove_callback = callback;
 	},
 	onCollision: function (contactBody) {
-		if (contactBody.kind == Constants.Types.Entities.PLAYER) {
-			if (this.player.id == contactBody.id) {
+		if (contactBody.kind === Constants.Types.Entities.PLAYER) {
+			if (this.player.id === contactBody.id) {
 				return false;
 			}
 			contactBody.shot();
