@@ -87,7 +87,7 @@ module.exports = cls.Class.extend({
 		}, 1000 / this.ups);
 		setInterval(function () {
 			var now = new Date() / 1000;
-			//log.debug("Ticks per second: " + ticks / (now - start));
+			log.debug("Ticks per second: " + ticks / (now - start));
 		}, 5000);
 		setTimeout(function () {
 			self.ready_callback();
