@@ -6,6 +6,7 @@ var fs = require('fs'),
 
 var WorldMap = module.exports = cls.Class.extend({
 	entities: [],
+	spawnregions: [],
 
 	init: function (map_filepath, engine) {
 		this.json = JSON.parse(fs.readFileSync(map_filepath, 'utf8'));
@@ -16,14 +17,26 @@ var WorldMap = module.exports = cls.Class.extend({
 		var self = this;
 
 		_.each(json.layers, function (layer) {
-			if (layer.type === "objectgroup") {
+			if (layer.type === "objectgroup" && layer.name === "objects") {
 				_.each(layer.objects, function (entity_info) {
 					WorldMap.adjustInfo(entity_info);
 					self.entities.push(EntityFactory.createEntity(entity_info));
 				});
 			}
+			if (layer.type === "objectgroup" && layer.name === "spawnplaces") {
+				_.each(layer.objects, function (entity_info) {
+					self.spawnregions.push(entity_info);
+				});
+			}
 		});
 	},
+	getSpawnPoint: function () {
+		var region = this.spawnregions[Math.floor(Math.random() * this.spawnregions.length)];
+		return {
+			x: Math.floor(region.x + Math.random() * region.width),
+			y: Math.floor(region.y + Math.random() * region.height)
+		};
+	}
 
 });
 
@@ -45,10 +58,6 @@ WorldMap.adjustInfo = function (entity_info) {
 		});
 		entity_info.points.reverse();
 	}
-	entity_info.width = entity_info.width / 2;
-	entity_info.height = entity_info.height / 2;
-	entity_info.x = entity_info.x + entity_info.width;
-	entity_info.y = entity_info.y + entity_info.height;
 };
 
 return WorldMap;

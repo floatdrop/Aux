@@ -23,7 +23,8 @@ module.exports = cls.Class.extend({
 	playerConnect: function (connection) {
 		var self = this;
 		var player = new Player(connection, connection.id, this.debug);
-		player.setPosition(100, 100);
+		var spawnPosition = this.map.getSpawnPoint();
+		player.setPosition(spawnPosition.x, spawnPosition.y);
 		log.info("Player " + player.id + " connected");
 
 		connection.onClose(function () {
