@@ -56,6 +56,12 @@ define(function () {
 				d: angle
 			});
 		},
+		sendGameLogerCommand: function (command) {
+			this.network.send({
+				t: command,
+				d: null
+			});
+		},
 		sendShoot: function () {
 			this.network.send({
 				t: Constants.Types.Messages.Shoot,
