@@ -19,7 +19,7 @@ var GameLoger = module.exports = cls.Class.extend({
 		this.sockets = {};
 
 		if (state === Constants.Types.GameLogerState.WriteLog) {
-			this.path = "replays/" + this.startTime.toString().split(':').join('-');
+			this.path = __dirname + "/../../../replays/" + this.startTime.toString().split(':').join('-');
 			server.onConnect(function (connection) {
 				var player = _.last(self.world.getPlayers()),
 					msg = new Buffer(JSON.stringify(player.getPosition()));
@@ -47,7 +47,6 @@ var GameLoger = module.exports = cls.Class.extend({
 			server.onConnect(function (connection) {
 				var player = new Player(new FakeConnection("fake"), "id", true);
 				player.connection = connection;
-				//player.sendMap(world.map);
 				player.send(Constants.Types.Messages.Welcome, {"playGameLog": true});
 
 				world.updatePlayers = function () {
