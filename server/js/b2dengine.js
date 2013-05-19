@@ -79,6 +79,12 @@ var Engine = module.exports = cls.Class.extend({
 		});
 		this.b2w.DestroyBody(entity.body);
 	},
+	clearWorld: function () {
+		var self = this;
+		_.each(this.getEntities(), function (entity) {
+			self.b2w.DestroyBody(entity.body);
+		});
+	},
 	getEntities: function (filter_function) {
 		var entities = [];
 		if (!filter_function) {

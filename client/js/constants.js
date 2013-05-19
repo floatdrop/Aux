@@ -15,6 +15,16 @@ Constants = {
 			Angle: 4,
 			RemoveList: 5,
 			Shoot: 6
+		},
+		GameLogerState: {
+			WriteLog: "write",
+			ReadLog: "read",
+			None: "none"
+		},
+		GameLogerMsg: {
+			Play: 0,
+			Pause: 1,
+			Stop: 2
 		}
 	}
 };

@@ -1,8 +1,8 @@
 /* global _ */
 
-define(['entities/player', 'client', 'entityfactory', 'entities/debugEntity'],
+define(['entities/player', 'client', 'entityfactory', 'entities/debugEntity', 'gameLoger/gameLogPlayer'],
 
-function (Player, Client, EntityFactory, DebugEntity) {
+function (Player, Client, EntityFactory, DebugEntity, GameLogPlayer) {
 	var Game = Class.extend({
 
 		init: function (renderer) {
@@ -45,6 +45,8 @@ function (Player, Client, EntityFactory, DebugEntity) {
 			this.layers.debug.addChild(this.debugSprite);
 
 			/* SOME UI */
+
+			this.onTick_callbacks = [];
 		},
 		run: function () {
 			this.tick();
@@ -53,7 +55,16 @@ function (Player, Client, EntityFactory, DebugEntity) {
 			LINK.Key.runCallbacks();
 			this.renderDebugEntities();
 			this.renderer.render(this.stage);
+			this.onTick_callback();
 			requestAnimFrame(this.tick.bind(this));
+		},
+		onTick: function (callback) {
+			this.onTick_callbacks.push(callback);
+		},
+		onTick_callback: function () {
+			_.each(this.onTick_callbacks, function (callback) {
+				callback();
+			});
 		},
 		renderDebugEntities: function () {
 			if (!this.context) return;
@@ -71,11 +82,16 @@ function (Player, Client, EntityFactory, DebugEntity) {
 
 			this.client = new Client(this.host, this.port);
 
-			this.client.onWelcome(function (entity_info) {
-				self.playerId = entity_info.id;
-				self.player = EntityFactory.createEntity(entity_info, "PlayerName");
-				self.entities[entity_info.id] = self.player;
-				self.camera.follow(self.player.getDisplayObject());
+			this.client.onWelcome(function (info) {
+				if (info.playGameLog) {
+					self.gameLogPlayer = new GameLogPlayer(self);
+					self.onTick(self.gameLogPlayer.update.bind(self.gameLogPlayer));
+				} else {
+					self.playerId = info.id;
+					self.player = EntityFactory.createEntity(info, "PlayerName");
+					self.entities[info.id] = self.player;
+					self.camera.follow(self.player.getDisplayObject());
+				}
 			});
 
 			this.client.onEntityList(function (entitieslist) {

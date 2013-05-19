@@ -1,7 +1,8 @@
 /* global _ */
 
 define(['./lib/json!../sprites/player.json',
-	'./lib/json!../sprites/bullet.json'], function () {
+	'./lib/json!../sprites/bullet.json',
+	'./lib/json!../sprites/point.json'], function () {
 
 	var Sprites = { definitions: {} };
 

@@ -18,10 +18,17 @@ module.exports = WS;
 var Server = cls.Class.extend({
 	init: function (port) {
 		this.port = port;
+		this.connection_callbacks = [];
 	},
 
 	onConnect: function (callback) {
-		this.connection_callback = callback;
+		this.connection_callbacks.push(callback);
+	},
+
+	connection_callback: function (connection) {
+		_.each(this.connection_callbacks, function (callback) {
+			callback(connection);
+		});
 	},
 
 	onError: function (callback) {
@@ -55,14 +62,18 @@ var Connection = cls.Class.extend({
 		this._connection = connection;
 		this._server = server;
 		this.id = id;
+		this.listen_callbacks = [];
 	},
 
 	onClose: function (callback) {
 		this.close_callback = callback;
 	},
 
-	listen: function (callback) {
-		this.listen_callback = callback;
+	listen: function (callback, decode) {
+		this.listen_callbacks.push({
+			callback: callback,
+			decode: decode
+		});
 	},
 
 	broadcast: function () {
@@ -135,9 +146,7 @@ WS.MultiVersionWebsocketServer = Server.extend({
 			connection.sendUTF = connection.send;
 			var c = new WS.miksagoWebSocketConnection(self._createId(), connection, self);
 
-			if (self.connection_callback) {
-				self.connection_callback(c);
-			}
+			self.connection_callback(c);
 			self.addConnection(c);
 		});
 
@@ -149,9 +158,7 @@ WS.MultiVersionWebsocketServer = Server.extend({
 				wsRequest.readHandshake();
 				var wsConnection = wsRequest.accept(wsRequest.requestedProtocols[0], wsRequest.origin);
 				var c = new WS.worlizeWebSocketConnection(self._createId(), wsConnection, self);
-				if (self.connection_callback) {
-					self.connection_callback(c);
-				}
+				self.connection_callback(c);
 				self.addConnection(c);
 
 			} else {
@@ -190,15 +197,7 @@ WS.worlizeWebSocketConnection = Connection.extend({
 		this._super(id, connection, server);
 
 		this._connection.on('message', function (message) {
-			if (self.listen_callback) {
-				if (message.type !== "utf8") {
-					var msg = String.fromCharCode.apply(null, new Uint8Array(message.binaryData));
-					var decoded = msgpack.unpack(new Buffer(msg, "binary"));
-					self.listen_callback(decoded);
-				} else {
-					self.listen_callback(JSON.parse(message.utf8Data));
-				}
-			}
+			self.listen_callback(message);
 		});
 
 		this._connection.on('close', function () {
@@ -207,6 +206,14 @@ WS.worlizeWebSocketConnection = Connection.extend({
 			}
 			/*delete */
 			self._server.removeConnection(self.id);
+		});
+	},
+
+	listen_callback: function (message) {
+		var decodeMsg = WS.decodeMessage(message);
+		_.each(this.listen_callbacks, function (callback) {
+			var msg = callback.decode ? decodeMsg : message;
+			callback.callback(msg);
 		});
 	},
 
@@ -226,6 +233,15 @@ WS.worlizeWebSocketConnection = Connection.extend({
 	}
 });
 
+
+WS.decodeMessage = function (message) {
+	if (message.type !== "utf8") {
+		var msg = String.fromCharCode.apply(null, new Uint8Array(message.binaryData));
+		var decoded = msgpack.unpack(new Buffer(msg, "binary"));
+		return decoded;
+	} 
+	return JSON.parse(message.utf8Data);
+};
 
 /**
  * Connection class for websocket-server (miksago)
