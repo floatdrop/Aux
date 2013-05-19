@@ -27,11 +27,12 @@ var Player = module.exports = Entity.extend({
 		this.bullets = 10;
 		this.animationType = this.health <= 0 ? "ghost" : "idle";
 
-		this.connection.listen(function (message) {
-			self.callbacks[message.t](message.d);
-		});
+		this.connection.listen(self.listen.bind(self), true);
 		this.bindCallbacks();
 		this.createBody();
+	},
+	listen: function (message) {
+		this.callbacks[message.t](message.d);
 	},
 	shot: function () {
 		this.health -= 1;
