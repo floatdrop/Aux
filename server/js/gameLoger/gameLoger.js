@@ -20,8 +20,8 @@ var GameLoger = module.exports = cls.Class.extend({
 
 		if (state === Constants.Types.GameLogerState.WriteLog) {
 			this.path = __dirname + "/../../../replays/" + this.startTime.toString().split(':').join('-');
-			server.onConnect(function (connection) {
-				var player = _.last(self.world.getPlayers()),
+			world.onPlayerCreated(function (player) {
+				var connection = player.connection,
 					msg = new Buffer(JSON.stringify(player.getPosition()));
 				self.writeLog(connection, msg, GameLoger.MsgType.Connect);
 				connection.listen(function (message) {
@@ -144,10 +144,11 @@ var GameLoger = module.exports = cls.Class.extend({
 	onConnect: function (command) {
 		var connection = new FakeConnection(command.id);
 		this.sockets[command.id] = connection;
+		this.world.onPlayerCreated(function (player) {
+			var pos = JSON.parse(command.message);
+			player.setPosition(pos.x, pos.y);
+		});
 		this.world.playerConnect(connection);
-		var player = _.last(this.world.getPlayers()),
-			pos = JSON.parse(command.message);
-		player.setPosition(pos.x, pos.y);
 	},
 	onStopLogPlayer: function () {
 		if (!this.world.started) {

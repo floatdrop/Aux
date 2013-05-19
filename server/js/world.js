@@ -50,6 +50,9 @@ module.exports = cls.Class.extend({
 		});
 
 		this.engine.addEntity(player);
+		if (this.created_callback) {
+			this.created_callback(player);
+		}
 	},
 	playerDisconnect: function (id) {
 		this.engine.removeEntity(id);
@@ -84,7 +87,7 @@ module.exports = cls.Class.extend({
 		}, 1000 / this.ups);
 		setInterval(function () {
 			var now = new Date() / 1000;
-			log.debug("Ticks per second: " + ticks / (now - start));
+			//log.debug("Ticks per second: " + ticks / (now - start));
 		}, 5000);
 		setTimeout(function () {
 			self.ready_callback();
@@ -100,6 +103,9 @@ module.exports = cls.Class.extend({
 	},
 	onPlayerDisconnect: function (callback) {
 		this.disconnect_callback = callback;
+	},
+	onPlayerCreated: function (callback) {
+		this.created_callback = callback;
 	},
 	onReady: function (callback) {
 		this.ready_callback = callback;
