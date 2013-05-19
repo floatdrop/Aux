@@ -7,6 +7,6 @@
 	"maximum_players": 10,
 	"map_filepath": "./client/assets/world/smallworld.json",
 	"debug": true,
-	"gameLoger": "write",
-	"logFile": "Sun May 19 2013 18-32-30 GMT+0600 (YEKT)"
+	"gameLoger": "read",
+	"logFile": "Sun May 19 2013 23-17-37 GMT+0600 (YEKT)"
 }

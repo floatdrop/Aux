@@ -6,7 +6,7 @@ define(['entities/entity'], function (Entity) {
 		init: function () {
 			this._super("trPoint" + GLOBAL_ID_COUNTER, Constants.Types.Entities.TrajectoryPoint);
 			GLOBAL_ID_COUNTER ++;
-			this.loadAnimations("bullet");
+			this.loadAnimations("point");
 			this.animation.alpha = 0.3;
 		}
 	});

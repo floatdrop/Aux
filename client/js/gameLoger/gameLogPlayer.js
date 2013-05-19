@@ -21,7 +21,7 @@ define(['jquery', '../entities/player', '../entities/trajectoryPoint'], function
 			var self = this,
 				div = $('<div>');
 				
-			$('body').append(div);
+			$('#content').append(div);
 			$('<button>').text('Play').click(self.play.bind(self)).appendTo(div);
 			$('<button>').text('Stop').click(self.stop.bind(self)).appendTo(div);
 			$('<button>').text('Pause').click(self.pause.bind(self)).appendTo(div);
@@ -74,6 +74,7 @@ define(['jquery', '../entities/player', '../entities/trajectoryPoint'], function
 			this.canvas.width = this.mapWidth;
 			this.canvas.height = this.mapHeight;
 
+			//wait some milleseconds while canvas resized
 			setTimeout(function () {
 				self.onCanvasResize();
 			}, 300);
@@ -92,7 +93,7 @@ define(['jquery', '../entities/player', '../entities/trajectoryPoint'], function
 					position = entity.getPosition();
 					point.setPosition(position.x, position.y);
 					point.animation.set("default").play();
-					game.layers.game.objects.addChild(point.getDisplayObject());
+					game.layers.game.tiles.objects.addChild(point.getDisplayObject());
 				}
 			});
 		}
