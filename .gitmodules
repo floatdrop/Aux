@@ -1,0 +1,3 @@
+[submodule "client/components/link.js"]
+	path = client/components/link.js
+	url = https://github.com/floatdrop/link.js
