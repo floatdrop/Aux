@@ -9,8 +9,10 @@
 	},
 	"dependencies": {
 		"underscore": ">0",
-	"websocket": ">0",
-	
+		"websocket": ">0",
+		"express": "3.0.0rc1",
+		"jade": "*",
+		"stylus": "*",
 		"websocket-server": ">0",
 		"async": ">0",
 		"msgpack": ">0",

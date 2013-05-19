@@ -1,5 +1,4 @@
-var fs = require('fs'),
-	log = require('./log'),
+var log = require('./log'),
 	cls = require('./lib/class'),
 	ws = require("./ws"),
 	World = require('./world'),
@@ -55,45 +54,4 @@ var Server = module.exports = cls.Class.extend({
 	}
 });
 
-function getConfigFile(path, callback) {
-	fs.readFile(path, 'utf8', function (err, json_string) {
-		if (err) {
-			console.error("Could not open config file: ", err.path);
-			callback(null);
-		} else {
-			callback(JSON.parse(json_string));
-		}
-	});
-}
-
-var main = function () {
-	var defaultConfigPath = './server/config.json',
-		customConfigPath = './server/config_local.json';
-
-	process.argv.forEach(function (val, index) {
-		if (index === 2) {
-			customConfigPath = val;
-		}
-	});
-
-	getConfigFile(customConfigPath, function (customConfig) {
-		if (customConfig) {
-			var server = new Server(customConfig);
-			server.start();
-		} else {
-			getConfigFile(defaultConfigPath, function (defaultConfig) {
-				if (defaultConfig) {
-					var server = new Server(defaultConfig);
-					server.start();
-				} else {
-					console.error("Server cannot start without any configuration file.");
-					process.exit(1);
-				}
-			});
-		}
-	});
-};
-
-if (require.main === module) {
-	main();
-}
+return Server;
