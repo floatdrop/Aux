@@ -73,6 +73,8 @@ define(['jquery', '../entities/player', '../entities/trajectoryPoint'], function
 
 			this.canvas.width = this.mapWidth;
 			this.canvas.height = this.mapHeight;
+			this.game.camera.position.x = 0;
+			this.game.camera.position.y = 0;
 
 			//wait some milleseconds while canvas resized
 			setTimeout(function () {
