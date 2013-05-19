@@ -1,4 +1,5 @@
 server/js/lib/**
+front/public/scripts/bootstrap.min.js
 client/js/lib/**
 node_modules/**
 debug.log
