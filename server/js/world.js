@@ -11,6 +11,7 @@ var b2Vec2 = Box2D.Common.Math.b2Vec2;
 
 module.exports = cls.Class.extend({
 	init: function (ups, map_filepath, engine, server, debug) {
+		this.started = false;
 		this.ups = ups;
 		this.engine = engine;
 		this.server = server;
@@ -59,12 +60,14 @@ module.exports = cls.Class.extend({
 			entity.update();
 		});
 	},
-	updatePlayers: function () {
-		var self = this;
-		var players = self.engine.getEntities(function (entity) {
+	getPlayers: function () {
+		return this.engine.getEntities(function (entity) {
 			return entity instanceof Player;
 		});
-		_.each(players, function (player) {
+	},
+	updatePlayers: function () {
+		var self = this;
+		_.each(this.getPlayers(), function (player) {
 			var entities = self.engine.getEntities(function (entity) { return self.engine.isVisible(player, entity); });
 			player.sendEntities(entities);
 		});
@@ -86,9 +89,11 @@ module.exports = cls.Class.extend({
 		setTimeout(function () {
 			self.ready_callback();
 		}, 1000 / this.ups);
+		this.started = true;
 	},
 	stop: function () {
 		clearInterval(this.worldUpdater);
+		this.started = false;
 	},
 	onPlayerConnect: function (callback) {
 		this.connect_callback = callback;
