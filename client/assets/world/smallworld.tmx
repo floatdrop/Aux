@@ -200,4 +200,12 @@
    eJztwQENAAAAwqD3T20PBxQAAAAAAAAAAAAA/BgrIAAB
   </data>
  </layer>
+ <objectgroup name="spawnplaces" width="60" height="46">
+  <object x="100" y="16" width="250" height="100"/>
+  <object x="1128" y="166" width="188" height="170"/>
+  <object x="672" y="500" width="90" height="82"/>
+  <object x="1398" y="1012" width="98" height="88"/>
+  <object x="110" y="826" width="88" height="80"/>
+  <object x="756" y="850" width="64" height="72"/>
+ </objectgroup>
 </map>
