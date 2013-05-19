@@ -11,9 +11,9 @@ vows.describe('Aux')
 	'A server': {
 		topic: function () {
 			return new Server({
-				port: 8081,
+				default_port: 8081,
 				debug_level: "debug",
-				map_filepath: "./client/assets/world/smallworld.json",
+				map_filepath: "./client/assets/world/smallworld.json"
 			});
 		},
 		'started': {
