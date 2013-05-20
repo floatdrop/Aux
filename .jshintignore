@@ -1,6 +1,7 @@
 server/js/lib/**
 front/public/scripts/bootstrap.min.js
 client/js/lib/**
+client/components/**
 node_modules/**
 debug.log
 exceptions.log
