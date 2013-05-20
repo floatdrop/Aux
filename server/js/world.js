@@ -30,7 +30,7 @@ module.exports = cls.Class.extend({
 		log.info("Player " + player.id + " connected");
 		logger.write(player.connection, new Buffer(JSON.stringify(player.getPosition())), logger.MsgType.Connect);
 		connection.onClose(function () {
-			self.disconnect_callback(player.id);
+			self.disconnect_callback(player);
 		});
 
 		log.info("Send Welcome to player " + player.id);
@@ -52,9 +52,9 @@ module.exports = cls.Class.extend({
 
 		this.engine.addEntity(player);
 	},
-	playerDisconnect: function (id) {
+	playerDisconnect: function (player) {
 		logger.write(player.connection, new Buffer(), logger.MsgType.Disconnect);
-		this.engine.removeEntity(id);
+		this.engine.removeEntity(player.id);
 	},
 	updateWorld: function () {
 		var self = this;

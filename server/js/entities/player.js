@@ -30,7 +30,7 @@ var Player = module.exports = Entity.extend({
 		this.animationType = this.health <= 0 ? "ghost" : "idle";
 
 		this.connection.listen(function (message) {
-			logger.write(player.connection, new Buffer(JSON.stringify(message)), logger.MsgType.Action);
+			logger.write(self.connection, new Buffer(JSON.stringify(message)), logger.MsgType.Action);
 			self.callbacks[message.t](message.d);
 		});
 		this.bindCallbacks();
