@@ -12,7 +12,7 @@ var b2BodyDef = Box2D.Dynamics.b2BodyDef,
 	b2FixtureDef = Box2D.Dynamics.b2FixtureDef,
 	b2CircleShape = Box2D.Collision.Shapes.b2CircleShape;
 
-var logger = require("./../gameLogger/gameLogger");
+var logger = require("./../gamelogger");
 
 var Player = module.exports = Entity.extend({
 	init: function (connection, id, debug) {

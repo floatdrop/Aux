@@ -9,7 +9,7 @@ var cls = require("./lib/class"),
 
 var b2Vec2 = Box2D.Common.Math.b2Vec2;
 
-var logger = require("./gameLogger/gameLogger");
+var logger = require("./gamelogger");
 
 module.exports = cls.Class.extend({
 	init: function (ups, map_filepath, engine, server, debug) {
