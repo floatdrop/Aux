@@ -2,7 +2,8 @@ var log = require('./log'),
 	cls = require('./lib/class'),
 	ws = require("./ws"),
 	World = require('./world'),
-	Box2dEngine = require('./b2dengine');
+	Box2dEngine = require('./b2dengine'),
+	GameLoger = require('./gameLoger/gameLoger');
 
 var Server = module.exports = cls.Class.extend({
 	init: function (config) {
@@ -44,6 +45,7 @@ var Server = module.exports = cls.Class.extend({
 		this.world = new World(this.config.ups, this.config.map_filepath, this.engine, this._server, this.config.debug);
 		this.world.onReady(this.ready_callback);
 		this.world.run();
+		this.gameLoger = new GameLoger(this.config.gameLoger, this.config.logFile, this._server, this.world);
 	},
 	stop: function () {
 		this.world.stop();
