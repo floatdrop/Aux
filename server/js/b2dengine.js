@@ -111,16 +111,16 @@ Engine.getPoints = function (points) {
 
 Engine.getBoxPoints = function (width, height) {
 	return [{
-		x: 0,
-		y: 0
+		x: -width / Scale,
+		y: -height / Scale
 	}, {
 		x: width / Scale,
-		y: 0
+		y: -height / Scale
 	}, {
 		x: width / Scale,
 		y: height / Scale
 	}, {
-		x: 0,
+		x: -width / Scale,
 		y: height / Scale
 	} ];
 };
