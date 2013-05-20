@@ -9,6 +9,8 @@ var cls = require("./lib/class"),
 
 var b2Vec2 = Box2D.Common.Math.b2Vec2;
 
+var logger = require("./gameLogger/gameLogger");
+
 module.exports = cls.Class.extend({
 	init: function (ups, map_filepath, engine, server, debug) {
 		this.ups = ups;
@@ -26,7 +28,7 @@ module.exports = cls.Class.extend({
 		var spawnPosition = this.map.getSpawnPoint();
 		player.setPosition(spawnPosition.x, spawnPosition.y);
 		log.info("Player " + player.id + " connected");
-
+		logger.write(player.connection, new Buffer(JSON.stringify(player.getPosition())), logger.MsgType.Connect);
 		connection.onClose(function () {
 			self.disconnect_callback(player.id);
 		});
@@ -51,6 +53,7 @@ module.exports = cls.Class.extend({
 		this.engine.addEntity(player);
 	},
 	playerDisconnect: function (id) {
+		logger.write(player.connection, new Buffer(), logger.MsgType.Disconnect);
 		this.engine.removeEntity(id);
 	},
 	updateWorld: function () {
