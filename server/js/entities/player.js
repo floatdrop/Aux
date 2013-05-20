@@ -12,6 +12,8 @@ var b2BodyDef = Box2D.Dynamics.b2BodyDef,
 	b2FixtureDef = Box2D.Dynamics.b2FixtureDef,
 	b2CircleShape = Box2D.Collision.Shapes.b2CircleShape;
 
+var logger = require("./../gamelogger");
+
 var Player = module.exports = Entity.extend({
 	init: function (connection, id, debug) {
 		var self = this;
@@ -28,6 +30,7 @@ var Player = module.exports = Entity.extend({
 		this.animationType = this.health <= 0 ? "ghost" : "idle";
 
 		this.connection.listen(function (message) {
+			logger.write(self.connection, new Buffer(JSON.stringify(message)), logger.MsgType.Action);
 			self.callbacks[message.t](message.d);
 		});
 		this.bindCallbacks();
