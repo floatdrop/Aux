@@ -53,7 +53,7 @@ module.exports = cls.Class.extend({
 		this.engine.addEntity(player);
 	},
 	playerDisconnect: function (player) {
-		logger.write(player.connection, new Buffer(), logger.MsgType.Disconnect);
+		logger.write(player.connection, new Buffer(player.id), logger.MsgType.Disconnect);
 		this.engine.removeEntity(player.id);
 	},
 	updateWorld: function () {
