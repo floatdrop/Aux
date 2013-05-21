@@ -1,11 +1,6 @@
 var fs = require('fs'),
 	Server = require('./server/js/server');
 
-require('nodetime').profile({
-	accountKey: process.env.NodeTimeKey,
-	appName: 'Aux'
-});
-
 function getConfigFile(path, callback) {
 	fs.readFile(path, 'utf8', function(err, json_string) {
 		if (err) {

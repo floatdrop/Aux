@@ -1,6 +1,6 @@
 {
 	"name": "aux",
-	"version": "0.0.4-8",
+	"version": "0.0.4-12",
 	"private": false,
 	"main": "server/js",
 	"subdomain": "aux",

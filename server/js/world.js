@@ -8,7 +8,10 @@ var cls = require("./lib/class"),
 	EntityFactory = require('./entityFactory');
 
 var b2Vec2 = Box2D.Common.Math.b2Vec2;
-var nodetime = require('nodetime');
+require('nodetime').profile({
+	accountKey: process.env.NodeTimeKey,
+	appName: 'Aux'
+});
 var logger = require("./gamelogger");
 
 module.exports = cls.Class.extend({
@@ -25,7 +28,7 @@ module.exports = cls.Class.extend({
 	},
 	playerConnect: function (connection) {
 		this.playersCount += 1;
-		nodetime.metric("World", "Players", "", this.playersCount);
+		require('nodetime').metric("World", "Players", "", this.playersCount);
 		var self = this;
 		var player = new Player(connection, connection.id, this.debug);
 		var spawnPosition = this.map.getSpawnPoint();
@@ -57,7 +60,7 @@ module.exports = cls.Class.extend({
 	},
 	playerDisconnect: function (player) {
 		this.playersCount -= 1;
-		nodetime.metric("World", "Players", "", this.playersCount);
+		require('nodetime').metric("World", "Players", "", this.playersCount);
 		logger.write(player.connection, new Buffer(player.id), logger.MsgType.Disconnect);
 		this.engine.removeEntity(player.id);
 	},
@@ -89,7 +92,7 @@ module.exports = cls.Class.extend({
 		}, 1000 / this.ups);
 		setInterval(function () {
 			var now = new Date() / 1000;
-			nodetime.metric("World", "Ticks per second", "ticks", ticks / (now - start));
+			require('nodetime').metric("World", "Ticks per second", "ticks", ticks / (now - start));
 		}, 5000);
 		setTimeout(function () {
 			self.ready_callback();
