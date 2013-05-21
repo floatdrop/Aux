@@ -1,6 +1,6 @@
 {
 	"name": "aux",
-	"version": "0.0.4-4",
+	"version": "0.0.4-5",
 	"private": false,
 	"main": "server/js",
 	"subdomain": "aux",
@@ -15,6 +15,7 @@
 		"stylus": "*",
 		"websocket-server": ">0",
 		"async": ">0",
+		"redis": ">0",
 		"msgpack": ">0",
 		"winston": ">0",
 		"node-static": ">0"

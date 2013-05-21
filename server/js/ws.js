@@ -114,15 +114,16 @@ WS.MultiVersionWebsocketServer = Server.extend({
 		var self = this;
 
 		this._super(port);
-		this.static = new(require('node-static').Server)('./client', {
-			cache: false
-		});
 
-		this._httpServer = http.createServer(function (request, response) {
-			self.static.serve(request, response);
-		});
+		var express = require('express');
+		var app = express();
+		var __dirname = './client';
+		app.use(express.static(__dirname));
+		app.use(express.directory(__dirname));
+
+		this._httpServer = http.createServer(app);
 		this._httpServer.listen(port, function () {
-			log.info("Server is listening on port " + port);
+			log.info("Server is listening on http://localhost:" + port);
 		});
 
 		this._miksagoServer = wsserver.createServer();

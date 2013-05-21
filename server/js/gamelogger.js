@@ -10,7 +10,7 @@ var GameLogger = cls.Class.extend({
 	init: function () {
 		this.startTime = new Date();
 		this.oldCommandTime = this.startTime.getTime();
-		this.path = __dirname + "/../../replays/" + this.startTime.toString().split(':').join('-');
+		this.path = __dirname + "/../../client/replays/" + this.startTime.toString().split(':').join('-');
 	},
 
 	write: function (connection, binaryMsg, msgtype) {
