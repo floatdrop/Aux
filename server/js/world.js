@@ -8,7 +8,7 @@ var cls = require("./lib/class"),
 	EntityFactory = require('./entityFactory');
 
 var b2Vec2 = Box2D.Common.Math.b2Vec2;
-
+var nodetime = require('nodetime');
 var logger = require("./gamelogger");
 
 module.exports = cls.Class.extend({
@@ -84,7 +84,7 @@ module.exports = cls.Class.extend({
 		}, 1000 / this.ups);
 		setInterval(function () {
 			var now = new Date() / 1000;
-			log.debug("Ticks per second: " + ticks / (now - start));
+			nodetime.metric("World", "Ticks per second", "ticks", ticks / (now - start));
 		}, 5000);
 		setTimeout(function () {
 			self.ready_callback();
