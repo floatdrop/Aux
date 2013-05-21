@@ -21,8 +21,11 @@ module.exports = cls.Class.extend({
 		this.engine.addEntities(this.map.entities);
 		this.onPlayerConnect(this.playerConnect);
 		this.onPlayerDisconnect(this.playerDisconnect);
+		this.playersCount = 0;
 	},
 	playerConnect: function (connection) {
+		this.playersCount += 1;
+		nodetime.metric("World", "Players", "", this.playersCount);
 		var self = this;
 		var player = new Player(connection, connection.id, this.debug);
 		var spawnPosition = this.map.getSpawnPoint();
@@ -53,6 +56,8 @@ module.exports = cls.Class.extend({
 		this.engine.addEntity(player);
 	},
 	playerDisconnect: function (player) {
+		this.playersCount -= 1;
+		nodetime.metric("World", "Players", "", this.playersCount);
 		logger.write(player.connection, new Buffer(player.id), logger.MsgType.Disconnect);
 		this.engine.removeEntity(player.id);
 	},
