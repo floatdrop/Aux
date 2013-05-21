@@ -1,23 +1,20 @@
 {
-	"name": "aux",
-	"version": "0.0.4-3",
+	"name": "auxilium",
+	"version": "0.0.1",
 	"private": false,
 	"main": "server/js",
-	"subdomain": "aux",
+	"subdomain": "auxilium",
 	"scripts": {
-		"start": "node ./app.js"
+		"start": "startsh"
 	},
 	"dependencies": {
-		"underscore": ">0",
-		"websocket": ">0",
-		"express": "3.0.0rc1",
-		"jade": "*",
-		"stylus": "*",
-		"websocket-server": ">0",
-		"async": ">0",
-		"msgpack": ">0",
-		"winston": ">0",
-		"node-static": ">0"
+		"yaml": "",
+		"express": "3.x",
+		"config": "",
+		"hbs": "1.x",
+		"less": "1.x",
+		"less-middleware": "",
+		"underscore": "1.x"
 	},
 	"devDependencies": {
 		"jshint": ">=0.9.1",
@@ -26,6 +23,6 @@
 		"zombie": "==1.4.1"
 	},
 	"engines": {
-		"node": ">=0.8"
+		"node": ">=0.8.8"
 	}
 }
