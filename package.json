@@ -1,9 +1,9 @@
 {
-	"name": "auxilium",
-	"version": "0.0.4-2",
+	"name": "aux",
+	"version": "0.0.4-3",
 	"private": false,
 	"main": "server/js",
-	"subdomain": "floatdrop-Aux",
+	"subdomain": "aux",
 	"scripts": {
 		"start": "node ./app.js"
 	},

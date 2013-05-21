@@ -37,5 +37,3 @@ getConfigFile(customConfigPath, function (customConfig) {
 		});
 	}
 });
-
-require('./front/app.js');
