@@ -5,8 +5,6 @@ var fs = require('fs'),
 	EntityFactory = require('./entityFactory');
 
 var WorldMap = module.exports = cls.Class.extend({
-	entities: [],
-	spawnregions: [],
 
 	init: function (map_filepath, engine) {
 		this.json = JSON.parse(fs.readFileSync(map_filepath, 'utf8'));
@@ -16,6 +14,8 @@ var WorldMap = module.exports = cls.Class.extend({
 	createObjects: function (json) {
 		var self = this;
 
+		this.entities = [];
+		this.spawnregions = [];
 		_.each(json.layers, function (layer) {
 			if (layer.type === "objectgroup" && layer.name === "objects") {
 				_.each(layer.objects, function (entity_info) {
