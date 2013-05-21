@@ -9,4 +9,5 @@ build.txt
 *.sublime-workspace
 debug.log
 exceptions.log
+npm-debug.log
 *.sh
