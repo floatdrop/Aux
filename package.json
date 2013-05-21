@@ -1,11 +1,11 @@
 {
 	"name": "auxilium",
-	"version": "0.0.4",
+	"version": "0.0.4-2",
 	"private": false,
 	"main": "server/js",
 	"subdomain": "floatdrop-Aux",
 	"scripts": {
-		"start": "node server/js/main.js"
+		"start": "node ./app.js"
 	},
 	"dependencies": {
 		"underscore": ">0",
@@ -26,6 +26,6 @@
 		"zombie": "==1.4.1"
 	},
 	"engines": {
-		"node": "0.10.x"
+		"node": ">=0.8"
 	}
 }
