@@ -18,7 +18,7 @@ var Player = module.exports = Entity.extend({
 	init: function (connection, id, debug) {
 		var self = this;
 		this.connection = connection;
-		this._super(id, "player", Constants.Types.Entities.PLAYER);
+		this._super(id, "player", Constants.Types.Entities.Player);
 		this.heading = 0;
 		this.angleEps = 90;
 		this.debug = debug;

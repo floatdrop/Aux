@@ -53,11 +53,15 @@ var Bullet = module.exports = Entity.extend({
 		this.remove_callback = callback;
 	},
 	onCollision: function (contactBody) {
-		if (contactBody.kind === Constants.Types.Entities.PLAYER) {
+		if (contactBody.kind === Constants.Types.Entities.Player) {
 			if (this.player.id === contactBody.id) {
 				return false;
 			}
 			contactBody.shot();
+		}
+		if (contactBody.kind === Constants.Types.Entities.Bullet)
+		{
+			return false;
 		}
 		this.ttf = 0;
 		return true;

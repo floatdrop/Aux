@@ -16,7 +16,6 @@
 		"stylus": "*",
 		"websocket-server": ">0",
 		"async": ">0",
-		"redis": ">0",
 		"msgpack": ">0",
 		"winston": ">0",
 		"node-static": ">0"

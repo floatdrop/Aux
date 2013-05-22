@@ -8,10 +8,12 @@ var cls = require("./lib/class"),
 	EntityFactory = require('./entityFactory');
 
 var b2Vec2 = Box2D.Common.Math.b2Vec2;
-require('nodetime').profile({
-	accountKey: process.env.NodeTimeKey,
-	appName: 'Aux'
-});
+if (process.env.NodeTimeKey) {
+	require('nodetime').profile({
+		accountKey: process.env.NodeTimeKey,
+		appName: 'Aux'
+	});
+}
 var logger = require("./gamelogger");
 
 module.exports = cls.Class.extend({
@@ -27,7 +29,7 @@ module.exports = cls.Class.extend({
 		this.playersCount = 0;
 	},
 	playerConnect: function (connection) {
-		if (this.playersCount == 0) {
+		if (this.playersCount === 0) {
 			logger.updateDate();
 		}
 		this.playersCount += 1;
