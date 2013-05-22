@@ -31,6 +31,13 @@ define(function () {
 			});
 
 			this.network.connect(this.host, this.port);
+
+			setInterval(function () {
+				self.network.send({
+					t: Constants.Types.Messages.Heartbit,
+					d: (new Date()).getTime()
+				});
+			}, 200);
 		},
 		onRemoveList: function (callback) {
 			this.removelist_callback = callback;
