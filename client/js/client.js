@@ -37,7 +37,7 @@ define(function () {
 					t: Constants.Types.Messages.Heartbit,
 					d: (new Date()).getTime()
 				});
-			}, 200);
+			}, 50);
 		},
 		onRemoveList: function (callback) {
 			this.removelist_callback = callback;

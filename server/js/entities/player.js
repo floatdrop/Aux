@@ -70,7 +70,7 @@ var Player = module.exports = Entity.extend({
 	},
 	send: function (event, message) {
 		var d = (new Date()).getTime() - this.lastHeartBit;
-		if (d < 300) {
+		if (d < 500) {
 			this.connection.send({
 				t: event,
 				d: message
