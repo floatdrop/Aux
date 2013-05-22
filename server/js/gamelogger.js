@@ -8,11 +8,14 @@ var GameLogger = cls.Class.extend({
 		Disconnect: 2
 	},
 	init: function () {
+		this.updateDate();
+	},
+	updateDate: function () {
 		this.startTime = new Date();
 		this.oldCommandTime = this.startTime.getTime();
-		this.path = __dirname + "/../../client/replays/" + this.startTime.toString().split(':').join('-');
+		var dir =  __dirname + "/../../client/replays/";
+		this.path = dir + "replay-" + this.startTime.toISOString().split(':').join('-');
 	},
-
 	write: function (connection, binaryMsg, msgtype) {
 		var id = new Buffer(connection.id),
 			buf = new Buffer(13 + id.length + binaryMsg.length),
