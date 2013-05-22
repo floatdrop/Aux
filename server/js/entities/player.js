@@ -70,13 +70,13 @@ var Player = module.exports = Entity.extend({
 	},
 	send: function (event, message) {
 		var d = (new Date()).getTime() - this.lastHeartBit;
-		if (d < 500) {
+		if (d < 5000) {
 			this.connection.send({
 				t: event,
 				d: message
 			});
 		} else {
-			log.warn("Drop event(" + event + "): " + this.ping + "ms, last HB: " + d + "ms ago");
+			log.warn("Drop event(" + event + ") - last HB: " + d + "ms ago");
 		}
 	},
 	sendEntities: function (entities) {
