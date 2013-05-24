@@ -7656,22 +7656,40 @@ LINK.TiledMap.prototype.onTiledMapJsonLoaded = function (jsonLoader) {
 
 	this.tilecache = {};
 
+	var tsLoaded = 0;
+	var tilesetLoaded = function (imageLoader) {
+		tsInfo.baseTexture = imageLoader.content.texture.baseTexture;
+		tsLoaded += 1;
+		if (tsLoaded === map.tilesets.length) {
+			this.tilesetsLoaded(map);
+		}
+	};
+
 	for (var j = 0, jl = map.tilesets.length; j < jl; ++j) {
 		var tsInfo = map.tilesets[j];
 		tsInfo.lastgid = tsInfo.firstgid + (tsInfo.imagewidth / tsInfo.tilewidth) * (tsInfo.imageheight / tsInfo.tileheight);
-		tsInfo.baseTexture = PIXI.Texture.fromImage(tsInfo.image).baseTexture;
+		var loader = new PIXI.ImageLoader(tsInfo.image, false);
+		loader.addEventListener("loaded", tilesetLoaded.bind(this));
+		loader.load();
 		this.tilesets.push(tsInfo);
 	}
 
 	this.version = map.version;
 
-	for (var i = 0, il = map.layers.length; i < il; ++i) {
-		if (map.layers[i].type === "tilelayer") { this.createTileLayer(map.layers[i]); }
-		if (map.layers[i].type === "objectgroup") { this.addLayer(map.layers[i].name); }
-	}
-
 };
 
+LINK.TiledMap.prototype.tilesetsLoaded = function (map) {
+	for (var i = 0, il = map.layers.length; i < il; ++i) {
+		map.layers[i].tilewidth = map.tilewidth;
+		map.layers[i].tileheight = map.tileheight;
+		if (map.layers[i].type === "tilelayer") {
+			this.createTileLayer(map.layers[i]);
+		}
+		if (map.layers[i].type === "objectgroup") {
+			this.addLayer(map.layers[i].name);
+		}
+	}
+};
 
 LINK.TiledMap.prototype.createTileLayer = function (layerJson) {
 	var layer = this.addLayer(layerJson.name);
@@ -7682,17 +7700,24 @@ LINK.TiledMap.prototype.createTileLayer = function (layerJson) {
 	layer.position.x = (layerJson.x * this.tilesize.width) | 0;
 	layer.position.y = (layerJson.y * this.tilesize.height) | 0;
 	layer.type = layerJson.type;
+	var renderTexture = new PIXI.RenderTexture(
+		layer.width * this.tilesize.height,
+		layer.height * this.tilesize.width);
 	for (var index in layerJson.data) {
 		var tileIndex = layerJson.data[index];
-		if (tileIndex === 0) { continue; }
+		if (tileIndex === 0) {
+			continue;
+		}
 		var tileset = this.getTileSet(tileIndex);
 		var tileTexture = this.getTileTexture(tileIndex, tileset);
 		var tileDisplayObject = new PIXI.Sprite(tileTexture);
-		tileDisplayObject.position = new PIXI.Point(
-		((index % layer.width) | 0) * this.tilesize.width,
-		((index / layer.width) | 0) * this.tilesize.height);
-		layer.addChild(tileDisplayObject);
+		tileDisplayObject.position.x = ((index % layer.width) | 0) * this.tilesize.width;
+		tileDisplayObject.position.y = ((index / layer.width) | 0) * this.tilesize.height;
+		var doc = new PIXI.DisplayObjectContainer();
+		doc.addChild(tileDisplayObject);
+		renderTexture.render(doc);
 	}
+	layer.addChild(new PIXI.Sprite(renderTexture));
 };
 
 LINK.TiledMap.prototype.getTileSet = function (index) {
@@ -7710,8 +7735,8 @@ LINK.TiledMap.prototype.getTileTexture = function (index, tileset) {
 	var i = index - tileset.firstgid;
 	var frame = new PIXI.Rectangle(
 	(((i * tileset.tilewidth) % tileset.imagewidth) | 0), (((i * tileset.tilewidth) / tileset.imagewidth) | 0) * tileset.tileheight,
-	tileset.tilewidth,
-	tileset.tileheight);
+		tileset.tilewidth,
+		tileset.tileheight);
 	this.tilecache[index] = new PIXI.Texture(tileset.baseTexture, frame);
 	return this.tilecache[index];
 };
