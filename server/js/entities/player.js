@@ -33,6 +33,9 @@ var Player = module.exports = Entity.extend({
 
 		this.connection.listen(function (message) {
 			logger.write(self.connection, new Buffer(JSON.stringify(message)), logger.MsgType.Action);
+			if (message.ts) {
+				self.computePing(message.ts);
+			}
 			if (self.callbacks[message.t]) {
 				self.callbacks[message.t](message.d);
 			}
@@ -52,7 +55,6 @@ var Player = module.exports = Entity.extend({
 		this.callbacks = {};
 		this.callbacks[Constants.Types.Messages.Action] = this.onAction.bind(this);
 		this.callbacks[Constants.Types.Messages.Angle] = this.onAngle.bind(this);
-		this.callbacks[Constants.Types.Messages.Heartbit] = this.onHeartbit.bind(this);
 		this.callbacks[Constants.Types.Messages.Shoot] = function (data) { self.shoot_callback(data); };
 	},
 	createBody: function () {
@@ -132,9 +134,9 @@ var Player = module.exports = Entity.extend({
 		}
 		this.heading = angle;
 	},
-	onHeartbit: function (data) {
-		this.ping = (new Date()).getTime() - data;
-		this.lastHeartBit = data;
+	computePing: function (ts) {
+		this.ping = (new Date()).getTime() - ts;
+		this.lastHeartBit = ts;
 	},
 	getDirectionByAngle: function (angle) {
 		if (angle > 315) return 'right';
