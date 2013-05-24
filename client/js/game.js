@@ -91,7 +91,9 @@ function (Player, Client, EntityFactory, DebugEntity) {
 				var id = info.id;
 				var entity = id in self.entities ? self.entities[id] : entity = EntityFactory.createEntity(info, id);
 				entity.update(info);
-				self.layers.game.tiles.objects.addChild(entity.getDisplayObject());
+				if (self.layers.game.tiles) {
+					self.layers.game.tiles.objects.addChild(entity.getDisplayObject());
+				}
 				entities[id] = entity;
 			});
 			_.each(_.difference(Object.keys(self.entities), Object.keys(entities)), function (id) {
