@@ -6502,6 +6502,21 @@ PIXI.BitmapFontLoader.prototype.onLoaded = function()
 var LINK = LINK || {};
 
 LINK.Cache = {};
+LINK.Utils = {};
+
+LINK.Utils.getOffset = function (el) {
+	var _x = 0;
+	var _y = 0;
+	while (el && !isNaN(el.offsetLeft) && !isNaN(el.offsetTop)) {
+		_x += el.offsetLeft - el.scrollLeft;
+		_y += el.offsetTop - el.scrollTop;
+		el = el.offsetParent;
+	}
+	return {
+		top: _y,
+		left: _x
+	};
+};
 /**
  * @author Vsevolod Strukchinsky @floatdrop
  */
