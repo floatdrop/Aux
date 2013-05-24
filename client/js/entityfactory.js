@@ -1,11 +1,11 @@
 /* global _ */
 
-define(['entities/player', 'entities/commonEntity', 'entities/circleEntity', 'entities/polygonEntity', 'entities/bullet'], function(Player, CommonEntity, CircleEntity, PolygonEntity, Bullet) {
+define(['entities/player', 'entities/commonEntity', 'entities/circleEntity', 'entities/polygonEntity', 'entities/bullet'], function (Player, CommonEntity, CircleEntity, PolygonEntity, Bullet) {
 	var EntityFactory = {
 		entities: {}
 	};
 
-	EntityFactory.createEntity = function(entity_info, name) {
+	EntityFactory.createEntity = function (entity_info, name) {
 
 		var kind = entity_info.kind;
 		if (!kind) {
@@ -22,20 +22,20 @@ define(['entities/player', 'entities/commonEntity', 'entities/circleEntity', 'en
 
 	EntityFactory.builders = [];
 
-	EntityFactory.builders[Constants.Types.Entities.CommonEntity] = function(entity_info) {
+	EntityFactory.builders[Constants.Types.Entities.CommonEntity] = function (entity_info) {
 		var entity = new CommonEntity(entity_info.id, entity_info.sprite);
 		return entity;
 	};
 
-	EntityFactory.builders[Constants.Types.Entities.PolygonEntity] = function(entity_info) {
+	EntityFactory.builders[Constants.Types.Entities.PolygonEntity] = function (entity_info) {
 		return new PolygonEntity(entity_info.id, "PolygonEntity");
 	};
 
-	EntityFactory.builders[Constants.Types.Entities.CircleEntity] = function(entity_info) {
+	EntityFactory.builders[Constants.Types.Entities.CircleEntity] = function (entity_info) {
 		return new CircleEntity(entity_info.id, "CircleEntity");
 	};
 
-	EntityFactory.builders[Constants.Types.Entities.Player] = function(entity_info) {
+	EntityFactory.builders[Constants.Types.Entities.Player] = function (entity_info) {
 		var entity = new Player(entity_info.id);
 		entity.animation.set(entity_info.animation);
 		entity.health = entity_info.health;
@@ -44,7 +44,7 @@ define(['entities/player', 'entities/commonEntity', 'entities/circleEntity', 'en
 		return entity;
 	};
 
-	EntityFactory.builders[Constants.Types.Entities.Bullet] = function(entity_info) {
+	EntityFactory.builders[Constants.Types.Entities.Bullet] = function (entity_info) {
 		var entity = new Bullet(entity_info.id);
 		entity.setAngle(entity_info.angle || 0);
 		entity.layer = entity_info.layer || "default";

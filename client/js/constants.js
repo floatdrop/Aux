@@ -8,13 +8,13 @@ Constants = {
 			Bullet: 5
 		},
 		Messages: {
-			Welcome: 0,
-			Map: 1,
-			EntityList: 2,
-			Action: 3,
-			Angle: 4,
-			RemoveList: 5,
-			Shoot: 6
+			Heartbit: 0,
+			EntityList: 1,
+			Action: 2,
+			Angle: 3,
+			Shoot: 4,
+			Welcome: 10,
+			Map: 11
 		}
 	}
 };
