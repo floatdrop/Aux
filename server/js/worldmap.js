@@ -48,8 +48,8 @@ WorldMap.adjustInfo = function (entity_info) {
 		entity_info.polyline.shift();
 		entity_info.points = [];
 		_.each(
-		entity_info.polyline, function (point) {
-			point.x = point.x,
+			entity_info.polyline, function (point) {
+			point.x = point.x;
 			point.y = point.y;
 			entity_info.points.push({
 				x: point.x,

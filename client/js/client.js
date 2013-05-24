@@ -31,6 +31,13 @@ define(function () {
 			});
 
 			this.network.connect(this.host, this.port);
+
+			setInterval(function () {
+				self.network.send({
+					t: Constants.Types.Messages.Heartbit,
+					ts: (new Date()).getTime()
+				});
+			}, 500);
 		},
 		onRemoveList: function (callback) {
 			this.removelist_callback = callback;
@@ -47,19 +54,22 @@ define(function () {
 		sendAction: function (action) {
 			this.network.send({
 				t: Constants.Types.Messages.Action,
-				d: action
+				d: action,
+				ts: (new Date()).getTime()
 			});
 		},
 		sendAngle: function (angle) {
 			this.network.send({
 				t: Constants.Types.Messages.Angle,
-				d: angle
+				d: angle,
+				ts: (new Date()).getTime()
 			});
 		},
 		sendShoot: function () {
 			this.network.send({
 				t: Constants.Types.Messages.Shoot,
-				d: null
+				d: null,
+				ts: (new Date()).getTime()
 			});
 		}
 	});

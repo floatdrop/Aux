@@ -27,11 +27,18 @@ var Player = module.exports = Entity.extend({
 		this.layer = "objects";
 		this.health = 1;
 		this.bullets = 10;
+		this.ping = 70;
+		this.lastHeartBit = (new Date()).getTime();
 		this.animationType = this.health <= 0 ? "ghost" : "idle";
 
 		this.connection.listen(function (message) {
 			logger.write(self.connection, new Buffer(JSON.stringify(message)), logger.MsgType.Action);
-			self.callbacks[message.t](message.d);
+			if (message.ts) {
+				self.computePing(message.ts);
+			}
+			if (self.callbacks[message.t]) {
+				self.callbacks[message.t](message.d);
+			}
 		});
 		this.bindCallbacks();
 		this.createBody();
@@ -64,10 +71,15 @@ var Player = module.exports = Entity.extend({
 		this.fixtureDef.shape = circleShape;
 	},
 	send: function (event, message) {
-		this.connection.send({
-			t: event,
-			d: message
-		});
+		var d = (new Date()).getTime() - this.lastHeartBit;
+		if (d < 5000) {
+			this.connection.send({
+				t: event,
+				d: message
+			});
+		} else {
+			log.warn("Drop event(" + event + ") - last HB: " + d + "ms ago");
+		}
 	},
 	sendEntities: function (entities) {
 		var ids = _.pluck(entities, 'id');
@@ -121,6 +133,10 @@ var Player = module.exports = Entity.extend({
 			angle = 0;
 		}
 		this.heading = angle;
+	},
+	computePing: function (ts) {
+		this.ping = (new Date()).getTime() - ts;
+		this.lastHeartBit = ts;
 	},
 	getDirectionByAngle: function (angle) {
 		if (angle > 315) return 'right';
