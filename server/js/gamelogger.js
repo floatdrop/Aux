@@ -15,6 +15,10 @@ var GameLogger = cls.Class.extend({
 		this.oldCommandTime = this.startTime.getTime();
 		var dir =  __dirname + "/../../client/replays/";
 		this.path = dir + "replay-" + this.startTime.toISOString().split(':').join('-');
+		if (this.file) {
+			fs.close(this.file);
+		}
+		this.file = fs.open(this.path, 'w');
 	},
 	write: function (connection, binaryMsg, msgtype) {
 		var id = new Buffer(connection.id),
@@ -31,9 +35,7 @@ var GameLogger = cls.Class.extend({
 		id.copy(buf, 13);
 		binaryMsg.copy(buf, 13 + id.length);
 
-		fs.appendFile(this.path, buf, function (err) {
-			if (err) throw err;
-		});
+		fs.write(this.file, buf);
 	}
 });
 
