@@ -108,7 +108,7 @@ module.exports = cls.Class.extend({
 		}, 1000 / this.ups);
 		setInterval(function () {
 			var now = new Date() / 1000;
-			require('nodetime').metric("World", "Players", self.playersCount, "", "set");
+			//require('nodetime').metric("World", "Players", self.playersCount, "", "set");
 			require('nodetime').metric("World", "Ticks per second", ticks / (now - start), "ticks", "set");
 		}, 5000);
 		setTimeout(function () {
