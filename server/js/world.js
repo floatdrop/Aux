@@ -61,6 +61,14 @@ module.exports = cls.Class.extend({
 			}
 		});
 
+		player.onRespawn(function () {
+			player.health = Player.StandartHealth;
+			player.bullets = Player.StandartBullets;
+			player.animationType = "idle";
+			var spawnPosition = self.map.getSpawnPoint();
+			player.setPosition(spawnPosition.x, spawnPosition.y);
+		});
+
 		this.engine.addEntity(player);
 	},
 	playerDisconnect: function (player) {
