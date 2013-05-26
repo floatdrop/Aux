@@ -72,14 +72,10 @@ var Player = module.exports = Entity.extend({
 	},
 	send: function (event, message) {
 		var d = (new Date()).getTime() - this.lastHeartBit;
-		if (d < 5000) {
-			this.connection.send({
-				t: event,
-				d: message
-			});
-		} else {
-			log.warn("Drop event(" + event + ") - last HB: " + d + "ms ago");
-		}
+		this.connection.send({
+			t: event,
+			d: message
+		});
 	},
 	sendEntities: function (entities) {
 		var ids = _.pluck(entities, 'id');
