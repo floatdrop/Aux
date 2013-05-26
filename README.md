@@ -5,7 +5,7 @@ Aux - is multiplayer shooter game for social networks. This game mostly based on
 Demo
 ----
 
-Demo server located at aux-ekb.air-labs.ru (may be down from time to time).
+Demo server located at [Russia](http://aux-ekb.air-labs.ru/) (may be down from time to time).
 
 Documentation
 -------------
