@@ -41,7 +41,7 @@ function (Player, Client, EntityFactory, DebugEntity) {
 				text.setText("Loading (" + ((assetsToLoad.length - loader.content.loadCount) * 100 / assetsToLoad.length) + "%)...");
 			});
 			this.loader.addEventListener("onComplete", function () {
-				text.setText("Connecting to server...")
+				text.setText("Connecting to server...");
 				self.stage.removeChild(text);
 				self.layers = new LINK.Layers({
 					"game": new LINK.Layers({

@@ -71,7 +71,7 @@ var Player = module.exports = Entity.extend({
 		this.fixtureDef.shape = circleShape;
 	},
 	send: function (event, message) {
-		var d = (new Date()).getTime() - this.lastHeartBit;
+		// var d = (new Date()).getTime() - this.lastHeartBit;
 		this.connection.send({
 			t: event,
 			d: message
