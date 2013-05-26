@@ -22,7 +22,7 @@ var GameLogger = cls.Class.extend({
 		}
 		fs.open(this.path, 'w', function (err, fd) {
 			if (err) {
-				log.error("Error, while opening " + self.path + ":"+err);
+				log.error("Error, while opening " + self.path + ":" + err);
 			} else {
 				self.file = fd;
 			}
