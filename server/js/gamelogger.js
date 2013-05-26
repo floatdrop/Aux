@@ -1,5 +1,6 @@
 var cls = require("./lib/class"),
-	fs = require('fs');
+	fs = require('fs'),
+	log = require('./log');
 
 var GameLogger = cls.Class.extend({
 	MsgType: {
@@ -11,6 +12,7 @@ var GameLogger = cls.Class.extend({
 		this.updateDate();
 	},
 	updateDate: function () {
+		var self = this;
 		this.startTime = new Date();
 		this.oldCommandTime = this.startTime.getTime();
 		var dir =  __dirname + "/../../client/replays/";
@@ -18,7 +20,13 @@ var GameLogger = cls.Class.extend({
 		if (this.file) {
 			fs.close(this.file);
 		}
-		this.file = fs.open(this.path, 'a');
+		fs.open(this.path, 'w', function (err, fd) {
+			if (err) {
+				log.error("Error, while opening " + self.path + ":"+err);
+			} else {
+				self.file = fd;
+			}
+		});
 	},
 	write: function (connection, binaryMsg, msgtype) {
 		var id = new Buffer(connection.id),
@@ -35,7 +43,7 @@ var GameLogger = cls.Class.extend({
 		id.copy(buf, 13);
 		binaryMsg.copy(buf, 13 + id.length);
 
-		fs.write(this.file, buf);
+		fs.write(this.file, buf, 0, buf.length);
 	}
 });
 
