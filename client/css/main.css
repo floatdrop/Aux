@@ -3,7 +3,7 @@
 html, body {
     height: 100%;         /* required */
     font-family: "Arial";
-    background-color: black;
+    background-color: #171717;
 }
 
 #content {

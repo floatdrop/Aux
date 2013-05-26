@@ -18,7 +18,7 @@ var GameLogger = cls.Class.extend({
 		if (this.file) {
 			fs.close(this.file);
 		}
-		this.file = fs.open(this.path, 'w');
+		this.file = fs.open(this.path, 'a');
 	},
 	write: function (connection, binaryMsg, msgtype) {
 		var id = new Buffer(connection.id),
