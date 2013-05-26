@@ -8,7 +8,6 @@ define(['jquery', 'game'], function ($, Game) {
 	var game = new Game(renderer, debug);
 
 	$(function () {
-		game.connect();
 		game.run();
 	});
 

@@ -6,6 +6,7 @@ function (Player, Client, EntityFactory, DebugEntity) {
 	var Game = Class.extend({
 
 		init: function (renderer) {
+			var self = this;
 			this.renderer = renderer;
 
 			/* BIND MOUSE */
@@ -21,30 +22,54 @@ function (Player, Client, EntityFactory, DebugEntity) {
 
 			/* CREATE STAGE */
 			this.stage = new PIXI.Stage(0x000000);
-			this.layers = new LINK.Layers({
-				"game": new LINK.Layers({
-					"tiles": new LINK.TiledMap('assets/world/smallworld.json'),
-					"objects": new LINK.Layers()
-				})
-			}, "debug", "ui");
-			this.stage.addChild(this.layers);
+			var text = new PIXI.Text("Loading (0%)...", {font: "35px Arial", fill: "white", align: "left"});
+			text.anchor.x = 0.5;
+			text.anchor.y = 0.5;
+			text.position.x = 400;
+			text.position.y = 300;
+			this.stage.addChild(text);
 
-			/* DROP CAMERA */
-			this.camera = new LINK.Camera(800, 600);
-			this.camera.on(this.layers.game);
-			this.camera.bounds = new PIXI.Rectangle(0, 0, 1920, 1472);
+			var assetsToLoad = [
+				'assets/world/tileset.png',
+				'assets/world/smallworld.json',
+				'assets/sprites/bullet.png',
+				'assets/sprites/empty.png',
+				'assets/sprites/player.png'
+			];			
+			this.loader = new LINK.Loader(assetsToLoad);
+			this.loader.addEventListener("onProgress", function (loader) {
+				text.setText("Loading (" + ((assetsToLoad.length - loader.content.loadCount) * 100 / assetsToLoad.length) + "%)...");
+			});
+			this.loader.addEventListener("onComplete", function () {
+				text.setText("Connecting to server...")
+				self.stage.removeChild(text);
+				self.layers = new LINK.Layers({
+					"game": new LINK.Layers({
+						"tiles": new LINK.TiledMap('assets/world/smallworld.json'),
+						"objects": new LINK.Layers()
+					})
+				}, "debug", "ui");
+				self.stage.addChild(self.layers);
+				
+				/* DROP CAMERA */
+				self.camera = new LINK.Camera(800, 600);
+				self.camera.on(self.layers.game);
+				self.camera.bounds = new PIXI.Rectangle(0, 0, 1920, 1472);
 
-			LINK.Stats.on(this.stage);
+				LINK.Stats.on(self.stage);
 
-			/* DEBUG ELEMENT */
-			this.canvas = document.createElement('canvas');
-			this.canvas.width = this.renderer.width;
-			this.canvas.height = this.renderer.height;
-			this.context = this.canvas.getContext('2d');
-			this.debugSprite = new PIXI.Sprite(PIXI.Texture.fromCanvas(this.canvas));
-			this.layers.debug.addChild(this.debugSprite);
+				/* DEBUG ELEMENT */
+				self.canvas = document.createElement('canvas');
+				self.canvas.width = self.renderer.width;
+				self.canvas.height = self.renderer.height;
+				self.context = self.canvas.getContext('2d');
+				self.debugSprite = new PIXI.Sprite(PIXI.Texture.fromCanvas(self.canvas));
+				self.layers.debug.addChild(self.debugSprite);
 
-			/* SOME UI */
+				self.connect();
+			});
+
+			this.loader.load();
 		},
 		run: function () {
 			this.tick();

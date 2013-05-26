@@ -4,7 +4,7 @@
  * Copyright (c) 2013, Vsevolod Strukchinsky
  * hhttps://github.com/floatdrop/link.js
  *
- * Compiled: 2013-05-24
+ * Compiled: 2013-05-26
  *
  * Link.JS Game Engine is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -7594,7 +7594,7 @@ LINK.Loader = function (assetURLs) {
 };
 
 LINK.Loader.constructor = LINK.Loader;
-LINK.Loader.prototype = Object.create(PIXI.AssetLoader);
+LINK.Loader.prototype = Object.create(PIXI.AssetLoader.prototype);
 
 LINK.Loader.prototype.load = function(items)
 {
@@ -7621,6 +7621,8 @@ TiledMap class loads json file of tiled map.
 **/
 LINK.TiledMap = function (mapUrl, config) {
 
+	PIXI.EventTarget.call(this);
+
 	LINK.Layers.call(this);
 
 	var self = this;
@@ -7641,6 +7643,7 @@ LINK.TiledMap.prototype = Object.create(LINK.Layers.prototype);
 
 LINK.TiledMap.prototype.onTiledMapJsonLoaded = function (jsonLoader) {
 	var map = jsonLoader.content.json;
+	var self = this;
 
 	this.scale = {
 		x: parseInt(map.properties.scale, 10) || 1,
@@ -7661,17 +7664,17 @@ LINK.TiledMap.prototype.onTiledMapJsonLoaded = function (jsonLoader) {
 		tsInfo.baseTexture = imageLoader.content.texture.baseTexture;
 		tsLoaded += 1;
 		if (tsLoaded === map.tilesets.length) {
-			this.tilesetsLoaded(map);
+			self.tilesetsLoaded(map);
 		}
 	};
 
 	for (var j = 0, jl = map.tilesets.length; j < jl; ++j) {
 		var tsInfo = map.tilesets[j];
 		tsInfo.lastgid = tsInfo.firstgid + (tsInfo.imagewidth / tsInfo.tilewidth) * (tsInfo.imageheight / tsInfo.tileheight);
+		this.tilesets.push(tsInfo);
 		var loader = new PIXI.ImageLoader(tsInfo.image, false);
 		loader.addEventListener("loaded", tilesetLoaded.bind(this));
 		loader.load();
-		this.tilesets.push(tsInfo);
 	}
 
 	this.version = map.version;
@@ -7689,6 +7692,8 @@ LINK.TiledMap.prototype.tilesetsLoaded = function (map) {
 			this.addLayer(map.layers[i].name);
 		}
 	}
+
+	this.onLoaded();
 };
 
 LINK.TiledMap.prototype.createTileLayer = function (layerJson) {
@@ -7739,6 +7744,11 @@ LINK.TiledMap.prototype.getTileTexture = function (index, tileset) {
 		tileset.tileheight);
 	this.tilecache[index] = new PIXI.Texture(tileset.baseTexture, frame);
 	return this.tilecache[index];
+};
+
+LINK.TiledMap.prototype.onLoaded = function()
+{
+    this.dispatchEvent({type: "loaded", content: this});
 };
  /**
   * @author Vsevolod Strukchinsky (@floatdrop)
