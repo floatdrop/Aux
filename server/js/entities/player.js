@@ -25,8 +25,8 @@ var Player = module.exports = Entity.extend({
 		this.setAnimation();
 		this.entities_ids = [];
 		this.layer = "objects";
-		this.health = 1;
-		this.bullets = 10;
+		this.health = Player.StandartHealth;
+		this.bullets = Player.StandartBullets;
 		this.ping = 70;
 		this.lastHeartBit = (new Date()).getTime();
 		this.animationType = this.health <= 0 ? "ghost" : "idle";
@@ -44,11 +44,21 @@ var Player = module.exports = Entity.extend({
 		this.createBody();
 	},
 	shot: function () {
+		var self = this;
 		this.health -= 1;
-		if (this.health <= 0) {
+		if (this.animationType !== "ghost" && this.health <= 0) {
 			this.animationType = "ghost";
 			this.bullets = 0;
+
+			if (self.respawn_callback) {
+				setTimeout(function () {
+					self.respawn_callback();
+				}, Player.RespawnTimeout);
+			}
 		}
+	},
+	onRespawn: function (callback) {
+		this.respawn_callback = callback;
 	},
 	bindCallbacks: function () {
 		var self = this;
@@ -157,5 +167,9 @@ var Player = module.exports = Entity.extend({
 		};
 	}
 });
+
+Player.StandartHealth = 1;
+Player.StandartBullets = 10;
+Player.RespawnTimeout = 4000;
 
 return Player;
