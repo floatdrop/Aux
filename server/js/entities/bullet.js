@@ -21,7 +21,7 @@ var Bullet = module.exports = Entity.extend({
 		this.bodyDef.linearDamping = 0.2;
 
 		this.fixtureDef = new b2FixtureDef();
-
+		this.fixtureDef.filter.groupIndex = -2;
 		var circleShape = new b2CircleShape();
 		circleShape.m_radius = 0.01;
 		this.fixtureDef.shape = circleShape;
