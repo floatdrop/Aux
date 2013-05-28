@@ -116,7 +116,7 @@ function (Player, Client, EntityFactory, DebugEntity) {
 				var id = info.id;
 				var entity = id in self.entities ? self.entities[id] : entity = EntityFactory.createEntity(info, id);
 				entity.update(info);
-				if (self.layers.game.tiles) {
+				if (self.layers.game.tiles.objects) {
 					self.layers.game.tiles.objects.addChild(entity.getDisplayObject());
 				}
 				entities[id] = entity;
