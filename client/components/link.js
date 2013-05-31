@@ -6523,7 +6523,8 @@ LINK.Utils.requestAnimFrame = (function () {
 		window.webkitRequestAnimationFrame ||
 		window.mozRequestAnimationFrame ||
 		window.oRequestAnimationFrame ||
-		window.msRequestAnimationFrame || function ( /* function FrameRequestCallback */ callback) {
+		window.msRequestAnimationFrame || function ( /* function FrameRequestCallback */ callback, /* DOMElement */ element) {
+			element = element;
 			window.setTimeout(callback, 1000 / 60);
 	};
 })();
