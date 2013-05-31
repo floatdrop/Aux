@@ -5,10 +5,11 @@
         "Constants": true,
         "Class": false,
         "define": false,
-        "requestAnimFrame": false,
-        "msgpack": true,
         "PIXI": false,
-        "LINK": false
+        "LINK": false,
+        "_": false,
+        "config",
+        "log": false
     },
     "maxparams": 10,
     "maxdepth": 5,
