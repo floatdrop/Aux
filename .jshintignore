@@ -1,4 +1,5 @@
-server/js/vendor/**
+server/vendor/**
 client/components/**
+client/js/lib/**
 node_modules/**
 *.log

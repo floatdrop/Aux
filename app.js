@@ -2,7 +2,7 @@
 GLOBAL.config = require('./config.js');
 GLOBAL.Class = require('./server/vendor/class.js').Class;
 GLOBAL._ = require('lodash');
-GLOBAL.log = require('./server/log.js')
+GLOBAL.log = require('./server/log.js');
 
 var Server = require('./server');
 

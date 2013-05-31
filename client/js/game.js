@@ -78,7 +78,7 @@ function (Player, Client, EntityFactory, DebugEntity) {
 			LINK.Key.runCallbacks();
 			this.renderDebugEntities();
 			this.renderer.render(this.stage);
-			requestAnimFrame(this.tick.bind(this));
+			LINK.Utils.requestAnimFrame(this.tick.bind(this));
 		},
 		renderDebugEntities: function () {
 			if (!this.context) return;

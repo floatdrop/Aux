@@ -8,7 +8,7 @@
         "PIXI": false,
         "LINK": false,
         "_": false,
-        "config",
+        "config": false,
         "log": false
     },
     "maxparams": 10,
