@@ -1,8 +1,4 @@
-
-GLOBAL.config = require('./config.js');
-GLOBAL.Class = require('./server/vendor/class.js').Class;
-GLOBAL._ = require('lodash');
-GLOBAL.log = require('./server/log.js');
+GLOBAL.config = require('../config.js');
 
 var Server = require('./server');
 

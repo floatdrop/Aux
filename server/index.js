@@ -1,3 +1,7 @@
+GLOBAL.Class = require('./vendor/class.js').Class;
+GLOBAL._ = require('lodash');
+GLOBAL.log = require('./log.js');
+
 var ws = require("./ws"),
 	World = require('./world'),
 	Box2dEngine = require('./b2dengine');
