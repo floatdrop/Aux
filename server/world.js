@@ -2,7 +2,7 @@ var Player = require("./entities/player"),
 	Bullet = require("./entities/bullet"),
 	WorldMap = require("./worldmap"),
 	Box2D = require('./vendor/box2d'),
-	EntityFactory = require('./entityFactory'),
+	EntityFactory = require('./entities/factory'),
 	b2Vec2 = Box2D.Common.Math.b2Vec2,
 	logger = require("./gamelogger");
 

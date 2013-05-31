@@ -1,4 +1,4 @@
-var Entity = require('../entity'),
+var Entity = require('./entity'),
 	Box2D = require('../vendor/box2d'),
 	b2FixtureDef = Box2D.Dynamics.b2FixtureDef,
 	b2Vec2 = Box2D.Common.Math.b2Vec2,

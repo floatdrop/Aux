@@ -1,11 +1,11 @@
-var PolygonEntity = require('./entities/polygonEntity'),
-	CircleEntity = require('./entities/circleEntity'),
-	CommonEntity = require('./entities/commonEntity'),
-	Bullet = require('./entities/bullet'),
-	Box2D = require('./vendor/box2d'),
+var PolygonEntity = require('./polygonEntity'),
+	CircleEntity = require('./circleEntity'),
+	CommonEntity = require('./commonEntity'),
+	Bullet = require('./bullet'),
+	Box2D = require('../vendor/box2d'),
 	b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape,
 	b2CircleShape = Box2D.Collision.Shapes.b2CircleShape;
-var Engine = require('./b2dengine');
+var Engine = require('../b2dengine');
 
 var EntityFactory = module.exports = Class.extend({});
 

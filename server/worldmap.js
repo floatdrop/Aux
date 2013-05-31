@@ -1,5 +1,5 @@
 var fs = require('fs'),
-	EntityFactory = require('./entityFactory');
+	EntityFactory = require('./entities/factory');
 
 var WorldMap = module.exports = Class.extend({
 

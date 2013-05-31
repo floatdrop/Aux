@@ -1,16 +1,14 @@
 var Box2D = require('../vendor/box2d'),
-	Entity = require('../entity'),
-	EntityFactory = require('../entityFactory');
-
-require('../../client/js/constants');
-
+	Entity = require('./entity'),
+	EntityFactory = require('./factory');
 var b2BodyDef = Box2D.Dynamics.b2BodyDef,
 	b2Body = Box2D.Dynamics.b2Body,
 	b2Vec2 = Box2D.Common.Math.b2Vec2,
 	b2FixtureDef = Box2D.Dynamics.b2FixtureDef,
 	b2CircleShape = Box2D.Collision.Shapes.b2CircleShape;
+var logger = require("../gamelogger");
 
-var logger = require("./../gamelogger");
+require('../../client/js/constants');
 
 var Player = module.exports = Entity.extend({
 	init: function (connection, id) {
