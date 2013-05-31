@@ -6518,7 +6518,7 @@ LINK.Utils.getOffset = function (el) {
 	};
 };
 
-LINK.Utils.requestAnimFrame = (function () {
+window.requestAnimFrame = (function () {
 	return window.requestAnimationFrame ||
 		window.webkitRequestAnimationFrame ||
 		window.mozRequestAnimationFrame ||

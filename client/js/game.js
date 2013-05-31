@@ -75,10 +75,11 @@ function (Player, Client, EntityFactory, DebugEntity) {
 			this.tick();
 		},
 		tick: function () {
+			var self = this;
 			LINK.Key.runCallbacks();
 			this.renderDebugEntities();
 			this.renderer.render(this.stage);
-			LINK.Utils.requestAnimFrame(this.tick.bind(this));
+			window.requestAnimFrame(this.tick.bind(this));
 		},
 		renderDebugEntities: function () {
 			if (!this.context) return;
