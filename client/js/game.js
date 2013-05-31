@@ -75,7 +75,6 @@ function (Player, Client, EntityFactory, DebugEntity) {
 			this.tick();
 		},
 		tick: function () {
-			var self = this;
 			LINK.Key.runCallbacks();
 			this.renderDebugEntities();
 			this.renderer.render(this.stage);
