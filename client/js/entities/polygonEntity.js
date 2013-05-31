@@ -10,16 +10,16 @@ define(['entities/debugEntity'], function (DebugEntity) {
         },
 
         update: function (entity_info) {
-            this.setPosition(entity_info.position.x, entity_info.position.y);
+            this.position = entity_info.position;
             this.points = _.map(entity_info.points, function (point) {
                 return { x: point.x * 100, y: point.y * 100 };
             });
         },
 
+        /* this should be overwriting renderCanvas and renderWebgl methods, if they were acessable in PIXI */
         draw: function (context) {
-            var position = this.getPosition();
-            var x = position.x,
-                y = position.y;
+            var x = this.position.x,
+                y = this.position.y;
 
             context.beginPath();
             for (var i = 0; i < this.points.length;i++) {
@@ -30,7 +30,7 @@ define(['entities/debugEntity'], function (DebugEntity) {
             }
             context.closePath();
             context.fill();
-        },
+        }
     });
 
     return PolygonEntity;

@@ -37,7 +37,7 @@ define(['entities/player', 'entities/commonEntity', 'entities/circleEntity', 'en
 
 	EntityFactory.builders[Constants.Types.Entities.Player] = function (entity_info) {
 		var entity = new Player(entity_info.id);
-		entity.animation.set(entity_info.animation);
+		entity.set(entity_info.animation);
 		entity.health = entity_info.health;
 		entity.bullets = entity_info.bullets;
 		entity.layer = entity_info.layer || "default";
@@ -46,7 +46,7 @@ define(['entities/player', 'entities/commonEntity', 'entities/circleEntity', 'en
 
 	EntityFactory.builders[Constants.Types.Entities.Bullet] = function (entity_info) {
 		var entity = new Bullet(entity_info.id);
-		entity.setAngle(entity_info.angle || 0);
+		entity.rotation = entity_info.angle || 0;
 		entity.layer = entity_info.layer || "default";
 		return entity;
 	};

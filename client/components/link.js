@@ -7666,6 +7666,11 @@ LINK.TiledMap.prototype.onTiledMapJsonLoaded = function (jsonLoader) {
 		height: map.tileheight
 	};
 
+	this.dimensions = {
+		width: map.width * this.tilesize.width,
+		height: map.height * this.tilesize.height
+	};
+
 	this.tilesets = [];
 
 	this.tilecache = {};

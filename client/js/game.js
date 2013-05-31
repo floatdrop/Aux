@@ -1,8 +1,8 @@
 /* global _ */
 
-define(['entities/player', 'client', 'entityfactory', 'entities/debugEntity'],
+define(['entities/player', 'client', 'entities/factory'],
 
-function (Player, Client, EntityFactory, DebugEntity) {
+function (Player, Client, EntityFactory) {
 	var Game = Class.extend({
 
 		init: function (renderer) {
@@ -43,9 +43,10 @@ function (Player, Client, EntityFactory, DebugEntity) {
 			this.loader.addEventListener("onComplete", function () {
 				text.setText("Connecting to server...");
 				self.stage.removeChild(text);
+				self.map = new LINK.TiledMap('assets/world/smallworld.json');
 				self.layers = new LINK.Layers({
 					"game": new LINK.Layers({
-						"tiles": new LINK.TiledMap('assets/world/smallworld.json'),
+						"map": self.map,
 						"objects": new LINK.Layers()
 					})
 				}, "debug", "ui");
@@ -54,7 +55,7 @@ function (Player, Client, EntityFactory, DebugEntity) {
 				/* DROP CAMERA */
 				self.camera = new LINK.Camera(800, 600);
 				self.camera.on(self.layers.game);
-				self.camera.bounds = new PIXI.Rectangle(0, 0, 1920, 1472);
+				self.camera.bounds = new PIXI.Rectangle(0, 0, self.map.dimensions.width, self.map.dimensions.height);
 
 				LINK.Stats.on(self.stage);
 
@@ -76,20 +77,8 @@ function (Player, Client, EntityFactory, DebugEntity) {
 		},
 		tick: function () {
 			LINK.Key.runCallbacks();
-			this.renderDebugEntities();
 			this.renderer.render(this.stage);
 			window.requestAnimFrame(this.tick.bind(this));
-		},
-		renderDebugEntities: function () {
-			if (!this.context) return;
-			this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-			var self = this;
-			_.each(self.entities, function (entity) {
-				if (entity instanceof DebugEntity) {
-					entity.draw(self.context);
-				}
-			});
-			this.debugSprite.setTexture(PIXI.Texture.fromCanvas(this.canvas));
 		},
 		connect: function () {
 			var self = this;
@@ -100,7 +89,7 @@ function (Player, Client, EntityFactory, DebugEntity) {
 				self.playerId = entity_info.id;
 				self.player = EntityFactory.createEntity(entity_info, "PlayerName");
 				self.entities[entity_info.id] = self.player;
-				self.camera.follow(self.player.getDisplayObject());
+				self.camera.follow(self.player);
 			});
 
 			this.client.onEntityList(function (entitieslist) {
@@ -116,13 +105,13 @@ function (Player, Client, EntityFactory, DebugEntity) {
 				var id = info.id;
 				var entity = id in self.entities ? self.entities[id] : entity = EntityFactory.createEntity(info, id);
 				entity.update(info);
-				if (self.layers.game.tiles) {
-					self.layers.game.tiles.objects.addChild(entity.getDisplayObject());
+				if (self.layers.game.map) {
+					self.layers.game.map.objects.addChild(entity);
 				}
 				entities[id] = entity;
 			});
 			_.each(_.difference(Object.keys(self.entities), Object.keys(entities)), function (id) {
-				self.layers.game.tiles.objects.removeChild(self.entities[id].getDisplayObject());
+				self.layers.game.map.objects.removeChild(self.entities[id]);
 			});
 			self.entities = entities;
 		},

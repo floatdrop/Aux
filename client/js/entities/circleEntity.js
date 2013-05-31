@@ -8,8 +8,8 @@ define(['entities/debugEntity'], function (DebugEntity) {
         },
 
         update: function (entity_info) {
-            this.setPosition(entity_info.position.x, entity_info.position.y);
-            this.radius = entity_info.radius * 100;
+            this.position = entity_info.position;
+            this.radius = entity_info.radius;
         },
 
         draw: function (context) {

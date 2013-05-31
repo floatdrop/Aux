@@ -2,28 +2,11 @@
 
 define(['sprites'], function (Sprites) {
 
-	var Entity = Class.extend({
+	var Entity = LINK.MovieClipManager.extend({
 		init: function (id, kind) {
 			this.id = id;
 			this.kind = kind;
-			this.animation = new LINK.MovieClipManager();
 			this.layer = "default";
-		},
-		getDisplayObject: function () {
-			return this.animation;
-		},
-		getPosition: function () {
-			return this.animation.position;
-		},
-		setPosition: function (x, y) {
-			this.animation.position.x = x | 0;
-			this.animation.position.y = y | 0;
-		},
-		getAngle: function () {
-			return this.animation.rotation;
-		},
-		setAngle: function (angle) {
-			this.animation.rotation = angle;
 		},
 		loadAnimations: function (sprite) {
 			var self = this;
@@ -35,13 +18,13 @@ define(['sprites'], function (Sprites) {
 				movieclip.scale = adef.scale;
 				movieclip.anchor = def.anchor;
 				movieclip.loop = adef.loop;
-				self.animation.add(name, movieclip).play();
+				self.add(name, movieclip).play();
 			});
 		},
 		update: function (entity_info) {
-			this.animation.set(entity_info.animation || "default").play();
-			this.setPosition(entity_info.position.x, entity_info.position.y);
-			this.setAngle(entity_info.angle);
+			this.set(entity_info.animation || "default").play();
+			this.position = entity_info.position;
+			this.rotate = entity_info.angle;
 		}
 	});
 
