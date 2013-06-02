@@ -1,16 +1,8 @@
-define(['entities/entity'], function (Entity) {
 
-	var DebugEntity = Entity.extend({
-		init: function (id) {
-			this._super(id, Constants.Types.Entities.CircleEntity);
-		},
-		getPosition: function () {
-			return {
-				x: this.animation.worldTransform[2],
-				y: this.animation.worldTransform[5]
-			};
-		}
-	});
+var Entity = require('entity');
 
-	return DebugEntity;
+module.exports = Entity.extend({
+	initialize: function (id) {
+		this.supr(id, Constants.Types.Entities.CircleEntity);
+	}
 });

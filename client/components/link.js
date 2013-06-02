@@ -4,7 +4,7 @@
  * Copyright (c) 2013, Vsevolod Strukchinsky
  * hhttps://github.com/floatdrop/link.js
  *
- * Compiled: 2013-05-26
+ * Compiled: 2013-05-31
  *
  * Link.JS Game Engine is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -6517,6 +6517,17 @@ LINK.Utils.getOffset = function (el) {
 		left: _x
 	};
 };
+
+window.requestAnimFrame = (function () {
+	return window.requestAnimationFrame ||
+		window.webkitRequestAnimationFrame ||
+		window.mozRequestAnimationFrame ||
+		window.oRequestAnimationFrame ||
+		window.msRequestAnimationFrame || function ( /* function FrameRequestCallback */ callback, /* DOMElement */ element) {
+			element = element;
+			window.setTimeout(callback, 1000 / 60);
+	};
+})();
 /**
  * @author Vsevolod Strukchinsky @floatdrop
  */
@@ -7653,6 +7664,11 @@ LINK.TiledMap.prototype.onTiledMapJsonLoaded = function (jsonLoader) {
 	this.tilesize = {
 		width: map.tilewidth,
 		height: map.tileheight
+	};
+
+	this.dimensions = {
+		width: map.width * this.tilesize.width,
+		height: map.height * this.tilesize.height
 	};
 
 	this.tilesets = [];

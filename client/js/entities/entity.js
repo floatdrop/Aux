@@ -1,49 +1,32 @@
-/* global _ */
+var Sprites = require('sprites');
 
-define(['sprites'], function (Sprites) {
+var DisplayObjectContainer = klass(PIXI.DisplayObjectContainer.prototype);
 
-	var Entity = Class.extend({
-		init: function (id, kind) {
-			this.id = id;
-			this.kind = kind;
-			this.animation = new LINK.MovieClipManager();
-			this.layer = "default";
-		},
-		getDisplayObject: function () {
-			return this.animation;
-		},
-		getPosition: function () {
-			return this.animation.position;
-		},
-		setPosition: function (x, y) {
-			this.animation.position.x = x | 0;
-			this.animation.position.y = y | 0;
-		},
-		getAngle: function () {
-			return this.animation.rotation;
-		},
-		setAngle: function (angle) {
-			this.animation.rotation = angle;
-		},
-		loadAnimations: function (sprite) {
-			var self = this;
-			var def = Sprites.definitions[sprite];
-			_.each(def.animations, function (adef, name) {
-				var movieclip = new PIXI.MovieClip(adef.textures);
-				movieclip.position = def.offset;
-				movieclip.animationSpeed = adef.speed;
-				movieclip.scale = adef.scale;
-				movieclip.anchor = def.anchor;
-				movieclip.loop = adef.loop;
-				self.animation.add(name, movieclip).play();
-			});
-		},
-		update: function (entity_info) {
-			this.animation.set(entity_info.animation || "default").play();
-			this.setPosition(entity_info.position.x, entity_info.position.y);
-			this.setAngle(entity_info.angle);
-		}
-	});
-
-	return Entity;
+module.exports = DisplayObjectContainer.extend({
+	initialize: function (id, kind) {
+		PIXI.DisplayObjectContainer.call(this);
+		this.id = id;
+		this.kind = kind;
+		this.layer = "default";
+		this.animation = new LINK.MovieClipManager();
+		this.addChild(this.animation);
+	},
+	loadAnimations: function (sprite) {
+		var self = this;
+		var def = Sprites.definitions[sprite];
+		_.each(def.animations, function (adef, name) {
+			var movieclip = new PIXI.MovieClip(adef.textures);
+			movieclip.position = def.offset;
+			movieclip.animationSpeed = adef.speed;
+			movieclip.scale = adef.scale;
+			movieclip.anchor = def.anchor;
+			movieclip.loop = adef.loop;
+			self.animation.add(name, movieclip).play();
+		});
+	},
+	update: function (entity_info) {
+		this.animation.set(entity_info.animation || "default").play();
+		this.position = new PIXI.Point(entity_info.position.x, entity_info.position.y);
+		this.rotate = entity_info.angle;
+	}
 });
