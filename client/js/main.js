@@ -1,5 +1,5 @@
 var $ = require('jquery');
-require('klass');
+window.klass = require('klass');
 window.Class = klass();
 require('constants');
 require('link');

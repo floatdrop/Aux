@@ -1,7 +1,7 @@
 /* global requirejs, define, QUnit */
 
 requirejs.config({
-	baseUrl: '/test/unit/'
+	baseUrl: '/client/test/unit/'
 });
 
 define(function (require) {

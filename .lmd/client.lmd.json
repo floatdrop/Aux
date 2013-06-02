@@ -23,10 +23,7 @@
         },
         "jquery": "components/jquery.js",
         "klass": { 
-            "path": "components/klass.js",
-            "exports": {
-                "klass": "klass"
-            }
+            "path": "components/klass.js"
         },
         "sprites/*": "sprites/*.json",
         "<%= file %>": "js/**/*.js"
