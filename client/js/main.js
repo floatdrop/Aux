@@ -1,4 +1,4 @@
-require('jquery');
+var $ = require('jquery');
 require('klass');
 window.Class = klass();
 require('constants');
