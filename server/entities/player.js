@@ -11,10 +11,10 @@ var logger = require("../gamelogger");
 require('../../client/js/constants');
 
 var Player = module.exports = Entity.extend({
-	init: function (connection, id) {
+	initialize: function (connection, id) {
+		this.supr(id, "player", Constants.Types.Entities.Player);
 		var self = this;
 		this.connection = connection;
-		this._super(id, "player", Constants.Types.Entities.Player);
 		this.heading = 0;
 		this.angleEps = 90;
 		this.setAnimation();

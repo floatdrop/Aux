@@ -1,4 +1,5 @@
-GLOBAL.Class = require('./vendor/class.js').Class;
+GLOBAL.klass = require("klass");
+GLOBAL.Class = klass();
 GLOBAL._ = require('lodash');
 GLOBAL.log = require('./log.js');
 
@@ -7,7 +8,7 @@ var ws = require("./ws"),
 	Box2dEngine = require('./b2dengine');
 
 var Server = module.exports = Class.extend({
-	init: function () {
+	initialize: function () {
 		this.started = false;
 
 		if (config.debug_level === "error") {

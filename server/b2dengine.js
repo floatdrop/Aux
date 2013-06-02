@@ -6,10 +6,10 @@ var Box2D = require('./vendor/box2d'),
 
 var Scale = 100;
 
-var Engine = module.exports = Class.extend({
+var Engine = module.exports = klass({
 	Scale: Scale,
 
-	init: function (viewarea) {
+	initialize: function (viewarea) {
 		this.b2w = new b2World(new b2Vec2(0, 0), false);
 		this.viewarea = viewarea;
 		var listener = new b2listener();

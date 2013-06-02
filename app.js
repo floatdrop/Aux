@@ -1,4 +1,4 @@
-GLOBAL.config = require('../config.js');
+GLOBAL.config = require('./config.js');
 
 var Server = require('./server');
 

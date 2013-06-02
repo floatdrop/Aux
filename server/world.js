@@ -7,7 +7,7 @@ var Player = require("./entities/player"),
 	logger = require("./gamelogger");
 
 module.exports = Class.extend({
-	init: function (engine, server) {
+	initialize: function (engine, server) {
 		this.engine = engine;
 		this.server = server;
 		this.map = new WorldMap(config.server.map);

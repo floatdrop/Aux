@@ -3,7 +3,7 @@ var actions = {};
 var GLOBAL_ID_COUNTER = 0;
 
 var Entity = module.exports = Class.extend({
-	init: function (id, type, kind) {
+	initialize: function (id, type, kind) {
 		this.setId(id);
 		this.type = type;
 		this.kind = kind;

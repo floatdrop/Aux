@@ -8,8 +8,8 @@ var Entity = require('./entity'),
 require('../../client/js/constants');
 
 var CircleEntity = module.exports = Entity.extend({
-	init: function (id, radius) {
-		this._super(id, "CircleEntity", Constants.Types.Entities.CircleEntity);
+	initialize: function (id, radius) {
+		this.supr(id, "CircleEntity", Constants.Types.Entities.CircleEntity);
 		var fixDef = new b2FixtureDef();
 		fixDef.density = 1.5;
 		fixDef.friction = 1;

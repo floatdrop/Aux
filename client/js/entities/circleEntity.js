@@ -1,25 +1,21 @@
-define(['entities/debugEntity'], function (DebugEntity) {
+var DebugEntity = require('debugEntity');
 
-    var CircleEntity = DebugEntity.extend({
-        radius: 0,
-        
-        init: function (id) {
-            this._super(id, Constants.Types.Entities.CircleEntity);
-        },
+module.exports = DebugEntity.extend({
+    radius: 0,
 
-        update: function (entity_info) {
-            this.position = entity_info.position;
-            this.radius = entity_info.radius;
-        },
+    initialize: function (id) {
+        this.supr(id, Constants.Types.Entities.CircleEntity);
+    },
 
-        draw: function (context) {
-            var position = this.getPosition();
-            context.beginPath();
-            context.arc(position.x, position.y, this.radius, 0, Math.PI * 2, true);
-            context.closePath();
-            context.fill();
-        }
-    });
+    update: function (entity_info) {
+        this.position = entity_info.position;
+        this.radius = entity_info.radius;
+    },
 
-    return CircleEntity;
+    draw: function (context) {
+        context.beginPath();
+        context.arc(this.worldtransform[2], this.worldtransform[5], this.radius, 0, Math.PI * 2, true);
+        context.closePath();
+        context.fill();
+    }
 });

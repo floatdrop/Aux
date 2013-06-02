@@ -13,7 +13,7 @@ module.exports = WS;
  * Abstract Server and Connection classes
  */
 var Server = Class.extend({
-	init: function (port) {
+	initialize: function (port) {
 		this.port = port;
 	},
 
@@ -48,7 +48,7 @@ var Server = Class.extend({
 
 
 var Connection = Class.extend({
-	init: function (id, connection, server) {
+	initialize: function (id, connection, server) {
 		this._connection = connection;
 		this._server = server;
 		this.id = id;
@@ -107,10 +107,10 @@ WS.MultiVersionWebsocketServer = Server.extend({
 	_connections: {},
 	_counter: 0,
 
-	init: function (port) {
+	initialize: function (port) {
 		var self = this;
 
-		this._super(port);
+		this.supr(port);
 
 		var express = require('express');
 		var app = express();
@@ -182,10 +182,10 @@ WS.MultiVersionWebsocketServer = Server.extend({
  * https://github.com/Worlize/WebSocket-Node
  */
 WS.worlizeWebSocketConnection = Connection.extend({
-	init: function (id, connection, server) {
+	initialize: function (id, connection, server) {
 		var self = this;
 
-		this._super(id, connection, server);
+		this.supr(id, connection, server);
 
 		this._connection.on('message', function (message) {
 			if (self.listen_callback) {

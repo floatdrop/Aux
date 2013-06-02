@@ -9,8 +9,8 @@ var Entity = require('./entity'),
 require('../../client/js/constants');
 
 var Bullet = module.exports = Entity.extend({
-	init: function (id, player) {
-		this._super(id, "bullet " + player.id, Constants.Types.Entities.Bullet);
+	initialize: function (id, player) {
+		this.supr(id, "bullet " + player.id, Constants.Types.Entities.Bullet);
 		this.player = player;
 		this.animation = "bullet";
 		this.ttf = Bullet.TimeToFly;

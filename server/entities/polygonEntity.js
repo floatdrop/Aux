@@ -8,8 +8,8 @@ var Entity = require('./entity'),
 require('../../client/js/constants');
 
 var PolygonEntity = module.exports = Entity.extend({
-	init: function (id, points) {
-		this._super(id, "PolygonEntity", Constants.Types.Entities.PolygonEntity);
+	initialize: function (id, points) {
+		this.supr(id, "PolygonEntity", Constants.Types.Entities.PolygonEntity);
 
 		this.points = points;
 

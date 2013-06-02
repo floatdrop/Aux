@@ -1,5 +1,5 @@
 server/vendor/**
 client/components/**
-client/js/lib/**
+client/*.lmd.js
 node_modules/**
 *.log

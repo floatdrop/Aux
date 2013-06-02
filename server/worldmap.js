@@ -1,9 +1,9 @@
 var fs = require('fs'),
 	EntityFactory = require('./entities/factory');
 
-var WorldMap = module.exports = Class.extend({
+var WorldMap = Class.extend({
 
-	init: function (map_filepath, engine) {
+	initialize: function (map_filepath, engine) {
 		this.json = JSON.parse(fs.readFileSync(map_filepath, 'utf8'));
 		this.createObjects(this.json, engine);
 	},
@@ -57,4 +57,4 @@ WorldMap.adjustInfo = function (entity_info) {
 	}
 };
 
-return WorldMap;
+module.exports = WorldMap;

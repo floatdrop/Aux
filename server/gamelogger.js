@@ -6,7 +6,7 @@ var GameLogger = Class.extend({
 		Connect: 1,
 		Disconnect: 2
 	},
-	init: function () {
+	initialize: function () {
 		this.updateDate();
 	},
 	updateDate: function () {

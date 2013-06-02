@@ -1,11 +1,9 @@
 {
     "globals": {
-        "console": false,
-        "jQuery": false,
-        "Constants": true,
-        "Class": false,
-        "define": false,
         "PIXI": false,
+        "klass": false,
+        "Class": false,
+        "Constants": true,
         "LINK": false,
         "_": false,
         "config": false,
