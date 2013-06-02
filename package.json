@@ -22,7 +22,16 @@
 		"jshint": ">=0.9.1",
 		"vows": ">=0.7.0",
 		"should": ">=1.2.2",
-		"zombie": "==1.4.1"
+		"zombie": "==1.4.1",
+		"grunt": "*",
+        "grunt-contrib-jshint": "*",
+        "grunt-contrib-uglify": "*",
+        "grunt-contrib-connect": "*",
+        "grunt-contrib-qunit": "*",
+        "grunt-contrib-yuidoc": "*",
+        "grunt-contrib-concat": "*",
+        "grunt-vows": "*",
+        "grunt-lmd": "*"
 	},
 	"engines": {
 		"node": ">=0.8"
