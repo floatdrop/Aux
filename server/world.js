@@ -24,10 +24,9 @@ module.exports = Class.extend({
 		log.metric("World", "Players", this.playersCount, "", "set");
 		var self = this;
 		var player = new Player(connection, connection.id);
-		var spawnPosition = this.map.getSpawnPoint();
-		player.setPosition(spawnPosition.x, spawnPosition.y);
+		player.position = this.map.getSpawnPoint();
 		log.info("Player " + player.id + " connected");
-		logger.write(player.connection, new Buffer(JSON.stringify(player.getPosition())), logger.MsgType.Connect);
+		logger.write(player.connection, new Buffer(JSON.stringify(player.position)), logger.MsgType.Connect);
 		connection.onClose(function () {
 			self.disconnect_callback(player);
 		});
@@ -40,7 +39,7 @@ module.exports = Class.extend({
 				var bullet = EntityFactory.createBullet(player);
 				self.engine.addEntity(bullet);
 				bullet.onRemove(self.engine.removeEntity.bind(self.engine));
-				var angle = player.getAngle() * Math.PI / 180,
+				var angle = player.angle * Math.PI / 180,
 					x = Math.cos(angle) * Bullet.SpeedRatio,
 					y = -Math.sin(angle) * Bullet.SpeedRatio;
 				bullet.body.SetAngle(angle);

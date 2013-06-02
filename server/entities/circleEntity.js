@@ -28,7 +28,7 @@ var CircleEntity = module.exports = Entity.extend({
 
 	getBaseState: function () {
 		return {
-			position: this.getPosition(),
+			position: this.position,
 			radius: this.shape.GetRadius(),
 			kind: this.kind,
 			id: this.id,

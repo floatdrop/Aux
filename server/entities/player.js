@@ -97,7 +97,7 @@ var Player = module.exports = Entity.extend({
 		}));
 	},
 	update: function () {
-		var curAngle = this.getAngle(),
+		var curAngle = this.angle,
 			delta = curAngle - this.heading,
 			sign = delta > 0 ? 1 : delta < 0 ? -1 : 0;
 
@@ -106,11 +106,11 @@ var Player = module.exports = Entity.extend({
 			sign *= -1;
 		}
 		curAngle -= Math.abs(delta) > this.angleEps ? sign * this.angleEps : delta;
-		this.setAngle(curAngle);
+		this.angle = curAngle;
 		this.setAnimation();
 	},
 	setAnimation: function () {
-		this.animation = this.animationType + "_" + this.getDirectionByAngle(this.getAngle());
+		this.animation = this.animationType + "_" + this.getDirectionByAngle(this.angle);
 	},
 	move: function (impulse) {
 		var self = this;
@@ -153,7 +153,7 @@ var Player = module.exports = Entity.extend({
 		return {
 			id: this.id,
 			kind: this.kind,
-			position: this.getPosition(),
+			position: this.position,
 			//angle: this.getAngle(),
 			animation: this.animation,
 			layer: this.layer,

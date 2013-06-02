@@ -27,6 +27,6 @@ module.exports = DisplayObjectContainer.extend({
 	update: function (entity_info) {
 		this.animation.set(entity_info.animation || "default").play();
 		this.position = new PIXI.Point(entity_info.position.x, entity_info.position.y);
-		this.rotate = entity_info.angle;
+		this.rotation = entity_info.angle;
 	}
 });

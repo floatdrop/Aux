@@ -16,7 +16,7 @@ EntityFactory.createEntity = function (entity_info) {
 	} else {
 		entity.setBodyDefAsPoly(Engine.getBoxPoints(entity_info.width || 16, entity_info.height || 16));
 	}
-	entity.setPosition(entity_info.x, entity_info.y);
+	entity.position = { x: entity_info.x, y: entity_info.y };
 	return entity;
 };
 
@@ -48,9 +48,8 @@ EntityFactory.createPolygonEntity = function (id, entity) {
 		EntityFactory.ConvertB2VecToJson(entity.fixtureDef.shape.m_vertices));
 	polygonEntity.entity = entity;
 	polygonEntity.shape = entity.fixture.m_shape;
-	var position = entity.getPosition();
-	polygonEntity.setPosition(position.x, position.y);
-	polygonEntity.setAngle(polygonEntity.getAngle());
+	polygonEntity.position = entity.position; 
+	polygonEntity.angle = polygonEntity.angle;
 	return polygonEntity;
 };
 
@@ -58,16 +57,14 @@ EntityFactory.createCircleEntity = function (id, entity) {
 	var circleEntity = new CircleEntity(id);
 	circleEntity.entity = entity;
 	circleEntity.shape = entity.fixture.m_shape;
-	var position = entity.getPosition();
-	circleEntity.setPosition(position.x, position.y);
-	circleEntity.setAngle(circleEntity.getAngle());
+	circleEntity.position = entity.position; 
+	circleEntity.angle = circleEntity.angle;
 	return circleEntity;
 };
 
 EntityFactory.createBullet = function (player) {
-	var bullet = new Bullet(null, player),
-		position = player.getPosition();
-	bullet.setPosition(position.x, position.y);
+	var bullet = new Bullet(null, player);
+	bullet.position = player.position; 
 	return bullet;
 };
 

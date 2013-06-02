@@ -20,19 +20,6 @@ var Entity = module.exports = Class.extend({
 			this.id = id;
 		}
 	},
-	setPosition: function (x, y) {
-		this.position.x = x;
-		this.position.y = y;
-	},
-	getPosition: function () {
-		return { x: this.position.x, y: this.position.y};
-	},
-	setAngle: function (a) {
-		this.angle = a;
-	},
-	getAngle: function () {
-		return this.angle;
-	},
 	update: function () {
 	},
 	scheduleAction: function (action, timeout, id) {
@@ -53,8 +40,8 @@ var Entity = module.exports = Class.extend({
 		return {
 			id: this.id,
 			kind: this.kind,
-			position: this.getPosition(),
-			angle: this.getAngle(),
+			position: this.position,
+			angle: this.angle,
 			animation: this.animation,
 			layer: this.layer
 		};

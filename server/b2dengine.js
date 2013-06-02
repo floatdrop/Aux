@@ -21,8 +21,8 @@ var Engine = module.exports = klass({
 		this.b2w.ClearForces();
 	},
 	isVisible: function (entityA, entityB) {
-		var a = entityA.getPosition();
-		var b = entityB.getPosition();
+		var a = entityA.position;
+		var b = entityB.position;
 		return Math.abs(b.x - a.x) < this.viewarea.width && Math.abs(b.y - a.y) < this.viewarea.height;
 	},
 	preSolve: function (contact) {
@@ -33,35 +33,35 @@ var Engine = module.exports = klass({
 
 		contact.SetEnabled(enabled1 && enabled2);
 	},
-	_setPosition: function (x, y) {
-		this.body.SetPosition(new b2Vec2(x / Scale, y / Scale));
-	},
-	_getPosition: function () {
-		var b2dPosition = this.body.GetPosition();
-		return {
-			x: b2dPosition.x * Scale,
-			y: b2dPosition.y * Scale
-		};
-	},
-	_setAngle: function (a) {
-		this.body.SetAngle(a);
-	},
-	_getAngle: function () {
-		return this.body.GetAngle();
-	},
 	addEntity: function (entity) {
-		var p = entity.getPosition();
-		entity.bodyDef.position = { x: p.x / Scale, y: p.y / Scale };
-		entity.angle = entity.getAngle();
+		entity.bodyDef.position = {
+			x: entity.position.x / Scale,
+			y: entity.position.y / Scale
+		};
 		entity.body = this.b2w.CreateBody(entity.bodyDef);
 		entity.body.m_userData = entity;
 		if (entity.fixtureDef) {
 			entity.fixture = entity.body.CreateFixture(entity.fixtureDef);
 		}
-		entity.setPosition = this._setPosition;
-		entity.getPosition = this._getPosition;
-		entity.setAngle = this._setAngle;
-		entity.getAngle = this._getAngle;
+		Object.defineProperty(entity, 'position', {
+			get: function () {
+				return {
+					x: entity.body.m_xf.position.x * Scale,
+					y: entity.body.m_xf.position.y * Scale
+				};
+			},
+			set: function (value) {
+				entity.body.SetPosition(value);
+			}
+		});
+		Object.defineProperty(entity, 'angle', {
+			get: function () {
+				return entity.body.m_sweep.a;
+			},
+			set: function (value) {
+				entity.body.SetAngle(value);
+			}
+		});
 	},
 	addEntities: function (entities_list) {
 		var self = this;
@@ -119,7 +119,7 @@ Engine.getBoxPoints = function (width, height) {
 	}, {
 		x: -width / Scale,
 		y: height / Scale
-	} ];
+	}];
 };
 
 

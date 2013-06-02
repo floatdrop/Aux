@@ -34,7 +34,7 @@ var Bullet = module.exports = Entity.extend({
 			this.animation = "blowing";
 			this.body.SetLinearVelocity(new b2Vec2(0, 0));
 			this.body.SetAngularVelocity(0);
-			this.setAngle(0);
+			this.angle = 0;
 		}
 		this.ttl -= 1;
 		this.ttf -= 1;
@@ -43,9 +43,9 @@ var Bullet = module.exports = Entity.extend({
 		return {
 			id: this.id,
 			kind: this.kind,
-			position: this.getPosition(),
+			position: this.position,
 			layer: this.layer,
-			angle: this.animation === "blowing" ? 0 : -this.getAngle(),
+			angle: -this.angle,
 			animation: this.animation
 		};
 	},
