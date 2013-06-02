@@ -28,13 +28,13 @@ module.exports = function (grunt) {
         connect: {
             qunit: {
                 options: {
-                    port: grunt.option('port-test') || 9002,
+                    port: process.env.PORT || 9002,
                     base: './'
                 }
             },
             test: {
                 options: {
-                    port: grunt.option('port-test') || 9002,
+                    port: process.env.PORT || 9002,
                     base: './',
                     keepalive: true
                 }
@@ -43,7 +43,7 @@ module.exports = function (grunt) {
         qunit: {
             all: {
                 options: {
-                    urls: ['http://localhost:' + (grunt.option('port-test') || 9002) + '/client/test/index.html']
+                    urls: ['http://localhost:' + (process.env.PORT || 9002) + '/client/test/index.html']
                 }
             }
         }
