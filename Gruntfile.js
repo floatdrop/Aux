@@ -28,13 +28,13 @@ module.exports = function (grunt) {
         connect: {
             qunit: {
                 options: {
-                    port: process.env.PORT || 9002,
+                    port: process.env.PORT || 8081,
                     base: './'
                 }
             },
             test: {
                 options: {
-                    port: process.env.PORT || 9002,
+                    port: process.env.PORT || 8081,
                     base: './',
                     keepalive: true
                 }
@@ -43,7 +43,7 @@ module.exports = function (grunt) {
         qunit: {
             all: {
                 options: {
-                    urls: ['http://localhost:' + (process.env.PORT || 9002) + '/client/test/index.html']
+                    urls: ['http://localhost:' + (process.env.PORT || 8081) + '/client/test/index.html']
                 }
             }
         }
@@ -51,6 +51,6 @@ module.exports = function (grunt) {
 
     //Load tasks
     grunt.registerTask('default', ['build', 'test']);
-    grunt.registerTask('build', ['jshint', 'lmd', 'vows']);
-    grunt.registerTask('test', ['connect:qunit', 'qunit']);
+    grunt.registerTask('build', ['jshint', 'lmd']);
+    grunt.registerTask('test', ['vows', 'connect:qunit', 'qunit']);
 };
