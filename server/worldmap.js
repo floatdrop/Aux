@@ -20,6 +20,14 @@ var WorldMap = Class.extend({
 					self.entities.push(EntityFactory.createEntity(entity_info));
 				});
 			}
+			if (layer.type === "objectgroup" && layer.name === "shootable_objects") {
+				_.each(layer.objects, function (entity_info) {
+					WorldMap.adjustInfo(entity_info);
+					var entity = EntityFactory.createEntity(entity_info);
+					entity.fixtureDef.filter.groupIndex = -2;
+					self.entities.push(entity);
+				});
+			}
 			if (layer.type === "objectgroup" && layer.name === "spawnplaces") {
 				_.each(layer.objects, function (entity_info) {
 					self.spawnregions.push(entity_info);
