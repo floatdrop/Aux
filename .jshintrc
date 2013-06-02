@@ -1,14 +1,13 @@
 {
     "globals": {
-        "console": false,
-        "jQuery": false,
-        "Constants": true,
-        "Class": false,
-        "define": false,
-        "requestAnimFrame": false,
-        "msgpack": true,
         "PIXI": false,
-        "LINK": false
+        "klass": false,
+        "Class": false,
+        "Constants": true,
+        "LINK": false,
+        "_": false,
+        "config": false,
+        "log": false
     },
     "maxparams": 10,
     "maxdepth": 5,

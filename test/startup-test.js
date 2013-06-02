@@ -4,17 +4,18 @@ var vows = require('vows'),
 	events = require('events'),
 	ws = require('websocket');
 
-var Server = require('../server/js/server');
+GLOBAL.config = require('../config.js');
+config.server.port = 8081;
+
+var Server = require('../server');
+
+
 
 vows.describe('Aux')
 	.addBatch({
 	'A server': {
 		topic: function () {
-			return new Server({
-				default_port: 8081,
-				debug_level: "debug",
-				map_filepath: "./client/assets/world/smallworld.json"
-			});
+			return new Server();
 		},
 		'started': {
 			topic: function (server) {
@@ -26,7 +27,7 @@ vows.describe('Aux')
 			'and index page': {
 				topic: function (server) {
 					server.should.be.an.instanceof(Server);
-					zombie.visit("http://localhost:" + server.config.port + "/", {
+					zombie.visit("http://localhost:" + config.server.port + "/", {
 						runScripts: false
 					}, this.callback);
 				},
@@ -48,7 +49,7 @@ vows.describe('Aux')
 					websocket.on('connect', function (connection) {
 						promise.emit('success', connection);
 					});
-					websocket.connect('ws://localhost:' + server.config.port + '/');
+					websocket.connect('ws://localhost:' + config.server.port + '/');
 					return promise;
 				},
 				"should connecting to server": function (connection) {

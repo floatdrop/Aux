@@ -1,0 +1,37 @@
+{
+    "name": "client build",
+    "root": "../client",
+    "output": "game.lmd.js",
+    "www_root": ".",
+    "sourcemap": "game.lmd.map",
+    "sourcemap_inline": true,
+    "sourcemap_www": ".",
+    "modules": {
+        "main": "js/main.js",
+        "link": {
+            "path": "components/link.js",
+            "exports": {
+                "LINK": "LINK",
+                "PIXI": "PIXI"
+            }
+        },
+        "lodash": {
+            "path": "components/lodash.js",
+            "exports": {
+                "_": "_"
+            }
+        },
+        "jquery": "components/jquery.js",
+        "klass": { 
+            "path": "components/klass.js"
+        },
+        "sprites/*": "sprites/*.json",
+        "<%= file %>": "js/**/*.js"
+    },
+    "main": "main",
+    "ie": false,
+    "warn": true,
+    "log": true,
+    "pack": false,
+    "lazy": false
+}

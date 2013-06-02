@@ -11,3 +11,5 @@ debug.log
 exceptions.log
 npm-debug.log
 *.sh
+client/game.lmd.js
+client/game.lmd.map

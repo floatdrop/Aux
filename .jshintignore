@@ -1,7 +1,6 @@
-server/js/lib/**
-front/public/scripts/bootstrap.min.js
-client/js/lib/**
+server/vendor/**
 client/components/**
+client/*.lmd.js
+client/test/lib/**
 node_modules/**
-debug.log
-exceptions.log
+*.log

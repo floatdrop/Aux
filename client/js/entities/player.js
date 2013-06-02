@@ -1,11 +1,8 @@
-define(['entities/entity'], function (Entity) {
+var Entity = require('entity');
 
-	var Player = Entity.extend({
-		init: function (id) {
-			this._super(id, "player");
-            this.loadAnimations("player");
-		}
-	});
-
-	return Player;
+module.exports = Entity.extend({
+	initialize: function (id) {
+		this.supr(id, "player");
+		this.loadAnimations("player");
+	}
 });
