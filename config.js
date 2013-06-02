@@ -3,7 +3,7 @@ var ticksPerSecond = 30.0;
 module.exports = {
 	"server": {
 		"host": "0.0.0.0",
-		"port": process.env.PORT || 8000,
+		"port": process.env.PORT || 8001,
 		"playerslimit": 10,
 		"map": "client/assets/world/smallworld.json"
 	},
