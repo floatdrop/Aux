@@ -24,6 +24,7 @@
 		"should": ">=1.2.2",
 		"zombie": "==1.4.1",
 		"grunt": "*",
+		"grunt-cli": "*",
         "grunt-contrib-jshint": "*",
         "grunt-contrib-uglify": "*",
         "grunt-contrib-connect": "*",
