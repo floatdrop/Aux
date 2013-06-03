@@ -114,7 +114,7 @@ WS.MultiVersionWebsocketServer = Server.extend({
 
 		var express = require('express');
 		var app = express();
-		var __dirname = './client';
+		var __dirname = './client-build';
 		app.use(express.static(__dirname));
 		app.use(express.directory(__dirname));
 

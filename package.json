@@ -25,6 +25,7 @@
 		"zombie": "==1.4.1",
 		"grunt": "*",
 		"grunt-cli": "*",
+		"grunt-contrib-copy": "*",
         "grunt-contrib-jshint": "*",
         "grunt-contrib-uglify": "*",
         "grunt-contrib-connect": "*",

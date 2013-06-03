@@ -1,9 +1,9 @@
 {
     "name": "client build",
     "root": "../client",
-    "output": "game.lmd.js",
+    "output": "../client-build/game.lmd.js",
     "www_root": ".",
-    "sourcemap": "game.lmd.map",
+    "sourcemap": "../client-build/game.lmd.map",
     "sourcemap_inline": true,
     "sourcemap_www": ".",
     "modules": {
