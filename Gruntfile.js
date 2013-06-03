@@ -14,18 +14,17 @@ module.exports = function (grunt) {
 		pkg: grunt.file.readJSON('package.json'),
 		copy: {
 			client: {
-				files: [{
-						expand: true,
-						cwd: 'client',
-						src: [
-							'index.html',
-							'assets/**',
-							'css/**',
-							'replays/**'
-						],
-						dest: 'client-build'
-					}
-				]
+				files: {
+					expand: true,
+					cwd: 'client',
+					src: [
+						'index.html',
+						'assets/**',
+						'css/**',
+						'replays/**'
+					],
+					dest: 'client-build'
+				}
 			}
 		},
 		jshint: {
