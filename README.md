@@ -8,15 +8,16 @@ This game using NodeJS on server side and [Link.js](http://github.com/floatdrop/
 Demo
 ----
 
-Demo server located at [Russia](http://aux-ekb.air-labs.ru/) (may be down from time to time).
+Demo server located in [Russia](http://aux-ekb.air-labs.ru/) (may be down from time to time).
 
-Documentation
--------------
-See client and server directories.
 
-For developers
+Building and running
 --------------
-See https://github.com/floatdrop/Aux/wiki/Developers
+
+* ```git clone https://github.com/floatdrop/Aux && cd Aux```
+* ```npm install -d```
+* ```grunt```
+* ```node app.js```
 
 
 License
