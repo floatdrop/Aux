@@ -14,7 +14,7 @@ module.exports = function (grunt) {
 		pkg: grunt.file.readJSON('package.json'),
 		copy: {
 			client: {
-				files: {
+				files: [{
 					expand: true,
 					cwd: 'client',
 					src: [
@@ -24,7 +24,7 @@ module.exports = function (grunt) {
 						'replays/**'
 					],
 					dest: 'client-build'
-				}
+				}]
 			}
 		},
 		jshint: {

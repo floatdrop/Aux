@@ -2,10 +2,13 @@ var vows = require('vows'),
 	should = require('should'),
 	zombie = require('zombie'),
 	events = require('events'),
-	ws = require('websocket');
+	ws = require('websocket'),
+	fs = require('fs'),
+	path = require('path');
 
 GLOBAL.config = require('../../config.js');
 config.server.port = 8081;
+config.server.replaysPath = path.normalize(__dirname + "/../../client-build/replays");
 
 var Server = require('../../server');
 
@@ -59,6 +62,11 @@ vows.describe('Aux')
 			teardown: function (server) {
 				server.should.be.an.instanceof(Server);
 				server.stop();
+
+				var files = fs.readdirSync(config.server.replaysPath);
+				files.forEach(function (file) {
+					fs.unlink(config.server.replaysPath + '/' + file);
+				});
 			}
 		}
 	}

@@ -13,8 +13,7 @@ var GameLogger = Class.extend({
 		var self = this;
 		this.startTime = new Date();
 		this.oldCommandTime = this.startTime.getTime();
-		var dir =  __dirname + "/../client-build/replays/";
-		this.path = dir + "replay-" + this.startTime.toISOString().split(':').join('-');
+		this.path = config.server.replaysPath + "/" + "replay-" + this.startTime.toISOString().split(':').join('-');
 		if (this.file) {
 			fs.close(this.file);
 		}

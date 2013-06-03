@@ -1,11 +1,12 @@
 var ticksPerSecond = 30.0;
-
+var path = require('path');
 module.exports = {
 	"server": {
 		"host": "0.0.0.0",
 		"port": process.env.PORT || 8001,
 		"playerslimit": 10,
-		"map": "client/assets/world/smallworld.json"
+		"map": "client-build/assets/world/smallworld.json",
+		"replaysPath": path.normalize(__dirname + "/client-build/replays")
 	},
 	"b2dengine": {
 		"ticksPerSecond": ticksPerSecond,
