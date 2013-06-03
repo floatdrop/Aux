@@ -18,7 +18,9 @@ module.exports = function (grunt) {
 			}
 		},
 		jshint: {
-			jshintrc: ".jshintrc"
+			all: {
+				src: ['.']
+			}
 		},
 		lmd: {
 			build_name: 'client'

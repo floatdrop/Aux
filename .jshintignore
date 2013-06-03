@@ -1,7 +1,7 @@
 server/vendor/**
 client/components/**
 client/*.lmd.js
-client/test/lib/**
+tests/client/lib/**
 client-build
 node_modules/**
 *.log
