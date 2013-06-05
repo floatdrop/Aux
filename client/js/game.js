@@ -77,10 +77,12 @@ module.exports = Class.extend({
 		this.loader.load();
 	},
 	run: function () {
+		setInterval(function () {
+			LINK.Key.runCallbacks();
+		}, 50);
 		this.tick();
 	},
 	tick: function () {
-		LINK.Key.runCallbacks();
 		this.renderer.render(this.stage);
 		window.requestAnimFrame(this.tick.bind(this));
 	},
