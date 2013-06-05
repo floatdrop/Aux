@@ -12,8 +12,6 @@ config.server.replaysPath = path.normalize(__dirname + "/../../client-build/repl
 
 var Server = require('../../server');
 
-
-
 vows.describe('Aux')
 	.addBatch({
 	'A server': {
