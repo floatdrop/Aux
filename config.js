@@ -1,5 +1,11 @@
 var ticksPerSecond = 30.0;
 var path = require('path');
+var fs = require('fs');
+
+var globalConfigFile = __dirname + '/../config.js';
+
+var globalConfig = fs.existsSync(globalConfigFile) ? require(globalConfigFile) : { Aux: {} };
+
 module.exports = {
 	"server": {
 		"host": "0.0.0.0",
@@ -14,5 +20,5 @@ module.exports = {
 	},
 	"debugLevel": "debug",
 	"debug": true,
-	"NodeTimeKey": process.env.NodeTimeKey || ""
+	"NodeTimeKey": globalConfig.Aux.NodeTimeKey || process.env.NodeTimeKey || ""
 };
