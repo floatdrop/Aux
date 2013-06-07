@@ -46,7 +46,7 @@ module.exports.metric = function (scope, name, value, unit, op) {
 var nodetime = require('nodetime');
 if (config.NodeTimeKey) {
 	nodetime.profile({
-		accoutKey: config.NodeTimeKey,
+		accountKey: config.NodeTimeKey,
 		appName: "Aux"
 	});
 }
