@@ -11,6 +11,7 @@
 		"lodash": ">=1.2.1",
 		"websocket": ">0",
 		"express": "3.0.0rc1",
+		"nodetime": "*",
 		"websocket-server": ">0",
 		"async": ">0",
 		"msgpack": ">0",
