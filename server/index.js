@@ -3,6 +3,9 @@ GLOBAL.Class = klass();
 GLOBAL._ = require('lodash');
 GLOBAL.log = require('./log.js');
 
+log.debug("Config: ");
+log.debug(GLOBAL.config);
+
 var ws = require("./ws"),
 	World = require('./world'),
 	Box2dEngine = require('./b2dengine');
