@@ -1,7 +1,7 @@
 var winston = require('winston'),
 	fs = require('fs');
 
-var logDirectory = __dirname + '/logs';
+var logDirectory = __dirname + '/../logs';
 
 if (!fs.existsSync(logDirectory)) {
 	fs.mkdirSync(logDirectory);
