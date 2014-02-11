@@ -9,17 +9,15 @@
 	},
 	"dependencies": {
 		"lodash": ">=1.2.1",
-		"websocket": ">0",
-		"express": "3.0.0rc1",
-		"nodetime": "*",
-		"websocket-server": ">0",
-		"async": ">0",
-		"msgpack": ">0",
-		"klass": ">0",
-		"winston": ">0"
+		"websocket": "*",
+		"express": "~3",
+		"websocket-server": "*",
+		"async": "*",
+		"msgpack": "*",
+		"klass": "*",
+		"winston": "*"
 	},
 	"devDependencies": {
-		"nodetime": ">0",
 		"jshint": ">=0.9.1",
 		"vows": ">=0.7.0",
 		"should": ">=1.2.2",

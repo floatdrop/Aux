@@ -38,15 +38,3 @@ module.exports = new(winston.Logger)({
 	],
 	exitOnError: false
 });
-
-module.exports.metric = function (scope, name, value, unit, op) {
-	log.debug("Metric: " + [scope, name, value, unit, op]);
-};
-
-var nodetime = require('nodetime');
-if (config.NodeTimeKey) {
-	nodetime.profile({
-		accountKey: config.NodeTimeKey,
-		appName: "Aux"
-	});
-}

@@ -21,7 +21,6 @@ module.exports = Class.extend({
 			logger.updateDate();
 		}
 		this.playersCount += 1;
-		log.metric("World", "Players", this.playersCount, "", "set");
 		var self = this;
 		var player = new Player(connection, connection.id);
 		player.position = this.map.getSpawnPoint();
@@ -60,7 +59,6 @@ module.exports = Class.extend({
 	},
 	playerDisconnect: function (player) {
 		this.playersCount -= 1;
-		log.metric("World", "Players", this.playersCount, "", "set");
 		logger.write(player.connection, new Buffer(player.id), logger.MsgType.Disconnect);
 		this.engine.removeEntity(player.id);
 	},
@@ -95,7 +93,6 @@ module.exports = Class.extend({
 		}, config.b2dengine.ticks);
 		setInterval(function () {
 			var now = new Date() / 1000;
-			log.metric("World", "Ticks per second", ticks / (now - start), "ticks", "set");
 		}, 5000);
 		setTimeout(function () {
 			self.ready_callback();
